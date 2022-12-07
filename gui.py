@@ -1,7 +1,9 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter.messagebox import showerror
-from turtle import RawTurtle, TurtleScreen
+from turtle import RawTurtle
+
+from configuretool import ConfigureTool
 from vectorize_qr import *
 from qrcodegen import QrCode
 
@@ -96,7 +98,7 @@ class App:
 
     def _add_tool_button_clicked(self):
         """Handle add tool button click event"""
-        wdw = AddToolWindow(self.master, self.options)
+        wdw = ConfigureTool(self.master, self.options)
 
     def _remove_tool_button_clicked(self):
         """Handle add tool button click event"""
@@ -131,37 +133,6 @@ class App:
         offset = (qr_size * self.pen_size) / 2
         self.turtle.goto(self.turtle.pos()[0] - offset, self.turtle.pos()[1] + offset)
         self.turtle.showturtle()
-
-
-class AddToolWindow:
-    def __init__(self, master, options):
-        self.options = options
-        self.add_tool = tk.Toplevel(master)
-        self.add_tool.geometry('400x200')
-        self.add_tool.title('Add tool')
-
-        frame = self._create_add_tool_frame()
-
-    def _create_add_tool_frame(self):
-        add_tool_frame = tk.Frame(self.add_tool, bd=5)
-        add_tool_frame['relief'] = 'ridge'
-        add_tool_frame.grid(column=0, row=0, sticky='W', **self.options)
-
-        # tool number entry
-        self.tool_nr = tk.StringVar()
-        tool_nr_entry = ttk.Entry(add_tool_frame, textvariable=self.tool_nr)
-        tool_nr_entry.grid(column=0, row=0, **self.options)
-        tool_nr_entry.focus()
-
-        # OK button
-        ok_button = ttk.Button(add_tool_frame, text='OK')
-        ok_button.grid(column=0, row=2, sticky='W', **self.options)
-        ok_button.configure(command=self._ok_button_clicked)
-
-        return add_tool_frame
-
-    def _ok_button_clicked(self):
-        self.add_tool.destroy()
 
 
 if __name__ == '__main__':
