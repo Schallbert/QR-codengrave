@@ -14,11 +14,13 @@ def _validate_number(entry):
 
 
 class ConfigureTool:
-    def __init__(self, master, options, tool=None):
+    def __init__(self, root, caller, options, tool=None):
+        self.caller = caller
         self.options = options
-        self.add_tool = tk.Toplevel(master)
-        self.add_tool.geometry('627x180')
-        self.add_tool.title('Add tool')
+        self.tool_dialog = tk.Toplevel(root)
+        self.tool_dialog.attributes('-topmost', 'true')
+        self.tool_dialog.geometry('557x180')
+        self.tool_dialog.title('Add/Edit tool')
 
         if tool is None:
             self.tool = Tool(0, 'Name', 3.18, 1000, 500, 24000, 90, 0.1)
@@ -28,7 +30,7 @@ class ConfigureTool:
         frame = self._create_config_tool_frame()
 
     def _create_config_tool_frame(self):
-        config_tool_frame = tk.Frame(self.add_tool, bd=5)
+        config_tool_frame = tk.Frame(self.tool_dialog, bd=5)
         config_tool_frame['relief'] = 'ridge'
         config_tool_frame.grid(column=0, row=0, sticky='W', **self.options)
         reg = config_tool_frame.register(_validate_number)
@@ -133,32 +135,42 @@ class ConfigureTool:
             self.tool_tip.set(0)
 
     def _validate_entries(self):
+        no_error = True
         if not (isinstance(self.tool_nr.get(), int) and self.tool_nr.get() > 0):
-            print("Error tool nr")
+            tk.messagebox.showinfo('Tool number error', 'Error: Tool Number must be a positive integer.')
+            no_error = False
         if not (self.tool_dia.get() > 0):
-            print("Error tool dia")
-        if not (isinstance(self.tool_xyfeed.get(), int) and self.tool_xyfeed.get() > 0):
-            print('Error tool Fxy')
-        if not (isinstance(self.tool_zfeed.get(), int) and self.tool_zfeed.get() > 0):
-            print('Error tool Fz')
+            tk.messagebox.showinfo('Tool diameter error', 'Error: Tool Diameter must be a positive numerical value.')
+            no_error = False
+        if not (isinstance(self.tool_xyfeed.get(), int) and self.tool_xyfeed.get() > 0) and \
+                (isinstance(self.tool_zfeed.get(), int) and self.tool_zfeed.get() > 0):
+            tk.messagebox.showinfo('Tool Feed error', 'Error: Tool Feed must be a positive integer.')
+            no_error = False
         if not (isinstance(self.tool_speed.get(), int) and self.tool_speed.get() > 0):
-            print('Error tool speed')
+            tk.messagebox.showinfo('Tool speed error', 'Error: Tool Speed must be a positive integer.')
+            no_error = False
         if self.is_tool_tapered.get():
             if not ((self.tool_angle.get() > 0) and (self.tool_angle.get() < 180) and self.tool_tip.get() >= 0):
-                print('Error tapered tool')
+                tk.messagebox.showinfo('Tapered Tool error', 'Error: Tool Angle must be a positive integer \n'
+                                                             'between 1° and 180°.\n'
+                                                             'Tool tip width must be a positive value.')
+                no_error = False
         else:
             # make sure everything is properly zeroed
             self.tool_angle.set(0)
             self.tool_tip.set(0)
 
-        tool = Tool(self.tool_nr.get(), self.tool_name.get(), self.tool_dia.get(), self.tool_xyfeed.get(),
-                    self.tool_zfeed.get(), self.tool_speed.get(), self.tool_angle.get(), self.tool_tip.get())
-
-        return tool
+        return no_error
 
     def _cancel_button_clicked(self):
-        self.add_tool.destroy()
+        self.tool = None
+        self.tool_dialog.destroy()
 
     def _ok_button_clicked(self):
-        self._validate_entries()
-        self.add_tool.destroy()
+        if not self._validate_entries():
+            return
+        # tool created using the dialog
+        self.tool = Tool(self.tool_nr.get(), self.tool_name.get(), self.tool_dia.get(), self.tool_xyfeed.get(),
+                         self.tool_zfeed.get(), self.tool_speed.get(), self.tool_angle.get(), self.tool_tip.get())
+        self.caller.add_or_edit_tool(self.tool)
+        self.tool_dialog.destroy()

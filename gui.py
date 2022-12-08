@@ -3,24 +3,33 @@ from tkinter import ttk
 from tkinter.messagebox import showerror
 from turtle import RawTurtle
 
+from qrcodegen import QrCode
+
 from configuretool import ConfigureTool
 from vectorize_qr import *
-from qrcodegen import QrCode
+from machinify_vector import *
 
 
 class App:
-    def __init__(self, master):
-        self.master = master
-        self.master.title("EngraveQr")
-        self.canvas = tk.Canvas(master)
+    def __init__(self, root):
+        self.root = root
+        self.root.iconbitmap('qruwu.ico')
+        self.root.title("EngraveQr")
+        self.canvas = tk.Canvas(root)
         self.canvas.config(width=600, height=600)
 
-        self.frame = ttk.Frame(self.master)
+        self.frame = ttk.Frame(self.root)
         self.options = {'padx': 5, 'pady': 5}
+
+        self.tool_list = ToolList()
 
         self.tc_frame = self._init_frame_text_convert()
         self.ts_frame = self._init_frame_tool_section()
         self.dwg_frame = self._init_frame_turtle()
+
+    def add_or_edit_tool(self, tool):
+        self.tool_list.add_or_update(tool)
+        self._update_tool_options()
 
     def _init_frame_text_convert(self):
         text_convert_frame = tk.Frame(bd=5)
@@ -54,7 +63,7 @@ class App:
         tool_section_frame.grid(column=3, row=1, sticky='N', **self.options)
 
         # Add Tool
-        add_tool_button = ttk.Button(tool_section_frame, text='Add tool')
+        add_tool_button = ttk.Button(tool_section_frame, text='Add/Edit tool')
         add_tool_button.grid(column=1, row=0, sticky='W', **self.options)
         add_tool_button.configure(command=self._add_tool_button_clicked)
 
@@ -66,10 +75,11 @@ class App:
         # Select Tool
         select_tool_label = ttk.Label(tool_section_frame, text='Select tool')
         select_tool_label.grid(column=1, row=1, sticky='E', **self.options)
-        selected = tk.StringVar()
-        selected.set('0')
-        tool_dropdown = tk.OptionMenu(tool_section_frame, selected, *self.options)
-        tool_dropdown.grid(column=2, row=1, columnspan=2, sticky='W', **self.options)
+        self.tool_selection = tk.StringVar(None)
+        self.tool_selection.trace('w', self._tool_selection_changed)
+        self.tool_dropdown = ttk.OptionMenu(tool_section_frame, variable=self.tool_selection,
+                                            *self.tool_list.get_tool_list_string())
+        self.tool_dropdown.grid(column=2, row=1, columnspan=3, sticky='W', **self.options)
 
         return tool_section_frame
 
@@ -98,10 +108,20 @@ class App:
 
     def _add_tool_button_clicked(self):
         """Handle add tool button click event"""
-        wdw = ConfigureTool(self.master, self.options)
+        ConfigureTool(self.root, self, self.options)
 
     def _remove_tool_button_clicked(self):
         """Handle add tool button click event"""
+        remove = self._tool_selection_get_to_int()
+        if remove == 0:
+            return
+        self.tool_list.remove(remove)
+        self._update_tool_options()
+        self.tool_selection.set(None)
+
+    def _tool_selection_changed(self, *args):
+        """Handle option box for tool selection changed event"""
+        self.tool_list.select_tool(self._tool_selection_get_to_int())
 
     def _draw_qr_turtle(self, text_to_qr):
         qr = QrCode.encode_text(text_to_qr, QrCode.Ecc.MEDIUM)
@@ -134,8 +154,24 @@ class App:
         self.turtle.goto(self.turtle.pos()[0] - offset, self.turtle.pos()[1] + offset)
         self.turtle.showturtle()
 
+    def _update_tool_options(self):
+        menu = self.tool_dropdown['menu']
+        menu.delete(0, 'end')
+        options_update = self.tool_list.get_tool_list_string()
+        for entry in options_update:
+            menu.add_command(label=entry,
+                             command=lambda value=entry: self.tool_selection.set(value))
+
+    def _tool_selection_get_to_int(self):
+        value = self.tool_selection.get().split('_')[0]
+        try:
+            int_value = int(value)
+            return int_value
+        except ValueError:
+            return 0
+
 
 if __name__ == '__main__':
-    root = tk.Tk()
-    app = App(root)
-    root.mainloop()
+    main = tk.Tk()
+    app = App(main)
+    main.mainloop()
