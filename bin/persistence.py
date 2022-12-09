@@ -10,6 +10,7 @@ class Persistence:
     _filename = 'persistence.dat'
     _tool_list = ToolList()
     _z_params = EngraveParams()
+    _has_loaded = False
 
     @classmethod
     def save(cls, data):
@@ -27,17 +28,19 @@ class Persistence:
 
     @classmethod
     def load(cls, data):
-        try:
-            with open(cls._pathname + cls._filename, 'rb') as file:
-                cls._tool_list, \
-                    cls._z_params \
-                    = pickle.load(file)
-        except FileNotFoundError:
-            showerror(title='Database file not found', message='Could not locate saved data under'
-                                                               + cls._pathname + cls._filename + '. \n' +
-                                                               'Starting with a blank database...')
-            pass
-        
+        if not cls._has_loaded:
+            try:
+                with open(cls._pathname + cls._filename, 'rb') as file:
+                    cls._tool_list, \
+                        cls._z_params \
+                        = pickle.load(file)
+            except FileNotFoundError:
+                showerror(title='Database file not found', message='Could not locate saved data under'
+                                                                   + cls._pathname + cls._filename + '. \n' +
+                                                                   'Starting with a blank database...')
+                pass
+            cls._has_loaded = True
+
         if type(data) == ToolList:
             return cls._tool_list
         elif type(data) == EngraveParams:

@@ -3,7 +3,7 @@ from tkinter import ttk
 
 from bin.gui_tool_configure import ConfigureTool
 
-from bin.machinify_vector import ToolList
+from bin.machinify_vector import ToolList, EngraveParams
 from bin.persistence import Persistence
 
 
@@ -14,6 +14,7 @@ class ToolManager:
         self.options = options
 
         self._tool_list = Persistence.load(ToolList())
+        self._z_params = Persistence.load(EngraveParams())
         self._tool_frame = self._init_frame_tool_section()
 
     def add_or_edit_tool(self, tool):
@@ -26,7 +27,7 @@ class ToolManager:
         """creates all items within the tool selection frame"""
         tool_section_frame = tk.Frame(bd=5)
         tool_section_frame['relief'] = 'ridge'
-        tool_section_frame.grid(column=3, row=1, sticky='N', **self.options)
+        tool_section_frame.grid(column=2, row=1, sticky='W', **self.options)
 
         # Add Tool
         add_tool_button = ttk.Button(tool_section_frame, text='Add/Edit tool')
@@ -40,15 +41,40 @@ class ToolManager:
 
         # Select Tool
         select_tool_label = ttk.Label(tool_section_frame, text='Select tool')
-        select_tool_label.grid(column=1, row=1, sticky='E', **self.options)
+        select_tool_label.grid(column=0, row=1, sticky='E', **self.options)
+
         self.tool_selection = tk.StringVar()
         self.tool_selection.trace('w', self._tool_selection_changed)
         self.tool_selection.set(self._tool_list.get_selected_tool_description())
 
-        print('DEBUG: tool selection value: ' + self.tool_selection.get())
         self.tool_dropdown = ttk.OptionMenu(tool_section_frame, self.tool_selection,
                                             *self._tool_list.get_tool_list_string())
-        self.tool_dropdown.grid(column=2, row=1, columnspan=3, sticky='W', **self.options)
+        self.tool_dropdown.config(width=30)
+        self.tool_dropdown.grid(column=0, row=2, columnspan=3, sticky='W', **self.options)
+
+        # Engrave
+        engrave_label = ttk.Label(tool_section_frame, text='Z-engrave depth [mm]')
+        engrave_label.grid(column=0, row=3, columnspan=2, sticky='E', **self.options)
+        self.engrave = tk.StringVar()
+        self.engrave.set(self._z_params.get_engrave_depth())
+        flyover_entry = ttk.Entry(tool_section_frame, textvariable=self.engrave, width=5)
+        flyover_entry.grid(column=2, row=3, **self.options)
+
+        # Hover
+        hover_label = ttk.Label(tool_section_frame, text='Z-hoverOver [mm]')
+        hover_label.grid(column=0, row=4, columnspan=2, sticky='E', **self.options)
+        self.hover = tk.StringVar()
+        self.hover.set(self._z_params.get_hover())
+        flyover_entry = ttk.Entry(tool_section_frame, textvariable=self.hover, width=5)
+        flyover_entry.grid(column=2, row=4, **self.options)
+
+        # Flyover
+        flyover_label = ttk.Label(tool_section_frame, text='Z-flyOver [mm]')
+        flyover_label.grid(column=0, row=5, columnspan=2, sticky='E', **self.options)
+        self.flyover = tk.StringVar()
+        self.flyover.set(self._z_params.get_flyover())
+        flyover_entry = ttk.Entry(tool_section_frame, textvariable=self.flyover, width=5)
+        flyover_entry.grid(column=2, row=5, **self.options)
 
         return tool_section_frame
 
