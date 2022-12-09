@@ -46,7 +46,7 @@ class ToolManager:
         self.tool_selection.set(self._tool_list.get_selected_tool_description())
 
         print('DEBUG: tool selection value: ' + self.tool_selection.get())
-        self.tool_dropdown = ttk.OptionMenu(tool_section_frame, variable=self.tool_selection,
+        self.tool_dropdown = ttk.OptionMenu(tool_section_frame, self.tool_selection,
                                             *self._tool_list.get_tool_list_string())
         self.tool_dropdown.grid(column=2, row=1, columnspan=3, sticky='W', **self.options)
 
@@ -75,6 +75,7 @@ class ToolManager:
         tool_number = self._tool_selection_get_to_int()
         self._tool_list.select_tool(tool_number)
         print('DEBUG: tool selection changed to: ' + str(tool_number))
+        Persistence.save(self._tool_list)
 
     def _update_tool_options(self):
         """callback handler for updating the tool dropdown box"""

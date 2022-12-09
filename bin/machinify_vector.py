@@ -14,7 +14,11 @@ class Tool:
     def get_description(self):
         """Helper method that generates a short tool description from number, name and diameter
         :returns the tool description string"""
-        return str(self.number) + '_' + self.name + '_' + str(self.diameter) + 'mm'
+        if self.number < 10:
+            numberstr = '0' + str(self.number)
+        else:
+            numberstr = str(self.number)
+        return numberstr + '_' + self.name + '_' + str(self.diameter) + 'mm'
 
 
 class ToolList:

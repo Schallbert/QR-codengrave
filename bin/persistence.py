@@ -14,10 +14,8 @@ class Persistence:
     @classmethod
     def save(cls, data):
         if type(data) == ToolList:
-            print('Saving tool list')
             cls._tool_list = data
         elif type(data) == EngraveParams:
-            print('Saving Engrave parameters')
             cls._z_params = data
         else:
             raise ValueError(str(data) + " is no type known to Persistence")
@@ -39,11 +37,10 @@ class Persistence:
                                                                + cls._pathname + cls._filename + '. \n' +
                                                                'Starting with a blank database...')
             pass
+        
         if type(data) == ToolList:
-            print('Loading tool list')
             return cls._tool_list
         elif type(data) == EngraveParams:
-            print('Loadong Engrave parameters')
             return cls._z_params
         else:
             raise ValueError(str(data) + " is no type known to Persistence")
