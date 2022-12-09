@@ -1,5 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
+from tkinter.messagebox import showerror
+
 from bin.machinify_vector import Tool
 
 
