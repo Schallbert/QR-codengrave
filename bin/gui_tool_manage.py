@@ -4,6 +4,7 @@ from tkinter import ttk
 from bin.gui_tool_configure import ConfigureTool
 
 from bin.machinify_vector import ToolList
+from bin.persistence import Persistence
 
 
 class ToolManager:
@@ -12,14 +13,14 @@ class ToolManager:
         self.root = root
         self.options = options
 
-        self.tool_list = ToolList()
-
-        self.tool_frame = self._init_frame_tool_section()
+        self._tool_list = Persistence.load(ToolList())
+        self._tool_frame = self._init_frame_tool_section()
 
     def add_or_edit_tool(self, tool):
-        """callback handler for tool window to """
-        self.tool_list.add_or_update(tool)
+        """callback handler for tool window to return data into main window"""
+        self._tool_list.add_or_update(tool)
         self._update_tool_options()
+        Persistence.save(self._tool_list)
 
     def _init_frame_tool_section(self):
         """creates all items within the tool selection frame"""
@@ -42,17 +43,17 @@ class ToolManager:
         select_tool_label.grid(column=1, row=1, sticky='E', **self.options)
         self.tool_selection = tk.StringVar(None)
         self.tool_selection.trace('w', self._tool_selection_changed)
+        print('DEBUG: tool selection value: ' + self.tool_selection.get())
         self.tool_dropdown = ttk.OptionMenu(tool_section_frame, variable=self.tool_selection,
-                                            *self.tool_list.get_tool_list_string())
+                                            *self._tool_list.get_tool_list_string())
         self.tool_dropdown.grid(column=2, row=1, columnspan=3, sticky='W', **self.options)
 
         return tool_section_frame
 
     def _add_tool_button_clicked(self):
         """Handle add tool button click event"""
-        if self.tool_list.is_tool_in_list(self._tool_selection_get_to_int()):
-            print(self.tool_list.get_selected_tool().number)
-            ConfigureTool(self.root, self, self.options, self.tool_list.get_selected_tool())
+        if self._tool_list.is_tool_in_list(self._tool_selection_get_to_int()):
+            ConfigureTool(self.root, self, self.options, self._tool_list.get_selected_tool())
         else:
             ConfigureTool(self.root, self, self.options)
 
@@ -61,19 +62,23 @@ class ToolManager:
         remove = self._tool_selection_get_to_int()
         if remove == 0:
             return
-        self.tool_list.remove(remove)
-        self._update_tool_options()
+        self._tool_list.remove(remove)
+        self._tool_list.select_tool(None)
         self.tool_selection.set(None)
+        Persistence.save(self._tool_list)
+        self._update_tool_options()
 
     def _tool_selection_changed(self, *args):
         """Handle option box for tool selection changed event"""
-        self.tool_list.select_tool(self._tool_selection_get_to_int())
+        tool_number = self._tool_selection_get_to_int()
+        self._tool_list.select_tool(tool_number)
+        print('DEBUG: tool selection changed to: ' + str(tool_number))
 
     def _update_tool_options(self):
         """callback handler for updating the tool dropdown box"""
         menu = self.tool_dropdown['menu']
         menu.delete(0, 'end')
-        options_update = self.tool_list.get_tool_list_string()
+        options_update = self._tool_list.get_tool_list_string()
         for entry in options_update:
             menu.add_command(label=entry,
                              command=lambda value=entry: self.tool_selection.set(value))
@@ -86,4 +91,5 @@ class ToolManager:
             int_value = int(value)
             return int_value
         except ValueError:
+            #  e.g. when selection is None
             return 0

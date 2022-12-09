@@ -1,5 +1,4 @@
 
-
 class Tool:
     """POD container class representing a tool."""
     def __init__(self, number, name, dia, fxy, fz, s, angle=0, tip=0):
@@ -38,6 +37,8 @@ class ToolList:
         """Selects a tool when found"""
         if key in self.tools:
             self.selected_tool = self.tools.get(key)
+        else:
+            self.selected_tool = None
 
     def get_selected_tool(self):
         """Getter method.
@@ -56,3 +57,29 @@ class ToolList:
         """Checks if the requested tool is in the list
         :returns that tool's number"""
         return key in self.tools
+
+
+class EngraveParams:
+    def __init__(self):
+        """POD container class representing Z axis data for G01 engraving, G00 hover, G00 flyover commands"""
+        self._z_flyover = 15
+        self._z_hover = 1
+        self._z_engrave = 0.4  # this value will actually be negative because it's below workpiece surface
+
+    def set_flyover(self, flyover):
+        self._z_flyover = flyover
+
+    def set_hover(self, hover):
+        self._z_hover = hover
+
+    def set_engrave_depth(self, engrave):
+        self._z_engrave = engrave
+
+    def get_flyover(self):
+        return self._z_flyover
+
+    def get_hover(self):
+        return self._z_hover
+
+    def get_engrave_depth(self):
+        return self._z_engrave
