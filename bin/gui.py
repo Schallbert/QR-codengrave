@@ -16,7 +16,8 @@ class App:
 
         self.gui_qr_generator = GuiGenerateQr(self.frame, self.options)
         self.gui_tool_manager = GuiToolManager(self.frame, self.options)
-        self.gui_gcode_generator = GuiGenerateGcode(self.frame, self.options)
+        self.gui_gcode_generator = GuiGenerateGcode(self.frame, self.gui_qr_generator,
+                                                    self.gui_tool_manager, self.options)
 
 
 if __name__ == '__main__':

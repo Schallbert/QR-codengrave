@@ -6,9 +6,11 @@ from bin.machinify_vector import XzeroYzero
 
 
 class GuiGenerateGcode:
-    def __init__(self, root, options):
+    def __init__(self, root, gui_tool_manager, gui_qr_generator, options):
         """displays the tool handling section within the main gui window"""
         self._root = root
+        self._gui_tool_manager = gui_tool_manager
+        self._gui_qr_generator = gui_qr_generator
         self.options = options
 
         self._xy0 = XzeroYzero()
@@ -58,6 +60,8 @@ class GuiGenerateGcode:
         append_button.configure(command=self._append_button_clicked())
 
         return gcode_frame
+
+    # EVENT HANDLERS ----------------------------
 
     def _generate_button_clicked(self):
         pass

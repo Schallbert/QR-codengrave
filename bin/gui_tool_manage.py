@@ -25,6 +25,18 @@ class GuiToolManager:
         self._update_tool_options()
         Persistence.save(self._tool_list)
 
+    def get_selected_tool(self):
+        """Getter function.
+        :returns the currently selected tool"""
+        return self._tool_list.get_selected_tool()
+
+    def get_engrave_params(self):
+        """Getter function.
+        :returns the engrave parameters if valid or None if invalid."""
+        if self._validate_entries():
+            return self._z_params
+        return None
+
     def _init_frame_tool_section(self):
         """creates all items within the tool selection frame"""
         tool_section_frame = tk.Frame(bd=5)
@@ -93,14 +105,18 @@ class GuiToolManager:
 
         return tool_section_frame
 
-    def _update_tool_options(self):
-        """callback handler for updating the tool dropdown box"""
-        menu = self.tool_dropdown['menu']
-        menu.delete(0, 'end')
-        options_update = self._tool_list.get_tool_list_string()
-        for entry in options_update:
-            menu.add_command(label=entry,
-                             command=lambda value=entry: self.tool_selection.set(value))
+    def _validate_entries(self):
+        """Simple validator method that checks hover and flyover heighs against hard-coded constraints"""
+        z_params_valid = EngraveParams()
+        if self._z_params.get_hover() < z_params_valid.get_hover():
+            tk.messagebox.showinfo('Hover height low', 'Warning: Please make sure your hover height \n'
+                                                       'for rapid G00 movement is safe (big enough).')
+            return False
+        if self._z_params.get_flyover() < z_params_valid.get_flyover():
+            tk.messagebox.showinfo('Flyover height low', 'Warning: Please make sure your flyover height \n'
+                                                         'for rapid G00 movement is safe (big enough).')
+            return False
+        return Tru
 
     def _tool_selection_get_to_int(self):
         """helper method to get a tool number from a tool description string
@@ -114,6 +130,15 @@ class GuiToolManager:
             return 0
 
     # EVENT HANDLERS ----------------------------
+
+    def _update_tool_options(self):
+        """callback handler for updating the tool dropdown box"""
+        menu = self.tool_dropdown['menu']
+        menu.delete(0, 'end')
+        options_update = self._tool_list.get_tool_list_string()
+        for entry in options_update:
+            menu.add_command(label=entry,
+                             command=lambda value=entry: self.tool_selection.set(value))
 
     def _add_tool_button_clicked(self):
         """Handle add tool button click event"""
