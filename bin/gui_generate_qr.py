@@ -20,7 +20,7 @@ class GuiGenerateQr:
     def get_qr_spiral_paths(self):
         """Getter method.
         :returns the spiral path if created, otherwise None."""
-        return self._spiral_path()
+        return self._spiral_path
 
     def _init_frame_text_convert(self):
         """Initializes the Text-to-QR-code generator section of the GUI"""
@@ -75,7 +75,7 @@ class GuiGenerateQr:
         qr_vect = VectorizeQr(self._qr, 0)
         self._spiral_path = qr_vect.generate_spiral_path()
 
-    def _draw_qr_turtle(self, text_to_qr):
+    def _draw_qr_turtle(self):
         """Method that draws a QR code path based on the QrPathSegment data class with Turtle."""
         self._prepare_turtle(self._qr.get_size())
 

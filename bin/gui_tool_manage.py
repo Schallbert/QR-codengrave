@@ -1,5 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
+from tkinter.messagebox import showerror
+from tkinter.messagebox import showinfo
 
 from bin.gui_tool_configure import GuiConfigureTool
 from bin.gui_tool_configure import validate_number
@@ -15,7 +17,7 @@ class GuiToolManager:
         self.options = options
 
         self._tool_list = Persistence.load(ToolList())
-        self._z_params = Persistence.load(EngraveParams())
+        self._z_params_safe = Persistence.load(EngraveParams())
 
         self._tool_frame = self._init_frame_tool_section()
 
@@ -34,7 +36,9 @@ class GuiToolManager:
         """Getter function.
         :returns the engrave parameters if valid or None if invalid."""
         if self._validate_entries():
-            return self._z_params
+            z_params = EngraveParams(self._engrave.get(), self._hover.get(), self._flyover.get())
+            Persistence.save(z_params)
+            return z_params
         return None
 
     def _init_frame_tool_section(self):
@@ -59,7 +63,7 @@ class GuiToolManager:
         select_tool_label.grid(column=0, row=1, sticky='E', **self.options)
 
         self.tool_selection = tk.StringVar()
-        self.tool_selection.trace('u', self._tool_selection_changed)
+        self.tool_selection.trace('w', self._tool_selection_changed)
         self.tool_selection.set(self._tool_list.get_selected_tool_description())
 
         self.tool_dropdown = ttk.OptionMenu(tool_section_frame, self.tool_selection,
@@ -72,51 +76,63 @@ class GuiToolManager:
         engrave_label.grid(column=0, row=3, columnspan=2, sticky='E', **self.options)
 
         self._engrave = tk.DoubleVar()
-        self._engrave.set(self._z_params.get_engrave_depth())
+        self._engrave.set(self._z_params_safe.z_engrave)
 
         engrave_entry = ttk.Entry(tool_section_frame, textvariable=self._engrave, width=5)
         engrave_entry.config(validate="key", validatecommand=(reg, '%P'))
         engrave_entry.grid(column=2, row=3, **self.options)
-        self._engrave.trace('u', self._engrave_changed)
 
         # Hover
         hover_label = ttk.Label(tool_section_frame, text='Z-hoverOver [mm]')
         hover_label.grid(column=0, row=4, columnspan=2, sticky='E', **self.options)
 
         self._hover = tk.DoubleVar()
-        self._hover.set(self._z_params.get_hover())
+        self._hover.set(self._z_params_safe.z_hover)
 
         hover_entry = ttk.Entry(tool_section_frame, textvariable=self._hover, width=5)
         hover_entry.config(validate="key", validatecommand=(reg, '%P'))
         hover_entry.grid(column=2, row=4, **self.options)
-        self._hover.trace('u', self._hover_changed())   # following error with 'w': "NoneType Object is not Callable
 
         # Flyover
         flyover_label = ttk.Label(tool_section_frame, text='Z-flyOver [mm]')
         flyover_label.grid(column=0, row=5, columnspan=2, sticky='E', **self.options)
 
         self._flyover = tk.IntVar()
-        self._flyover.set(self._z_params.get_flyover())
+        self._flyover.set(self._z_params_safe.z_flyover)
 
         flyover_entry = ttk.Entry(tool_section_frame, textvariable=self._flyover, width=5)
         flyover_entry.config(validate="key", validatecommand=(reg, '%P'))
         flyover_entry.grid(column=2, row=5, **self.options)
-        self._flyover.trace('u', self._flyover_changed())
 
         return tool_section_frame
 
     def _validate_entries(self):
-        """Simple validator method that checks hover and flyover heighs against hard-coded constraints"""
-        z_params_valid = EngraveParams()
-        if self._z_params.get_hover() < z_params_valid.get_hover():
-            tk.messagebox.showinfo('Hover height low', 'Warning: Please make sure your hover height \n'
-                                                       'for rapid G00 movement is safe (big enough).')
+        """Simple validator method that checks all engraving parameters for correct type.
+         In addition, checks hover and flyover heighs against hard-coded constraints"""
+        z_safe = EngraveParams()
+        try:
+            self._engrave.get()
+        except tk.TclError:
+            showerror(title='Error: Engrave depth', message='Error: invalid input for Engrave Depth. \n'
+                                                            'Please update the value.')
             return False
-        if self._z_params.get_flyover() < z_params_valid.get_flyover():
-            tk.messagebox.showinfo('Flyover height low', 'Warning: Please make sure your flyover height \n'
-                                                         'for rapid G00 movement is safe (big enough).')
+        try:
+            if self._hover.get() < z_safe.z_hover:
+                raise tk.TclError
+        except tk.TclError:
+            showinfo('Warning: Hover height', 'Warning: Please make sure your Hover height \n'
+                                              'for rapid G00 movement is safe (positive value >' +
+                     str(z_safe.z_hover) + 'mm)')
             return False
-        return Tru
+        try:
+            if self._flyover.get() < z_safe.z_flyover:
+                raise tk.TclError
+        except tk.TclError:
+            showinfo('Flyover height low', 'Warning: Please make sure your Flyover height \n'
+                                           'for rapid G00 movement is safe (positive value >' +
+                     str(z_safe.z_flyover) + 'mm).')
+            return False
+        return True
 
     def _tool_selection_get_to_int(self):
         """helper method to get a tool number from a tool description string
@@ -164,28 +180,3 @@ class GuiToolManager:
         self._tool_list.select_tool(tool_number)
         print('DEBUG: tool selection changed to: ' + str(tool_number))
         Persistence.save(self._tool_list)
-
-    def _engrave_changed(self, *args):
-        """Event handler for engrave entry change event
-        Is able to display a warning when high engrave depth is selected"""
-        try:
-            self._engrave.get()
-        except tk.TclError:
-            self._engrave.set(self._z_params.get_engrave_depth())
-        self._z_params.set_engrave_depth(self._engrave.get())
-
-    def _hover_changed(self, *args):
-        """Event handler for hover entry change event"""
-        try:
-            self._hover.get()
-        except tk.TclError:
-            self._hover.set(self._z_params.get_hover())
-        self._z_params.set_hover(self._hover.get())
-
-    def _flyover_changed(self, *args):
-        """Event handler for flyover entry change event"""
-        try:
-            self._flyover.get()
-        except tk.TclError:
-            self._flyover.set(self._z_params.get_flyover())
-        self._z_params.set_hover(self._flyover.get())

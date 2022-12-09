@@ -75,29 +75,11 @@ class ToolList:
 
 
 class EngraveParams:
-    def __init__(self):
+    def __init__(self, engrave=0.4, hover=0.5, flyover=5):
         """POD container class representing Z axis data for G01 engraving, G00 hover, G00 flyover commands"""
-        self._z_flyover = 5
-        self._z_hover = 0.5
-        self._z_engrave = 0.4  # this value will actually be negative because it's below workpiece surface
-
-    def set_flyover(self, flyover):
-        self._z_flyover = flyover
-
-    def set_hover(self, hover):
-        self._z_hover = hover
-
-    def set_engrave_depth(self, engrave):
-        self._z_engrave = engrave
-
-    def get_flyover(self):
-        return self._z_flyover
-
-    def get_hover(self):
-        return self._z_hover
-
-    def get_engrave_depth(self):
-        return self._z_engrave
+        self.z_flyover = flyover
+        self.z_hover = hover
+        self.z_engrave = engrave  # this value will actually be negative because it's below workpiece surface
 
 
 class XzeroYzero:

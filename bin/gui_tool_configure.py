@@ -19,6 +19,7 @@ def validate_number(entry):
 
 class GuiConfigureTool:
     """GUI class that makes a tool configuration window."""
+
     def __init__(self, root, caller, options, tool=None):
         self.caller = caller
         self.options = options
@@ -145,47 +146,45 @@ class GuiConfigureTool:
     def _validate_entries(self):
         """Validates input to the various fields of the tool configure window.
         :returns True in case input looks all right, else False."""
-        ok = True
         try:
             if self.tool_nr.get() < 1:
                 raise tk.TclError
         except tk.TclError:
-            tk.messagebox.showinfo('Tool number error', 'Error: Tool Number must be a positive integer.')
-            ok = False
+            tk.messagebox.showinfo('Tool number warning', 'Info: Tool Number must be a positive integer.')
+            return False
         try:
             if self.tool_dia.get() <= 0:
                 raise tk.TclError
         except tk.TclError:
-            tk.messagebox.showinfo('Tool diameter error', 'Error: Tool Diameter must be a positive numerical value.')
-            ok = False
+            tk.messagebox.showinfo('Tool diameter warning', 'Info: Tool Diameter must be a positive numerical value.')
+            return False
         try:
             if self.tool_xyfeed.get() < 1 or self.tool_zfeed.get() < 1:
                 raise tk.TclError
         except tk.TclError:
-            tk.messagebox.showinfo('Tool Feed error', 'Error: Tool Feed must be a positive integer.')
-            ok = False
+            tk.messagebox.showinfo('Tool Feed warning', 'Info: Tool Feed must be a positive integer.')
+            return False
         try:
             if self.tool_speed.get() < 1:
                 raise tk.TclError
         except tk.TclError:
-            tk.messagebox.showinfo('Tool speed error', 'Error: Tool Speed must be a positive integer.')
-            ok = False
+            tk.messagebox.showinfo('Tool speed warning', 'Info: Tool Speed must be a positive integer.')
+            return False
         if self.is_tool_tapered.get():
             try:
                 self.tool_tip.get()
-                if not (self.tool_angle.get() > 0) and (self.tool_angle.get() < 180):
+                if not ((self.tool_angle.get() > 0) and (self.tool_angle.get() < 180)):
                     raise tk.TclError
             except tk.TclError:
-                tk.messagebox.showinfo('Tapered Tool error', 'Error: Tool Angle must be a positive integer \n'
-                                                             'between 1° and 180°.\n'
-                                                             'Tool tip width must be a positive value.')
-                ok = False
+                tk.messagebox.showinfo('Tapered Tool warning', 'Info: Tool Angle must be a positive integer \n'
+                                                               'between 1° and 180°.\n'
+                                                               'Tool tip width must be a positive value.')
+                return False
         else:
             # make sure everything is properly zeroed
             self.tool_angle.set(0)
             self.tool_tip.set(0)
-
-        return ok
+        return True
 
     def _cancel_button_clicked(self):
         """Button callback event handler. Handles cancel button click."""
