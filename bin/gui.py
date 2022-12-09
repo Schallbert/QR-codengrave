@@ -1,5 +1,6 @@
 from bin.gui_generate_qr import *
 from bin.gui_tool_manage import *
+from bin.gui_generate_gcode import *
 
 
 class App:
@@ -13,8 +14,9 @@ class App:
         self.frame = ttk.Frame(self.root)
         self.options = {'padx': 5, 'pady': 5}
 
-        self.gui_qr_generator = GenerateQr(self.frame, self.options)
-        self.gui_tool_manager = ToolManager(self.frame, self.options)
+        self.gui_qr_generator = GuiGenerateQr(self.frame, self.options)
+        self.gui_tool_manager = GuiToolManager(self.frame, self.options)
+        self.gui_gcode_generator = GuiGenerateGcode(self.frame, self.options)
 
 
 if __name__ == '__main__':

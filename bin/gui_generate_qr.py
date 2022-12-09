@@ -6,7 +6,7 @@ from tkinter.messagebox import showerror
 from bin.vectorize_qr import *
 
 
-class GenerateQr:
+class GuiGenerateQr:
     def __init__(self, main, options):
         self.main = main
         self.options = options

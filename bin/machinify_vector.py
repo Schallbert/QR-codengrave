@@ -1,3 +1,6 @@
+from bin.vectorize_qr import Point
+
+
 class Tool:
     """POD container class representing a tool."""
 
@@ -95,3 +98,18 @@ class EngraveParams:
 
     def get_engrave_depth(self):
         return self._z_engrave
+
+
+class XzeroYzero:
+    """Very simple POD class to keep a XY-0 reference point for the G-code"""
+    def __init__(self):
+        self._xy = Point(0, 0)
+
+    def set_x0(self, x):
+        self._xy.x = x
+
+    def set_y0(self, y):
+        self._xy.y = y
+
+    def get(self):
+        return self._xy

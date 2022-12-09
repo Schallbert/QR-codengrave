@@ -1,15 +1,14 @@
 import tkinter as tk
 from tkinter import ttk
-from tkinter.messagebox import showerror
 
-from bin.gui_tool_configure import ConfigureTool
+from bin.gui_tool_configure import GuiConfigureTool
 from bin.gui_tool_configure import validate_number
 
 from bin.machinify_vector import ToolList, EngraveParams
 from bin.persistence import Persistence
 
 
-class ToolManager:
+class GuiToolManager:
     def __init__(self, root, options):
         """displays the tool handling section within the main gui window"""
         self.root = root
@@ -17,6 +16,7 @@ class ToolManager:
 
         self._tool_list = Persistence.load(ToolList())
         self._z_params = Persistence.load(EngraveParams())
+
         self._tool_frame = self._init_frame_tool_section()
 
     def add_or_edit_tool(self, tool):
@@ -47,7 +47,7 @@ class ToolManager:
         select_tool_label.grid(column=0, row=1, sticky='E', **self.options)
 
         self.tool_selection = tk.StringVar()
-        self.tool_selection.trace('w', self._tool_selection_changed)
+        self.tool_selection.trace('u', self._tool_selection_changed)
         self.tool_selection.set(self._tool_list.get_selected_tool_description())
 
         self.tool_dropdown = ttk.OptionMenu(tool_section_frame, self.tool_selection,
@@ -62,9 +62,9 @@ class ToolManager:
         self._engrave = tk.DoubleVar()
         self._engrave.set(self._z_params.get_engrave_depth())
 
-        self._engrave_entry = ttk.Entry(tool_section_frame, textvariable=self._engrave, width=5)
-        self._engrave_entry.config(validate="key", validatecommand=(reg, '%P'))
-        self._engrave_entry.grid(column=2, row=3, **self.options)
+        engrave_entry = ttk.Entry(tool_section_frame, textvariable=self._engrave, width=5)
+        engrave_entry.config(validate="key", validatecommand=(reg, '%P'))
+        engrave_entry.grid(column=2, row=3, **self.options)
         self._engrave.trace('u', self._engrave_changed)
 
         # Hover
@@ -74,9 +74,9 @@ class ToolManager:
         self._hover = tk.DoubleVar()
         self._hover.set(self._z_params.get_hover())
 
-        self._hover_entry = ttk.Entry(tool_section_frame, textvariable=self._hover, width=5)
-        self._hover_entry.config(validate="key", validatecommand=(reg, '%P'))
-        self._hover_entry.grid(column=2, row=4, **self.options)
+        hover_entry = ttk.Entry(tool_section_frame, textvariable=self._hover, width=5)
+        hover_entry.config(validate="key", validatecommand=(reg, '%P'))
+        hover_entry.grid(column=2, row=4, **self.options)
         self._hover.trace('u', self._hover_changed())   # following error with 'w': "NoneType Object is not Callable
 
         # Flyover
@@ -86,9 +86,9 @@ class ToolManager:
         self._flyover = tk.IntVar()
         self._flyover.set(self._z_params.get_flyover())
 
-        self._flyover_entry = ttk.Entry(tool_section_frame, textvariable=self._flyover, width=5)
-        self._flyover_entry.config(validate="key", validatecommand=(reg, '%P'))
-        self._flyover_entry.grid(column=2, row=5, **self.options)
+        flyover_entry = ttk.Entry(tool_section_frame, textvariable=self._flyover, width=5)
+        flyover_entry.config(validate="key", validatecommand=(reg, '%P'))
+        flyover_entry.grid(column=2, row=5, **self.options)
         self._flyover.trace('u', self._flyover_changed())
 
         return tool_section_frame
@@ -118,9 +118,9 @@ class ToolManager:
     def _add_tool_button_clicked(self):
         """Handle add tool button click event"""
         if self._tool_list.is_tool_in_list(self._tool_selection_get_to_int()):
-            ConfigureTool(self.root, self, self.options, self._tool_list.get_selected_tool())
+            GuiConfigureTool(self.root, self, self.options, self._tool_list.get_selected_tool())
         else:
-            ConfigureTool(self.root, self, self.options)
+            GuiConfigureTool(self.root, self, self.options)
 
     def _remove_tool_button_clicked(self):
         """Handle add tool button click event"""
@@ -152,8 +152,7 @@ class ToolManager:
     def _hover_changed(self, *args):
         """Event handler for hover entry change event"""
         try:
-            if self._hover.get() < 0.1:
-                raise tk.TclError
+            self._hover.get()
         except tk.TclError:
             self._hover.set(self._z_params.get_hover())
         self._z_params.set_hover(self._hover.get())
@@ -161,8 +160,7 @@ class ToolManager:
     def _flyover_changed(self, *args):
         """Event handler for flyover entry change event"""
         try:
-            if self._flyover.get() < 0.1:
-                raise tk.TclError
+            self._flyover.get()
         except tk.TclError:
             self._flyover.set(self._z_params.get_flyover())
         self._z_params.set_hover(self._flyover.get())

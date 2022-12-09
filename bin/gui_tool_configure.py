@@ -17,7 +17,7 @@ def validate_number(entry):
         return False
 
 
-class ConfigureTool:
+class GuiConfigureTool:
     """GUI class that makes a tool configuration window."""
     def __init__(self, root, caller, options, tool=None):
         self.caller = caller
@@ -38,7 +38,7 @@ class ConfigureTool:
         """init method that creates the frame with all gui elements"""
         config_tool_frame = tk.Frame(self.tool_dialog, bd=5)
         config_tool_frame['relief'] = 'ridge'
-        config_tool_frame.grid(column=0, row=0, sticky='NW', **self.options)
+        config_tool_frame.grid(column=1, row=0, sticky='NW', **self.options)
         reg = config_tool_frame.register(validate_number)
 
         # tool number
