@@ -5,15 +5,15 @@ from turtle import RawTurtle
 
 from qrcodegen import QrCode
 
-from configuretool import ConfigureTool
-from vectorize_qr import *
-from machinify_vector import *
+from bin.configuretool import ConfigureTool
+from bin.vectorize_qr import *
+from bin.machinify_vector import *
 
 
 class App:
     def __init__(self, root):
         self.root = root
-        self.root.iconbitmap('assets/qruwu.ico')
+        self.root.iconbitmap('../assets/qruwu.ico')
         self.root.title("EngraveQr")
         self.canvas = tk.Canvas(root)
         self.canvas.config(width=600, height=600)

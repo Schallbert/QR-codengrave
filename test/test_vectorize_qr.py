@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import MagicMock
 
-from VectorizeQr import *
+from bin.vectorize_qr import *
 
 
 class TestLine(unittest.TestCase):

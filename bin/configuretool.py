@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-from machinify_vector import Tool
+from bin.machinify_vector import Tool
 
 
 def _validate_number(entry):
