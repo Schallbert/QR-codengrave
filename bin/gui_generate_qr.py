@@ -90,7 +90,7 @@ class GenerateQr:
 
     def _prepare_turtle(self, qr_size):
         # clear screen and reset turtle
-        self.turtle.done()
+        self.turtle.up()
         self.turtle.clear()
         self.turtle.setheading(0)
 

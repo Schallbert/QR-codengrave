@@ -5,11 +5,13 @@ from tkinter.messagebox import showerror
 from bin.machinify_vector import Tool
 
 
-def _validate_number(entry):
-    if entry == "" or ".":
+def validate_number(entry):
+    """Helper function that is used in validators to check
+    that the entered keystroke is a number"""
+    if entry == '':
         return True
     try:
-        int(entry)
+        float(entry)
         return True
     except ValueError:
         return False
@@ -37,7 +39,7 @@ class ConfigureTool:
         config_tool_frame = tk.Frame(self.tool_dialog, bd=5)
         config_tool_frame['relief'] = 'ridge'
         config_tool_frame.grid(column=0, row=0, sticky='NW', **self.options)
-        reg = config_tool_frame.register(_validate_number)
+        reg = config_tool_frame.register(validate_number)
 
         # tool number
         tool_nr_label = ttk.Label(config_tool_frame, text='Tool Nr.')
@@ -60,7 +62,7 @@ class ConfigureTool:
         # tool diameter
         tool_dia_label = ttk.Label(config_tool_frame, text='\u2300 [mm]')
         tool_dia_label.grid(column=2, row=0, **self.options)
-        self.tool_dia = tk.IntVar()
+        self.tool_dia = tk.DoubleVar()
         self.tool_dia.set(self.tool.diameter)
         tool_dia_entry = ttk.Entry(config_tool_frame, textvariable=self.tool_dia, width=5)
         tool_dia_entry.grid(column=2, row=1, **self.options)
@@ -108,7 +110,7 @@ class ConfigureTool:
 
         # tool tip width
         self.tool_tip_label = ttk.Label(config_tool_frame, text='Tip width [mm]')
-        self.tool_tip = tk.IntVar()
+        self.tool_tip = tk.DoubleVar()
         self.tool_tip.set(self.tool.tip)
         self.tool_tip_entry = ttk.Entry(config_tool_frame, textvariable=self.tool_tip, width=5)
         self.tool_tip_entry.config(validate="key", validatecommand=(reg, '%P'))
@@ -143,32 +145,47 @@ class ConfigureTool:
     def _validate_entries(self):
         """Validates input to the various fields of the tool configure window.
         :returns True in case input looks all right, else False."""
-        no_error = True
-        if not (isinstance(self.tool_nr.get(), int) and self.tool_nr.get() > 0):
+        ok = True
+        try:
+            if self.tool_nr.get() < 1:
+                raise tk.TclError
+        except tk.TclError:
             tk.messagebox.showinfo('Tool number error', 'Error: Tool Number must be a positive integer.')
-            no_error = False
-        if not (self.tool_dia.get() > 0):
+            ok = False
+        try:
+            if self.tool_dia.get() <= 0:
+                raise tk.TclError
+        except tk.TclError:
             tk.messagebox.showinfo('Tool diameter error', 'Error: Tool Diameter must be a positive numerical value.')
-            no_error = False
-        if not (isinstance(self.tool_xyfeed.get(), int) and self.tool_xyfeed.get() > 0) and \
-                (isinstance(self.tool_zfeed.get(), int) and self.tool_zfeed.get() > 0):
+            ok = False
+        try:
+            if self.tool_xyfeed.get() < 1 or self.tool_zfeed.get() < 1:
+                raise tk.TclError
+        except tk.TclError:
             tk.messagebox.showinfo('Tool Feed error', 'Error: Tool Feed must be a positive integer.')
-            no_error = False
-        if not (isinstance(self.tool_speed.get(), int) and self.tool_speed.get() > 0):
+            ok = False
+        try:
+            if self.tool_speed.get() < 1:
+                raise tk.TclError
+        except tk.TclError:
             tk.messagebox.showinfo('Tool speed error', 'Error: Tool Speed must be a positive integer.')
-            no_error = False
+            ok = False
         if self.is_tool_tapered.get():
-            if not ((self.tool_angle.get() > 0) and (self.tool_angle.get() < 180) and self.tool_tip.get() >= 0):
+            try:
+                self.tool_tip.get()
+                if not (self.tool_angle.get() > 0) and (self.tool_angle.get() < 180):
+                    raise tk.TclError
+            except tk.TclError:
                 tk.messagebox.showinfo('Tapered Tool error', 'Error: Tool Angle must be a positive integer \n'
                                                              'between 1° and 180°.\n'
                                                              'Tool tip width must be a positive value.')
-                no_error = False
+                ok = False
         else:
             # make sure everything is properly zeroed
             self.tool_angle.set(0)
             self.tool_tip.set(0)
 
-        return no_error
+        return ok
 
     def _cancel_button_clicked(self):
         """Button callback event handler. Handles cancel button click."""
