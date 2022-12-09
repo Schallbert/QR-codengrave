@@ -1,6 +1,6 @@
-
 class Tool:
     """POD container class representing a tool."""
+
     def __init__(self, number, name, dia, fxy, fz, s, angle=0, tip=0):
         self.number = number
         self.name = name
@@ -20,43 +20,51 @@ class Tool:
 class ToolList:
     """A class that represents a list of tools in form of a dictionary.
     Features some helper methods and maintains the selected tool"""
+
     def __init__(self):
-        self.tools = dict()
-        self.selected_tool = None
+        self._tools = dict()
+        self._selected_tool = None
 
     def add_or_update(self, tool):
         """Adds or updates a tool's values in the list"""
-        self.tools.update({tool.number: tool})
+        self._tools.update({tool.number: tool})
 
     def remove(self, key):
         """Removes a tool from the list when found"""
-        if key in self.tools:
-            self.tools.pop(key)
+        if key in self._tools:
+            self._tools.pop(key)
 
     def select_tool(self, key):
         """Selects a tool when found"""
-        if key in self.tools:
-            self.selected_tool = self.tools.get(key)
+        if key in self._tools:
+            self._selected_tool = self._tools.get(key)
         else:
-            self.selected_tool = None
+            self._selected_tool = None
 
     def get_selected_tool(self):
         """Getter method.
         :returns the selected tool"""
-        return self.selected_tool
+        return self._selected_tool
+
+    def get_selected_tool_description(self):
+        """Getter method.
+        :returns the selected tool's description string or None when no tool is selected."""
+        if self._selected_tool is not None:
+            return self._selected_tool.get_description()
+        return 'None'
 
     def get_tool_list_string(self):
         """Compiles a sorted list of tools.
         :returns a list of tool descriptions."""
         tools_list = list()
-        for key in sorted(self.tools.keys()):
-            tools_list.append(self.tools.get(key).get_description())
+        for key in sorted(self._tools.keys()):
+            tools_list.append(self._tools.get(key).get_description())
         return tools_list
 
     def is_tool_in_list(self, key):
         """Checks if the requested tool is in the list
         :returns that tool's number"""
-        return key in self.tools
+        return key in self._tools
 
 
 class EngraveParams:

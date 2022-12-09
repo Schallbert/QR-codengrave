@@ -41,8 +41,10 @@ class ToolManager:
         # Select Tool
         select_tool_label = ttk.Label(tool_section_frame, text='Select tool')
         select_tool_label.grid(column=1, row=1, sticky='E', **self.options)
-        self.tool_selection = tk.StringVar(None)
+        self.tool_selection = tk.StringVar()
         self.tool_selection.trace('w', self._tool_selection_changed)
+        self.tool_selection.set(self._tool_list.get_selected_tool_description())
+
         print('DEBUG: tool selection value: ' + self.tool_selection.get())
         self.tool_dropdown = ttk.OptionMenu(tool_section_frame, variable=self.tool_selection,
                                             *self._tool_list.get_tool_list_string())
