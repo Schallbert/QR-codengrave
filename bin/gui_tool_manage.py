@@ -63,13 +63,13 @@ class GuiToolManager:
         select_tool_label.grid(column=0, row=1, sticky='E', **self.options)
 
         self.tool_selection = tk.StringVar()
-        self.tool_selection.trace('w', self._tool_selection_changed)
         self.tool_selection.set(self._tool_list.get_selected_tool_description())
 
         self.tool_dropdown = ttk.OptionMenu(tool_section_frame, self.tool_selection,
                                             *self._tool_list.get_tool_list_string())
         self.tool_dropdown.config(width=30)
         self.tool_dropdown.grid(column=0, row=2, columnspan=3, sticky='W', **self.options)
+        self.tool_selection.trace('w', self._tool_selection_changed)
 
         # Engrave
         engrave_label = ttk.Label(tool_section_frame, text='Z-engrave depth [mm]')
@@ -178,5 +178,7 @@ class GuiToolManager:
         """Handle option box for tool selection changed event"""
         tool_number = self._tool_selection_get_to_int()
         self._tool_list.select_tool(tool_number)
+        self._update_tool_options()  # Call this to not have disappearing entries in List
         print('DEBUG: tool selection changed to: ' + str(tool_number))
         Persistence.save(self._tool_list)
+
