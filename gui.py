@@ -13,7 +13,7 @@ from machinify_vector import *
 class App:
     def __init__(self, root):
         self.root = root
-        self.root.iconbitmap('qruwu.ico')
+        self.root.iconbitmap('assets/qruwu.ico')
         self.root.title("EngraveQr")
         self.canvas = tk.Canvas(root)
         self.canvas.config(width=600, height=600)
@@ -28,6 +28,7 @@ class App:
         self.dwg_frame = self._init_frame_turtle()
 
     def add_or_edit_tool(self, tool):
+        """callback handler for tool window to """
         self.tool_list.add_or_update(tool)
         self._update_tool_options()
 
@@ -108,7 +109,11 @@ class App:
 
     def _add_tool_button_clicked(self):
         """Handle add tool button click event"""
-        ConfigureTool(self.root, self, self.options)
+        if self.tool_list.is_tool_in_list(self._tool_selection_get_to_int()):
+            print(self.tool_list.get_selected_tool().number)
+            ConfigureTool(self.root, self, self.options, self.tool_list.get_selected_tool())
+        else:
+            ConfigureTool(self.root, self, self.options)
 
     def _remove_tool_button_clicked(self):
         """Handle add tool button click event"""

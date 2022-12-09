@@ -4,7 +4,7 @@ from machinify_vector import Tool
 
 
 def _validate_number(entry):
-    if entry == "":
+    if entry == "" or ".":
         return True
     try:
         int(entry)
@@ -14,6 +14,7 @@ def _validate_number(entry):
 
 
 class ConfigureTool:
+    """GUI class that makes a tool configuration window."""
     def __init__(self, root, caller, options, tool=None):
         self.caller = caller
         self.options = options
@@ -27,9 +28,10 @@ class ConfigureTool:
         else:
             self.tool = tool
 
-        frame = self._create_config_tool_frame()
+        self.frame = self._create_config_tool_frame()
 
     def _create_config_tool_frame(self):
+        """init method that creates the frame with all gui elements"""
         config_tool_frame = tk.Frame(self.tool_dialog, bd=5)
         config_tool_frame['relief'] = 'ridge'
         config_tool_frame.grid(column=0, row=0, sticky='W', **self.options)
@@ -38,7 +40,8 @@ class ConfigureTool:
         # tool number
         tool_nr_label = ttk.Label(config_tool_frame, text='Tool Nr.')
         tool_nr_label.grid(column=0, row=0, **self.options)
-        self.tool_nr = tk.IntVar(self.tool.number)
+        self.tool_nr = tk.IntVar()
+        self.tool_nr.set(self.tool.number)
         tool_nr_entry = ttk.Entry(config_tool_frame, textvariable=self.tool_nr, width=5)
         tool_nr_entry.grid(column=0, row=1, **self.options)
         tool_nr_entry.config(validate="key", validatecommand=(reg, '%P'))
@@ -121,6 +124,7 @@ class ConfigureTool:
         return config_tool_frame
 
     def _checkbox_check(self):
+        """Checkbox callback event handler. Updates GUI based on checkbox status"""
         if self.is_tool_tapered.get():
             self.tool_angle_label.grid(column=3, row=2, **self.options)
             self.tool_angle_entry.grid(column=3, row=3, **self.options)
@@ -135,6 +139,8 @@ class ConfigureTool:
             self.tool_tip.set(0)
 
     def _validate_entries(self):
+        """Validates input to the various fields of the tool configure window.
+        :returns True in case input looks all right, else False."""
         no_error = True
         if not (isinstance(self.tool_nr.get(), int) and self.tool_nr.get() > 0):
             tk.messagebox.showinfo('Tool number error', 'Error: Tool Number must be a positive integer.')
@@ -163,10 +169,13 @@ class ConfigureTool:
         return no_error
 
     def _cancel_button_clicked(self):
+        """Button callback event handler. Handles cancel button click."""
         self.tool = None
         self.tool_dialog.destroy()
 
     def _ok_button_clicked(self):
+        """Button callback event handler. Handles OK button click.
+        :returns a tool to the main GUI in case all entries have been made OK."""
         if not self._validate_entries():
             return
         # tool created using the dialog
