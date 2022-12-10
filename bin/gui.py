@@ -3,6 +3,8 @@ from bin.gui_tool_manage import *
 from bin.gui_generate_gcode import *
 from bin.gui_status_bar import *
 
+from bin.machinify_vector import MachinifyVector
+
 
 class App:
     def __init__(self, root):
@@ -18,11 +20,28 @@ class App:
         self.frame = ttk.Frame(self.root)
         self.options = {'padx': 5, 'pady': 5}
 
-        self.gui_qr_generator = GuiGenerateQr(self.frame, self.options)
-        self.gui_tool_manager = GuiToolManager(self.frame, self.options)
-        self.gui_status_bar = GuiStatusBar(self.frame, self.options)
-        self.gui_gcode_generator = GuiGenerateGcode(self.frame, self.gui_qr_generator,
+        self._machinify = None
+
+        self.gui_qr_generator = GuiGenerateQr(self, self.options)
+        self.gui_tool_manager = GuiToolManager(self, self.options)
+        self.gui_status_bar = GuiStatusBar(self, self.options)
+        self.gui_gcode_generator = GuiGenerateGcode(self, self.gui_qr_generator,
                                                     self.gui_tool_manager, self.options)
+
+    def update_status(self, text=''):
+        if text != '':
+            self.gui_status_bar.set_status_text(text)
+        elif self.gui_qr_generator.is_qr_defined() and self.gui_tool_manager.get_selected_tool() is not None:
+            self._collect_data()
+            self.gui_status_bar.set_job_duration(self._machinify.get_job_duration_sec())
+            self.gui_status_bar.set_qr_size(self._machinify.get_qr_size_mm())
+            self.gui_status_bar.set_status_ready()
+        else:
+            self.gui_status_bar.set_status_not_ready()
+
+    def _collect_data(self):
+        self._machinify = MachinifyVector(self.gui_qr_generator.get_qr_spiral_paths(),
+                                          self.gui_tool_manager.get_selected_tool())
 
 
 if __name__ == '__main__':

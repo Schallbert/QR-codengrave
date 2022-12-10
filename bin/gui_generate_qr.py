@@ -18,6 +18,9 @@ class GuiGenerateQr:
         self.tc_frame = self._init_frame_text_convert()
         self.dwg_frame = self._init_frame_turtle()
 
+    def is_qr_defined(self):
+        return self._qr is not None
+
     def get_qr_spiral_paths(self):
         """Getter method.
         :returns the spiral path if created, otherwise None."""
@@ -78,6 +81,8 @@ class GuiGenerateQr:
 
     def _draw_qr_turtle(self):
         """Method that draws a QR code path based on the QrPathSegment data class with Turtle."""
+        self._main.update_status('Drawing')
+
         path_count = len(self._spiral_path)
         self.progress.config(maximum=path_count)
         self._stop_draw = False
@@ -99,6 +104,7 @@ class GuiGenerateQr:
 
         self.turtle.hideturtle()
         self._stop_draw = False
+        self._main.update_status()
 
     def _prepare_turtle(self, qr_size):
         """Prepares the turtle tool for another drawing, i.e. clearing, scaling, centering"""

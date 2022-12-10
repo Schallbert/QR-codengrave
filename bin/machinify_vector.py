@@ -1,4 +1,4 @@
-from bin.vectorize_qr import Point
+from bin.vectorize_qr import Point, QrCode
 
 
 class Tool:
@@ -84,6 +84,7 @@ class EngraveParams:
 
 class XzeroYzero:
     """Very simple POD class to keep a XY-0 reference point for the G-code"""
+
     def __init__(self):
         self._xy = Point(0, 0)
 
@@ -95,3 +96,29 @@ class XzeroYzero:
 
     def get(self):
         return self._xy
+
+
+class MachinifyVector:
+    def __init__(self, qr_path, tool):
+        self._qr_path = qr_path
+        self._tool = tool
+        self._engrave_params = EngraveParams()
+        self._time_buffer = 1
+
+    def set_engrave_params(self, engraveparams):
+        self._engrave_params = engraveparams
+
+    def get_job_duration_sec(self):
+        count_z_moves = 0
+        for path in self._qr_path:
+            count_z_moves += len(path.get_z_vector())
+        xy_moves_mm = self._tool.diameter * len(self._qr_path) / 2 * len(self._qr_path)
+        z_moves_mm = count_z_moves * (self._engrave_params.z_hover + self._engrave_params.z_engrave)
+
+        xy_moves_sec = xy_moves_mm / self._tool.fxy * 60 * self._time_buffer
+        z_moves_sec = z_moves_mm / self._tool.fz * 60 * self._time_buffer
+
+        return xy_moves_sec + z_moves_sec
+
+    def get_qr_size_mm(self):
+        return self._qr_path[0].get_xy_line().get_abs_length() * self._tool.diameter

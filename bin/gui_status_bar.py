@@ -22,12 +22,16 @@ class GuiStatusBar:
     def set_status_not_ready(self):
         self._status_label.config(foreground='black', text='Status: Not Ready')
 
+    def set_status_text(self, text):
+        self._status_label.config(foreground='black', text='Status: ' + text)
+
     def set_job_duration(self, sec):
         td = timedelta(seconds=sec)
+        td -= timedelta(microseconds=td.microseconds)
         self._duration_label.config(text='Estimated job duration: ' + str(td))
 
     def set_qr_size(self, millimeters):
-        self._size_label.config(text='QR-code size: ' + str(millimeters) + 'x' + str(millimeters) + 'mm')
+        self._size_label.config(text='QR-code size: {:.0f}'.format(millimeters) + 'x{:.0f}'.format(millimeters) + 'mm')
 
     def _init_status_bar(self):
         status_bar_frame = tk.Frame(bd=5)
@@ -40,11 +44,11 @@ class GuiStatusBar:
         self._status_label.grid(column=0, row=0, sticky='W', **self._options)
 
         # Estimated job duration ' hh:mm:ss '
-        self._duration_label = ttk.Label(status_bar_frame, text='Estimated job duration: Unknown', width=31)
+        self._duration_label = ttk.Label(status_bar_frame, text='Estimated job duration: Unknown', width=32)
         self._duration_label.grid(column=1, row=0, sticky='W', **self._options)
 
         # Estimated QR-code size ' nnn x nnn mm '
-        self._size_label = ttk.Label(status_bar_frame, text='QR-code size: Unknown', width=24)
+        self._size_label = ttk.Label(status_bar_frame, text='QR-code size: Unknown', width=32)
         self._size_label.grid(column=2, row=0, sticky='W', **self._options)
 
         # Estimated QR-code size ' nnn x nnn mm '

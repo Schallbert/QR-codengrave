@@ -11,10 +11,10 @@ from bin.persistence import Persistence
 
 
 class GuiToolManager:
-    def __init__(self, root, options):
+    def __init__(self, main, options):
         """displays the tool handling section within the main gui window"""
-        self.root = root
-        self.options = options
+        self._main = main
+        self._options = options
 
         self._tool_list = Persistence.load(ToolList())
         self._z_params_safe = Persistence.load(EngraveParams())
@@ -45,22 +45,22 @@ class GuiToolManager:
         """creates all items within the tool selection frame"""
         tool_section_frame = tk.Frame(bd=5)
         tool_section_frame['relief'] = 'ridge'
-        tool_section_frame.grid(column=1, row=0, rowspan=2, sticky='W', **self.options)
+        tool_section_frame.grid(column=1, row=0, rowspan=2, sticky='W', **self._options)
         reg = tool_section_frame.register(validate_number)
 
         # Add Tool
         add_tool_button = ttk.Button(tool_section_frame, text='Add/Edit tool')
-        add_tool_button.grid(column=1, row=0, sticky='W', **self.options)
+        add_tool_button.grid(column=1, row=0, sticky='W', **self._options)
         add_tool_button.configure(command=self._add_tool_button_clicked)
 
         # Remove Tool
         remove_tool_button = ttk.Button(tool_section_frame, text='Remove tool')
-        remove_tool_button.grid(column=2, row=0, sticky='W', **self.options)
+        remove_tool_button.grid(column=2, row=0, sticky='W', **self._options)
         remove_tool_button.configure(command=self._remove_tool_button_clicked)
 
         # Select Tool
         select_tool_label = ttk.Label(tool_section_frame, text='Select tool')
-        select_tool_label.grid(column=0, row=1, sticky='E', **self.options)
+        select_tool_label.grid(column=0, row=1, sticky='E', **self._options)
 
         self.tool_selection = tk.StringVar()
         self.tool_selection.set(self._tool_list.get_selected_tool_description())
@@ -68,41 +68,41 @@ class GuiToolManager:
         self.tool_dropdown = ttk.OptionMenu(tool_section_frame, self.tool_selection,
                                             *self._tool_list.get_tool_list_string())
         self.tool_dropdown.config(width=30)
-        self.tool_dropdown.grid(column=0, row=2, columnspan=3, sticky='W', **self.options)
+        self.tool_dropdown.grid(column=0, row=2, columnspan=3, sticky='W', **self._options)
         self.tool_selection.trace('w', self._tool_selection_changed)
 
         # Engrave
         engrave_label = ttk.Label(tool_section_frame, text='Z-engrave depth [mm]')
-        engrave_label.grid(column=0, row=3, columnspan=2, sticky='E', **self.options)
+        engrave_label.grid(column=0, row=3, columnspan=2, sticky='E', **self._options)
 
         self._engrave = tk.DoubleVar()
         self._engrave.set(self._z_params_safe.z_engrave)
 
         engrave_entry = ttk.Entry(tool_section_frame, textvariable=self._engrave, width=5)
         engrave_entry.config(validate="key", validatecommand=(reg, '%P'))
-        engrave_entry.grid(column=2, row=3, **self.options)
+        engrave_entry.grid(column=2, row=3, **self._options)
 
         # Hover
         hover_label = ttk.Label(tool_section_frame, text='Z-hoverOver [mm]')
-        hover_label.grid(column=0, row=4, columnspan=2, sticky='E', **self.options)
+        hover_label.grid(column=0, row=4, columnspan=2, sticky='E', **self._options)
 
         self._hover = tk.DoubleVar()
         self._hover.set(self._z_params_safe.z_hover)
 
         hover_entry = ttk.Entry(tool_section_frame, textvariable=self._hover, width=5)
         hover_entry.config(validate="key", validatecommand=(reg, '%P'))
-        hover_entry.grid(column=2, row=4, **self.options)
+        hover_entry.grid(column=2, row=4, **self._options)
 
         # Flyover
         flyover_label = ttk.Label(tool_section_frame, text='Z-flyOver [mm]')
-        flyover_label.grid(column=0, row=5, columnspan=2, sticky='E', **self.options)
+        flyover_label.grid(column=0, row=5, columnspan=2, sticky='E', **self._options)
 
         self._flyover = tk.IntVar()
         self._flyover.set(self._z_params_safe.z_flyover)
 
         flyover_entry = ttk.Entry(tool_section_frame, textvariable=self._flyover, width=5)
         flyover_entry.config(validate="key", validatecommand=(reg, '%P'))
-        flyover_entry.grid(column=2, row=5, **self.options)
+        flyover_entry.grid(column=2, row=5, **self._options)
 
         return tool_section_frame
 
@@ -159,9 +159,9 @@ class GuiToolManager:
     def _add_tool_button_clicked(self):
         """Handle add tool button click event"""
         if self._tool_list.is_tool_in_list(self._tool_selection_get_to_int()):
-            GuiConfigureTool(self.root, self, self.options, self._tool_list.get_selected_tool())
+            GuiConfigureTool(self._main, self, self._options, self._tool_list.get_selected_tool())
         else:
-            GuiConfigureTool(self.root, self, self.options)
+            GuiConfigureTool(self._main, self, self._options)
 
     def _remove_tool_button_clicked(self):
         """Handle add tool button click event"""
@@ -181,4 +181,5 @@ class GuiToolManager:
         self._update_tool_options()  # Call this to not have disappearing entries in List
         print('DEBUG: tool selection changed to: ' + str(tool_number))
         Persistence.save(self._tool_list)
+        self._main.update_status()
 
