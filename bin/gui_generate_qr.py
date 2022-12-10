@@ -8,11 +8,12 @@ from bin.vectorize_qr import *
 
 class GuiGenerateQr:
     def __init__(self, main, options):
-        self.main = main
-        self.options = options
+        self._main = main
+        self._options = options
 
         self._qr = None
         self._spiral_path = None
+        self._stop_draw = False
 
         self.tc_frame = self._init_frame_text_convert()
         self.dwg_frame = self._init_frame_turtle()
@@ -26,31 +27,32 @@ class GuiGenerateQr:
         """Initializes the Text-to-QR-code generator section of the GUI"""
         text_convert_frame = tk.Frame(bd=5)
         text_convert_frame['relief'] = 'ridge'
-        text_convert_frame.grid(column=0, row=0, sticky='W', **self.options)
+        text_convert_frame.grid(column=0, row=0, sticky='NW', **self._options)
 
         # qr text label
         qr_text_label = ttk.Label(text_convert_frame, text='Text to convert')
-        qr_text_label.grid(column=0, row=0, sticky='W', **self.options)
+        qr_text_label.grid(column=0, row=0, sticky='W', **self._options)
 
         # qr text entry
         self.qr_text = tk.StringVar()
         qr_text_entry = ttk.Entry(text_convert_frame, textvariable=self.qr_text, width=31)
-        qr_text_entry.grid(column=1, row=0, **self.options)
+        qr_text_entry.grid(column=1, row=0, **self._options)
         qr_text_entry.focus()
 
         # create qr button
         create_qr_button = ttk.Button(text_convert_frame, text='Create QR')
-        create_qr_button.grid(column=2, row=0, sticky='W', **self.options)
+        create_qr_button.grid(column=2, row=0, sticky='W', **self._options)
         create_qr_button.configure(command=self._create_qr_button_clicked)
 
-        # progress segment
-        self.progress_label = tk.Label(text_convert_frame)
-        self.progress_label.grid(column=0, row=1, sticky='W', **self.options)
+        # stop sim button
+        stop_draw_button = ttk.Button(text_convert_frame, text='Stop Draw')
+        stop_draw_button.grid(column=2, row=1, sticky='W', **self._options)
+        stop_draw_button.configure(command=self._stop_draw_button_clicked)
 
         # progress bar
-        self.progress = ttk.Progressbar(text_convert_frame, length=277, mode="determinate",
-                                        takefocus=False)
-        self.progress.grid(column=1, row=1, columnspan=2, sticky='W', **self.options)
+        self.progress = ttk.Progressbar(text_convert_frame, style='teal.Horizontal.TProgressbar', orient='horizontal',
+                                        length=277, mode="determinate", takefocus=False)
+        self.progress.grid(column=0, row=1, columnspan=2, sticky='W', **self._options)
 
         return text_convert_frame
 
@@ -58,14 +60,13 @@ class GuiGenerateQr:
         """Initializes the Turtle drawing section of the GUI"""
         drawing_frame = tk.Frame(bd=5)
         drawing_frame['relief'] = 'ridge'
-        drawing_frame.grid(column=0, row=1, columnspan=3, rowspan=5, sticky='W', **self.options)
-        turtle_canvas = tk.Canvas(drawing_frame)
+        drawing_frame.grid(column=0, row=1, rowspan=3, sticky='NSEW', **self._options)
+        turtle_canvas = tk.Canvas(drawing_frame, height=300, width=300)
         turtle_canvas.pack()
         self.turtle = RawTurtle(turtle_canvas)
         self.turtle.hideturtle()
         self.turtle.speed(0)
         self.turtle.up()
-
         return drawing_frame
 
     def _create_qr_from_input(self, text_to_qr):
@@ -77,14 +78,15 @@ class GuiGenerateQr:
 
     def _draw_qr_turtle(self):
         """Method that draws a QR code path based on the QrPathSegment data class with Turtle."""
-        self._prepare_turtle(self._qr.get_size())
-
         path_count = len(self._spiral_path)
         self.progress.config(maximum=path_count)
+        self._stop_draw = False
         for i in range(path_count):
-            self.progress_label.config(text='Path: {:d}'.format(i) +
-                                            ' Len: {:d}'.format(self._spiral_path[i].get_xy_line().get_abs_length()))
+            if self._stop_draw:
+                break
             for vect in self._spiral_path[i].get_z_vector():
+                if self._stop_draw:
+                    break
                 length = vect.get_length()
                 if vect.get_state():
                     self.turtle.down()
@@ -96,22 +98,26 @@ class GuiGenerateQr:
             self.progress.step()
 
         self.turtle.hideturtle()
-        self.progress_label.config(text='')
+        self._stop_draw = False
 
     def _prepare_turtle(self, qr_size):
         """Prepares the turtle tool for another drawing, i.e. clearing, scaling, centering"""
         # clear screen and reset turtle
+        self._stop_draw = True
         self.turtle.up()
         self.turtle.clear()
         self.turtle.setheading(0)
 
         # scale pensize to make QR-code fit screen
-        self.pen_size = 11 - (qr_size // 20)
+        if qr_size > 100:
+            self.pen_size = 1
+        else:
+            self.pen_size = 13 - (qr_size // 10)
         self.turtle.pensize(self.pen_size)
 
         # center turtle on screen
         offset = (qr_size * self.pen_size) / 2
-        self.turtle.goto(self.turtle.pos()[0] - offset, self.turtle.pos()[1] + offset)
+        self.turtle.goto(0 - offset, 0 + offset)
         self.turtle.showturtle()
 
         # EVENT HANDLERS ----------------------------
@@ -124,4 +130,9 @@ class GuiGenerateQr:
             showerror(title='Text Parse Error', message='Error: Could not convert the text to as string:\n' + error)
             return
         self._create_qr_from_input(text)
+        self._prepare_turtle(self._qr.get_size())
         self._draw_qr_turtle()
+
+    def _stop_draw_button_clicked(self):
+        """Handle stop draw button click event"""
+        self._stop_draw = True

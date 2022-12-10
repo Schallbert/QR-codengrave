@@ -45,7 +45,7 @@ class GuiToolManager:
         """creates all items within the tool selection frame"""
         tool_section_frame = tk.Frame(bd=5)
         tool_section_frame['relief'] = 'ridge'
-        tool_section_frame.grid(column=2, row=1, sticky='W', **self.options)
+        tool_section_frame.grid(column=1, row=0, rowspan=2, sticky='W', **self.options)
         reg = tool_section_frame.register(validate_number)
 
         # Add Tool

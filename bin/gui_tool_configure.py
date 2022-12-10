@@ -27,6 +27,7 @@ class GuiConfigureTool:
         self.tool_dialog.attributes('-topmost', 'true')
         self.tool_dialog.geometry('557x180')
         self.tool_dialog.title('Add/Edit tool')
+        self.tool_dialog.iconbitmap('../assets/qruwu.ico')
 
         if tool is None:
             self.tool = Tool(0, 'Name', 3.18, 1000, 500, 24000, 90, 0.1)
