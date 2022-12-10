@@ -159,9 +159,9 @@ class GuiToolManager:
     def _add_tool_button_clicked(self):
         """Handle add tool button click event"""
         if self._tool_list.is_tool_in_list(self._tool_selection_get_to_int()):
-            GuiConfigureTool(self._main, self, self._options, self._tool_list.get_selected_tool())
+            GuiConfigureTool(self._tool_frame, self, self._options, self._tool_list.get_selected_tool())
         else:
-            GuiConfigureTool(self._main, self, self._options)
+            GuiConfigureTool(self._tool_frame, self, self._options)
 
     def _remove_tool_button_clicked(self):
         """Handle add tool button click event"""

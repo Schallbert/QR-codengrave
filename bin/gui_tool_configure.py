@@ -20,10 +20,10 @@ def validate_number(entry):
 class GuiConfigureTool:
     """GUI class that makes a tool configuration window."""
 
-    def __init__(self, root, caller, options, tool=None):
+    def __init__(self, main, caller, options, tool=None):
         self.caller = caller
         self.options = options
-        self.tool_dialog = tk.Toplevel(root)
+        self.tool_dialog = tk.Toplevel(main)
         self.tool_dialog.attributes('-topmost', 'true')
         self.tool_dialog.geometry('557x180')
         self.tool_dialog.title('Add/Edit tool')
