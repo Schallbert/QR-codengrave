@@ -3,8 +3,7 @@ from bin.vectorize_qr import Point, QrCode
 
 class Tool:
     """POD container class representing a tool."""
-
-    def __init__(self, number, name, dia, fxy, fz, s, angle=0, tip=0):
+    def __init__(self, number=1, name='Name', dia=3.18, fxy=1000, fz=500, s=24000, angle=90, tip=0.1):
         self.number = number
         self.name = name
         self.diameter = dia
@@ -64,6 +63,10 @@ class ToolList:
         """Compiles a sorted list of tools.
         :returns a list of tool descriptions."""
         tools_list = list()
+        if not self._tools:
+            #  tool list empty. Enter a dummy tool here so OptionMenu item won't throw
+            self.add_or_update(Tool())
+            
         for key in sorted(self._tools.keys()):
             tools_list.append(self._tools.get(key).get_description())
         return tools_list

@@ -18,7 +18,7 @@ class GuiConfigureTool:
         self._tool_dialog.iconbitmap('../assets/qruwu.ico')
 
         if tool is None:
-            self.tool = Tool(0, 'Name', 3.18, 1000, 500, 24000, 90, 0.1)
+            self.tool = Tool()
         else:
             self.tool = tool
 

@@ -8,7 +8,7 @@ from bin.vectorize_qr import Point
 
 class GuiConfigureXy0:
     """GUI class that makes a workpiece XY0 offset configuration window."""
-    def __init__(self, main, caller, options, tool=None):
+    def __init__(self, main, caller, options, xy0=None):
         self._caller = caller
         self._options = options
         self._xy0_dialog = tk.Toplevel(main)
@@ -17,7 +17,10 @@ class GuiConfigureXy0:
         self._xy0_dialog.title('Edit Workpiece XY Zero offset')
         self._xy0_dialog.iconbitmap('../assets/qruwu.ico')
 
-        self._xy0 = Point()
+        if xy0 is None:
+            self._xy0 = Point()
+        else:
+            self._xy0 = xy0
 
         self.frame = self._create_config_xy0_frame()
 

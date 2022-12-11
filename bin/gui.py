@@ -36,9 +36,9 @@ class App:
             self.gui_status_bar.set_status_text(text)
         if self._collect_necessary_data():
             self.gui_status_bar.set_qr_size(self._machinify.get_qr_size_mm())
-        if self._collect_optional_data():
-            self.gui_status_bar.set_job_duration(self._machinify.get_job_duration_sec())
-            self.gui_status_bar.set_status_ready()
+            if self._collect_optional_data():
+                self.gui_status_bar.set_job_duration(self._machinify.get_job_duration_sec())
+                self.gui_status_bar.set_status_ready()
         else:
             self.gui_status_bar.set_status_not_ready()
 
@@ -77,6 +77,7 @@ class App:
                                                                     'Did you set the according entries?')
             return False
         return True
+
 
 if __name__ == '__main__':
     main = tk.Tk()

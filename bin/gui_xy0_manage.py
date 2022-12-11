@@ -1,8 +1,10 @@
 import tkinter as tk
 from tkinter import ttk
 
-from bin.gui_xy0_configure import *
+from bin.persistence import *
 from bin.vectorize_qr import Point
+
+from bin.gui_xy0_configure import *
 from bin.gui_helpers import validate_number
 
 
@@ -11,7 +13,7 @@ class GuiXy0Manager:
         self._main = main
         self._options = options
 
-        self._xy0 = Point()
+        self._xy0 = Persistence.load(Point())
 
         self._params_frame = self._init_frame_params_section()
 
@@ -65,4 +67,4 @@ class GuiXy0Manager:
 
     def _set_button_clicked(self):
         """Handle set xy0 button click event"""
-        GuiConfigureXy0(self._params_frame, self, self._options)
+        GuiConfigureXy0(self._params_frame, self, self._options, self._xy0)

@@ -53,7 +53,7 @@ class GuiToolManager:
         self.tool_selection.set(self._tool_list.get_selected_tool_description())
 
         self.tool_dropdown = tk.OptionMenu(tool_section_frame, self.tool_selection,
-                                            *self._tool_list.get_tool_list_string())
+                                           *self._tool_list.get_tool_list_string())
         self.tool_dropdown.config(width=30)
         self.tool_dropdown.grid(column=1, row=1, columnspan=2, sticky='W', **self._options)
         self.tool_selection.trace('w', self._tool_selection_changed)
