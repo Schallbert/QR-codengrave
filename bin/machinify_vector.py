@@ -84,7 +84,6 @@ class EngraveParams:
 
 class XzeroYzero:
     """Very simple POD class to keep a XY-0 reference point for the G-code"""
-
     def __init__(self):
         self._xy = Point(0, 0)
 
@@ -103,16 +102,23 @@ class MachinifyVector:
         self._qr_path = qr_path
         self._tool = tool
         self._engrave_params = EngraveParams()
+        self._xy_zero = XzeroYzero()
+
         self._time_buffer = 1
 
     def set_engrave_params(self, engraveparams):
         self._engrave_params = engraveparams
 
+    def set_xy_zero(self, xy_zero):
+        self._xy_zero = xy_zero
+
     def get_job_duration_sec(self):
         count_z_moves = 0
+
         for path in self._qr_path:
             count_z_moves += len(path.get_z_vector())
-        xy_moves_mm = self._tool.diameter * len(self._qr_path) / 2 * len(self._qr_path)
+
+        xy_moves_mm = self._get_xy_move_per_step() * self._qr_path[0].get_xy_line().get_abs_length() ** 2
         z_moves_mm = count_z_moves * (self._engrave_params.z_hover + self._engrave_params.z_engrave)
 
         xy_moves_sec = xy_moves_mm / self._tool.fxy * 60 * self._time_buffer
@@ -121,4 +127,16 @@ class MachinifyVector:
         return xy_moves_sec + z_moves_sec
 
     def get_qr_size_mm(self):
-        return self._qr_path[0].get_xy_line().get_abs_length() * self._tool.diameter
+        return self._get_xy_move_per_step() * self._qr_path[0].get_xy_line().get_abs_length()
+
+    def _get_xy_move_per_step(self):
+        if self._tool.tip > 0:
+            return self._tool.tip
+        else:
+            return self._tool.diameter
+
+    def generate_gcode(self):
+        print('x0 = ' + str(self._xy_zero.get().x) + ' y0 = ' + str(self._xy_zero.get().y))
+        print('engrave = ' + str(self._engrave_params.z_engrave) + ' hover = ' + str(self._engrave_params.z_hover) +
+              'flyover = ' + str(self._engrave_params.z_flyover))
+

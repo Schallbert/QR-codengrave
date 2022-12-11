@@ -87,6 +87,7 @@ class GuiGenerateQr:
         self.progress.config(maximum=path_count)
         self._stop_draw = False
         for i in range(path_count):
+            self.progress.step()
             if self._stop_draw:
                 break
             for vect in self._spiral_path[i].get_z_vector():
@@ -100,21 +101,22 @@ class GuiGenerateQr:
                 else:
                     self.turtle.forward(self.pen_size * length)
             self.turtle.right(90)
-            self.progress.step()
 
         self.turtle.hideturtle()
         self._stop_draw = False
         self._main.update_status()
 
-    def _prepare_turtle(self, qr_size):
-        """Prepares the turtle tool for another drawing, i.e. clearing, scaling, centering"""
-        # clear screen and reset turtle
+    def _prepare_turtle(self):
+        """Prepares the turtle tool for another drawing, i.e. clearing the screen"""
         self._stop_draw = True
+        self.progress.stop()
         self.turtle.up()
         self.turtle.clear()
         self.turtle.setheading(0)
 
-        # scale pensize to make QR-code fit screen
+    def _prepare_screen_for_drawing(self, qr_size):
+        """Scales pensize to fit QR-code to screen by scaling. Centers for drawing"""
+
         if qr_size > 100:
             self.pen_size = 1
         else:
@@ -136,9 +138,10 @@ class GuiGenerateQr:
             showerror(title='Text Parse Error', message='Error: Could not convert the text to as string:\n' + error)
             return
         self._create_qr_from_input(text)
-        self._prepare_turtle(self._qr.get_size())
+        self._prepare_turtle()
+        self._prepare_screen_for_drawing(self._qr.get_size())
         self._draw_qr_turtle()
 
     def _stop_draw_button_clicked(self):
         """Handle stop draw button click event"""
-        self._stop_draw = True
+        self._prepare_turtle()

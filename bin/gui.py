@@ -2,6 +2,7 @@ from bin.gui_generate_qr import *
 from bin.gui_tool_manage import *
 from bin.gui_generate_gcode import *
 from bin.gui_status_bar import *
+from bin.gui_engrave_params import *
 
 from bin.machinify_vector import MachinifyVector
 
@@ -25,6 +26,7 @@ class App:
         self.gui_qr_generator = GuiGenerateQr(self, self.options)
         self.gui_tool_manager = GuiToolManager(self, self.options)
         self.gui_status_bar = GuiStatusBar(self, self.options)
+        self.gui_engrave_params = GuiEngraveParams(self, self.options)
         self.gui_gcode_generator = GuiGenerateGcode(self, self.gui_qr_generator,
                                                     self.gui_tool_manager, self.options)
 
@@ -39,9 +41,15 @@ class App:
         else:
             self.gui_status_bar.set_status_not_ready()
 
+    def run_gcode_generator(self):
+        if self._machinify is not None:
+            self._machinify.generate_gcode()
+
     def _collect_data(self):
         self._machinify = MachinifyVector(self.gui_qr_generator.get_qr_spiral_paths(),
                                           self.gui_tool_manager.get_selected_tool())
+        self._machinify.set_engrave_params(self.gui_tool_manager.get_engrave_params())
+        self._machinify.set_xy_zero(self.gui_gcode_generator.get_xy0())
 
 
 if __name__ == '__main__':
