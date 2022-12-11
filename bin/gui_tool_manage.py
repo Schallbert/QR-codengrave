@@ -22,6 +22,7 @@ class GuiToolManager:
         self._tool_list.add_or_update(tool)
         self._update_tool_options()
         Persistence.save(self._tool_list)
+        self._main.update_status()
 
     def get_selected_tool(self):
         """Getter function.
@@ -80,6 +81,7 @@ class GuiToolManager:
 
     def _add_tool_button_clicked(self):
         """Handle add tool button click event"""
+        self._main.update_status('\u27f1 Tool')
         if self._tool_list.is_tool_in_list(self._tool_selection_get_to_int()):
             GuiConfigureTool(self._tool_frame, self, self._options, self._tool_list.get_selected_tool())
         else:
@@ -101,6 +103,5 @@ class GuiToolManager:
         tool_number = self._tool_selection_get_to_int()
         self._tool_list.select_tool(tool_number)
         self._update_tool_options()  # Call this to not have disappearing entries in List
-        print('DEBUG: tool selection changed to: ' + str(tool_number))
         Persistence.save(self._tool_list)
         self._main.update_status()

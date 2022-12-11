@@ -16,11 +16,11 @@ class GuiStatusBar:
         self.frame = self._init_status_bar()
 
     def set_status_ready(self):
-        self._status_label.config(foreground='#00A877', text='Status: Ready \u2713')
+        self._status_label.config(foreground='#00A877', text='Status: \u2713 Ready')
         pass
 
     def set_status_not_ready(self):
-        self._status_label.config(foreground='black', text='Status: Not Ready')
+        self._status_label.config(foreground='black', text='Status: \u231b Not Ready')
 
     def set_status_text(self, text):
         self._status_label.config(foreground='black', text='Status: ' + text)

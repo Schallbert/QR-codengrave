@@ -78,7 +78,7 @@ class GuiGenerateQr:
 
     def _draw_qr_turtle(self):
         """Method that draws a QR code path based on the QrPathSegment data class with Turtle."""
-        self._main.update_status('\u270e Drawing')
+        self._main.update_status('\u270d Drawing')
 
         path_count = len(self._spiral_path)
         self.progress.config(maximum=path_count)

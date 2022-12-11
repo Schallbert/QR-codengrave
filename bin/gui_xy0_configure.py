@@ -26,8 +26,8 @@ class GuiConfigureXy0:
         self._xy0_dialog = tk.Toplevel(main)
         self._xy0_dialog.attributes('-topmost', 'true')
         self._xy0_dialog.resizable(width=False, height=False)
-        self._xy0_dialog.geometry('600x400')
-        self._xy0_dialog.title('Edit Workpiece XY Zero offset')
+        self._xy0_dialog.geometry('175x390')
+        self._xy0_dialog.title('XY0')
         self._xy0_dialog.iconbitmap('../assets/qruwu.ico')
 
         if xy0 is None:
@@ -39,11 +39,6 @@ class GuiConfigureXy0:
 
     def _create_config_xy0_frame(self):
         """init method that creates the frame with all gui elements"""
-        # Graphics frame
-        graphics_frame = tk.Frame(self._xy0_dialog, bd=5)
-        graphics_frame['relief'] = 'ridge'
-        graphics_frame.grid(column=1, row=0, rowspan=2, sticky='NESW', **self._options)
-
         # Radiobutton frame
         rbtn_frame = tk.LabelFrame(self._xy0_dialog, bd=5, text='Choose XY0 offset')
         rbtn_frame['relief'] = 'ridge'
