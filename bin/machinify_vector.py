@@ -98,13 +98,30 @@ class XzeroYzero:
 
 
 class MachinifyVector:
-    def __init__(self, qr_path, tool):
-        self._qr_path = qr_path
-        self._tool = tool
-        self._engrave_params = EngraveParams()
-        self._xy_zero = XzeroYzero()
+    def __init__(self):
+        self._qr_path = None
+        self._tool = None
+        self._engrave_params = None
+        self._xy_zero = None
 
         self._time_buffer = 1
+
+    def report_data_missing(self):
+        if self._qr_path is None:
+            return 'QR-code data'
+        if self._tool is None:
+            return 'Tool data'
+        if self._engrave_params is None:
+            return 'Engrave parameters'
+        if self._xy_zero is None:
+            return 'XY Zero offsets'
+        return ''
+
+    def set_qr_path(self, path):
+        self._qr_path = path
+
+    def set_tool(self, tool):
+        self._tool = tool
 
     def set_engrave_params(self, engraveparams):
         self._engrave_params = engraveparams
@@ -129,14 +146,13 @@ class MachinifyVector:
     def get_qr_size_mm(self):
         return self._get_xy_move_per_step() * self._qr_path[0].get_xy_line().get_abs_length()
 
-    def _get_xy_move_per_step(self):
-        if self._tool.tip > 0:
-            return self._tool.tip
-        else:
-            return self._tool.diameter
-
     def generate_gcode(self):
         print('x0 = ' + str(self._xy_zero.get().x) + ' y0 = ' + str(self._xy_zero.get().y))
         print('engrave = ' + str(self._engrave_params.z_engrave) + ' hover = ' + str(self._engrave_params.z_hover) +
               'flyover = ' + str(self._engrave_params.z_flyover))
 
+    def _get_xy_move_per_step(self):
+        if self._tool.tip > 0:
+            return self._tool.tip
+        else:
+            return self._tool.diameter

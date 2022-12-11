@@ -21,36 +21,64 @@ class App:
         self.frame = ttk.Frame(self.root)
         self.options = {'padx': 5, 'pady': 5}
 
-        self._machinify = None
+        self._machinify = MachinifyVector()
 
         self.gui_qr_generator = GuiGenerateQr(self, self.options)
         self.gui_tool_manager = GuiToolManager(self, self.options)
         self.gui_status_bar = GuiStatusBar(self, self.options)
         self.gui_engrave_params = GuiEngraveParams(self, self.options)
-        self.gui_gcode_generator = GuiGenerateGcode(self, self.gui_qr_generator,
-                                                    self.gui_tool_manager, self.options)
+        self.gui_gcode_generator = GuiGenerateGcode(self, self.options)
 
     def update_status(self, text=''):
         if text != '':
             self.gui_status_bar.set_status_text(text)
-        elif self.gui_qr_generator.is_qr_defined() and self.gui_tool_manager.get_selected_tool() is not None:
-            self._collect_data()
-            self.gui_status_bar.set_job_duration(self._machinify.get_job_duration_sec())
+        if self._collect_necessary_data():
             self.gui_status_bar.set_qr_size(self._machinify.get_qr_size_mm())
+        if self._collect_optional_data():
+            self.gui_status_bar.set_job_duration(self._machinify.get_job_duration_sec())
             self.gui_status_bar.set_status_ready()
         else:
             self.gui_status_bar.set_status_not_ready()
 
     def run_gcode_generator(self):
-        if self._machinify is not None:
+        if self._validate_data():
             self._machinify.generate_gcode()
 
-    def _collect_data(self):
-        self._machinify = MachinifyVector(self.gui_qr_generator.get_qr_spiral_paths(),
-                                          self.gui_tool_manager.get_selected_tool())
-        self._machinify.set_engrave_params(self.gui_tool_manager.get_engrave_params())
-        self._machinify.set_xy_zero(self.gui_gcode_generator.get_xy0())
+    def _collect_necessary_data(self):
+        paths = self.gui_qr_generator.get_qr_spiral_paths()
+        tool = self.gui_tool_manager.get_selected_tool()
 
+        if paths is None:
+            return False
+        if tool is None:
+            return False
+
+        self._machinify.set_qr_path(paths)
+        self._machinify.set_tool(tool)
+        return True
+
+    def _collect_optional_data(self):
+        engrave = self.gui_engrave_params.get_engrave_parameters()
+        xy0 = None  # TODO implement
+
+        if self._machinify is None:
+            return False
+        if engrave is None:
+            return False
+        if xy0 is None:
+            return False
+
+        self._machinify.set_engrave_params(engrave)
+        self._machinify.set_xy_zero(xy0)
+        return True
+
+    def _validate_data(self):
+        error = self._machinify.report_data_missing()
+        if error != '':
+            showerror(title='Error: ' + error + ' missing', message='Error: could not locate ' + error + '. \n '
+                                                                   'Did you set the according entries?')
+            return False
+        return True
 
 if __name__ == '__main__':
     main = tk.Tk()

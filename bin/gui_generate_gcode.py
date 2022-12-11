@@ -7,11 +7,9 @@ from bin.machinify_vector import XzeroYzero
 
 
 class GuiGenerateGcode:
-    def __init__(self, main, gui_qr_generator, gui_tool_manager, options):
+    def __init__(self, main, options):
         """displays the tool handling section within the main gui window"""
         self._main = main
-        self._gui_tool_manager = gui_tool_manager
-        self._gui_qr_generator = gui_qr_generator
         self._options = options
 
         self._xy0 = XzeroYzero()
@@ -65,29 +63,12 @@ class GuiGenerateGcode:
 
         return gcode_frame
 
-    def _validate_data(self):
-        if self._gui_qr_generator.get_qr_spiral_paths() is None:
-            showerror(title='Error: QR not set', message='Error: could not locate QR-code data. \n '
-                                                         'Did you create any?')
-            return False
-        if self._gui_tool_manager.get_selected_tool() is None:
-            showerror(title='Error: Tool not set', message='Error: could not locate Tool data. \n '
-                                                           'Did you select any?')
-            return False
-        if self._gui_tool_manager.get_engrave_params() is None:
-            showerror(title='Error: Engrave Parameters', message='Error: Could not find valid Z-height \n '
-                                                                 'and Engraving depth parameters.')
-            return False
-        return True
-
     # EVENT HANDLERS ----------------------------
 
     def _generate_button_clicked(self):
         self._main.update_status('\u2699 G-code')
+        self._main.run_gcode_generator()
         self._main.update_status()
-        if self._validate_data():
-            self._main.run_gcode_generator()
-
 
     def _append_button_clicked(self):
         pass

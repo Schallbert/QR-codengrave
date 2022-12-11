@@ -18,9 +18,6 @@ class GuiGenerateQr:
         self.tc_frame = self._init_frame_text_convert()
         self.dwg_frame = self._init_frame_turtle()
 
-    def is_qr_defined(self):
-        return self._qr is not None
-
     def get_qr_spiral_paths(self):
         """Getter method.
         :returns the spiral path if created, otherwise None."""
