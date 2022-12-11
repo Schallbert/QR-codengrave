@@ -66,7 +66,7 @@ class ToolList:
         if not self._tools:
             #  tool list empty. Enter a dummy tool here so OptionMenu item won't throw
             self.add_or_update(Tool())
-            
+
         for key in sorted(self._tools.keys()):
             tools_list.append(self._tools.get(key).get_description())
         return tools_list

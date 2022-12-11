@@ -86,7 +86,8 @@ class GuiConfigureTool:
         tool_speed_entry.config(validate="key", validatecommand=(reg, '%P'))
 
         # tool isTapered
-        self.is_tool_tapered = tk.BooleanVar(False)
+        self.is_tool_tapered = tk.BooleanVar()
+        self.is_tool_tapered.set(self.tool.angle != 0)  # checkbox pre-set when tool is tapered
         tool_tapered_check = ttk.Checkbutton(config_tool_frame, variable=self.is_tool_tapered, onvalue=True,
                                              offvalue=False, text='Tapered tool / V-cut', command=self._checkbox_check)
         tool_tapered_check.grid(column=1, row=4, **self._options)
@@ -104,6 +105,9 @@ class GuiConfigureTool:
         self.tool_tip.set(self.tool.tip)
         self.tool_tip_entry = ttk.Entry(config_tool_frame, textvariable=self.tool_tip, width=5)
         self.tool_tip_entry.config(validate="key", validatecommand=(reg, '%P'))
+
+        # check if tool angle and tool tip data shall be shown
+        self._checkbox_check()
 
         # Cancel button
         cancel_button = ttk.Button(config_tool_frame, text='Cancel')
