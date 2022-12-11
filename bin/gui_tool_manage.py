@@ -30,9 +30,9 @@ class GuiToolManager:
 
     def _init_frame_tool_section(self):
         """creates all items within the tool selection frame"""
-        tool_section_frame = tk.Frame(bd=5)
+        tool_section_frame = tk.LabelFrame(bd=5, text='Select Tool')
         tool_section_frame['relief'] = 'ridge'
-        tool_section_frame.grid(column=1, row=0, rowspan=2, sticky='W', **self._options)
+        tool_section_frame.grid(column=1, row=0, rowspan=2, sticky='NWS', **self._options)
 
         # Add Tool
         add_tool_button = ttk.Button(tool_section_frame, text='Add/Edit tool')
@@ -44,10 +44,6 @@ class GuiToolManager:
         remove_tool_button.grid(column=2, row=0, sticky='W', **self._options)
         remove_tool_button.configure(command=self._remove_tool_button_clicked)
 
-        # Select Tool label
-        select_tool_label = tk.Label(tool_section_frame, text='Select tool')
-        select_tool_label.grid(column=0, row=1, sticky='E', **self._options)
-
         # Select Tool OptionMenu
         self.tool_selection = tk.StringVar()
         self.tool_selection.set(self._tool_list.get_selected_tool_description())
@@ -55,7 +51,7 @@ class GuiToolManager:
         self.tool_dropdown = tk.OptionMenu(tool_section_frame, self.tool_selection,
                                            *self._tool_list.get_tool_list_string())
         self.tool_dropdown.config(width=30)
-        self.tool_dropdown.grid(column=1, row=1, columnspan=2, sticky='W', **self._options)
+        self.tool_dropdown.grid(column=1, row=1, columnspan=2, sticky='SW', **self._options)
         self.tool_selection.trace('w', self._tool_selection_changed)
 
         return tool_section_frame

@@ -25,17 +25,17 @@ class GuiGenerateQr:
 
     def _init_frame_text_convert(self):
         """Initializes the Text-to-QR-code generator section of the GUI"""
-        text_convert_frame = tk.Frame(bd=5)
+        text_convert_frame = tk.LabelFrame(bd=5, text='Convert Text to QR-Code')
         text_convert_frame['relief'] = 'ridge'
-        text_convert_frame.grid(column=0, row=0, sticky='NW', **self._options)
+        text_convert_frame.grid(column=0, row=0, sticky='NSEW', **self._options)
 
         # qr text label
-        qr_text_label = ttk.Label(text_convert_frame, text='Text to convert')
+        qr_text_label = ttk.Label(text_convert_frame, text='Text: ')
         qr_text_label.grid(column=0, row=0, sticky='W', **self._options)
 
         # qr text entry
         self.qr_text = tk.StringVar()
-        qr_text_entry = ttk.Entry(text_convert_frame, textvariable=self.qr_text, width=31)
+        qr_text_entry = ttk.Entry(text_convert_frame, textvariable=self.qr_text, width=40)
         qr_text_entry.grid(column=1, row=0, **self._options)
         qr_text_entry.focus()
 
@@ -51,14 +51,14 @@ class GuiGenerateQr:
 
         # progress bar
         self.progress = ttk.Progressbar(text_convert_frame, style='teal.Horizontal.TProgressbar', orient='horizontal',
-                                        length=277, mode="determinate", takefocus=False)
-        self.progress.grid(column=0, row=1, columnspan=2, sticky='W', **self._options)
+                                        length=248, mode="determinate", takefocus=False)
+        self.progress.grid(column=0, row=1, columnspan=2, sticky='E', **self._options)
 
         return text_convert_frame
 
     def _init_frame_turtle(self):
         """Initializes the Turtle drawing section of the GUI"""
-        drawing_frame = tk.Frame(bd=5)
+        drawing_frame = tk.LabelFrame(bd=5, text='QR-code drawing screen')
         drawing_frame['relief'] = 'ridge'
         drawing_frame.grid(column=0, row=1, rowspan=3, sticky='NSEW', **self._options)
         turtle_canvas = tk.Canvas(drawing_frame, height=300, width=300)

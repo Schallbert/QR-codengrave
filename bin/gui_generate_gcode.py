@@ -13,7 +13,7 @@ class GuiGenerateGcode:
     def _init_frame_gcode_section(self):
         gcode_frame = tk.Frame(bd=5)
         gcode_frame['relief'] = 'ridge'
-        gcode_frame.grid(column=1, row=4, sticky='SW', **self._options)
+        gcode_frame.grid(column=1, row=4, sticky='NE', **self._options)
 
         # Generate button
         generate_button = ttk.Button(gcode_frame, text='Generate G-code')
@@ -21,9 +21,10 @@ class GuiGenerateGcode:
         generate_button.configure(command=self._generate_button_clicked)
 
         # Append button
-        append_button = ttk.Button(gcode_frame, text='Append G-code to File')
-        append_button.grid(column=1, row=3, sticky='W', **self._options)
-        append_button.configure(command=self._append_button_clicked)
+        #  TODO: implement later
+        # append_button = ttk.Button(gcode_frame, text='Append G-code to File')
+        # append_button.grid(column=1, row=3, sticky='W', **self._options)
+        # append_button.configure(command=self._append_button_clicked)
 
         return gcode_frame
 
