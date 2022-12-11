@@ -34,8 +34,10 @@ class App:
     def update_status(self, text=''):
         if text != '':
             self.gui_status_bar.set_status_text(text)
-        if self._collect_necessary_data():
-            self.gui_status_bar.set_qr_size(self._machinify.get_qr_size_mm())
+        elif self._collect_necessary_data():
+            size = self._machinify.get_dimension_info()
+            self.gui_status_bar.set_qr_size(size[0])
+            self.gui_xy0_manager.set_dimension_info(size)
             if self._collect_optional_data():
                 self.gui_status_bar.set_job_duration(self._machinify.get_job_duration_sec())
                 self.gui_status_bar.set_status_ready()

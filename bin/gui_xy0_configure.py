@@ -6,11 +6,23 @@ from bin.gui_helpers import validate_number
 from bin.vectorize_qr import Point
 
 
+class Offset:
+    """Enum class associating a DIRECTION on the XY-plane with a number"""
+    CENTER = 1
+    TOPLEFT = 2
+    TOPRIGHT = 3
+    BOTTOMLEFT = 4
+    BOTTOMRIGHT = 5
+    CUSTOM = 6
+
+
 class GuiConfigureXy0:
     """GUI class that makes a workpiece XY0 offset configuration window."""
-    def __init__(self, main, caller, options, xy0=None):
+
+    def __init__(self, main, caller, options, qr_dimension, xy0=None):
         self._caller = caller
         self._options = options
+        self._qr_dimension = qr_dimension
         self._xy0_dialog = tk.Toplevel(main)
         self._xy0_dialog.attributes('-topmost', 'true')
         self._xy0_dialog.resizable(width=False, height=False)
@@ -27,33 +39,66 @@ class GuiConfigureXy0:
 
     def _create_config_xy0_frame(self):
         """init method that creates the frame with all gui elements"""
-        xy0_frame = tk.Frame(self._xy0_dialog, bd=5)
+        # Graphics frame
+        graphics_frame = tk.Frame(self._xy0_dialog, bd=5)
+        graphics_frame['relief'] = 'ridge'
+        graphics_frame.grid(column=1, row=0, rowspan=2, sticky='NESW', **self._options)
+
+        # Radiobutton frame
+        rbtn_frame = tk.LabelFrame(self._xy0_dialog, bd=5, text='Choose XY0 offset')
+        rbtn_frame['relief'] = 'ridge'
+        rbtn_frame.grid(column=0, row=0, sticky='NEW', **self._options)
+
+        # Custom XY0 frame
+        xy0_frame = tk.LabelFrame(self._xy0_dialog, bd=5, text='XY0 offset values')
         xy0_frame['relief'] = 'ridge'
-        xy0_frame.grid(column=0, row=0, sticky='NE', **self._options)
+        xy0_frame.grid(column=0, row=1, sticky='NE', **self._options)
 
         reg = xy0_frame.register(validate_number)
 
-        # X label
-        setx0_label = ttk.Label(xy0_frame, text='Set X0 [mm]')
+        # Radiobuttons
+        self._xy_option = tk.IntVar()
+        btn_center = tk.Radiobutton(rbtn_frame, text="QR Center", variable=self._xy_option, value=Offset.CENTER,
+                                    command=self._radiobutton_selection_changed)
+        btn_center.grid(column=0, row=0, sticky='W', **self._options)
+        btn_center = tk.Radiobutton(rbtn_frame, text="QR Top-Left", variable=self._xy_option, value=Offset.TOPLEFT,
+                                    command=self._radiobutton_selection_changed)
+        btn_center.grid(column=0, row=1, sticky='W', **self._options)
+        btn_center = tk.Radiobutton(rbtn_frame, text="QR Top-Right", variable=self._xy_option, value=Offset.TOPRIGHT,
+                                    command=self._radiobutton_selection_changed)
+        btn_center.grid(column=0, row=2, sticky='W', **self._options)
+        btn_center = tk.Radiobutton(rbtn_frame, text="QR Bottom-Left", variable=self._xy_option,
+                                    value=Offset.BOTTOMLEFT,
+                                    command=self._radiobutton_selection_changed)
+        btn_center.grid(column=0, row=3, sticky='W', **self._options)
+        btn_center = tk.Radiobutton(rbtn_frame, text="QR Bottom-Right", variable=self._xy_option,
+                                    value=Offset.BOTTOMRIGHT,
+                                    command=self._radiobutton_selection_changed)
+        btn_center.grid(column=0, row=4, sticky='W', **self._options)
+        btn_center = tk.Radiobutton(rbtn_frame, text="QR Custom", variable=self._xy_option, value=Offset.CUSTOM,
+                                    command=self._radiobutton_selection_changed)
+        btn_center.grid(column=0, row=5, sticky='W', **self._options)
+
+        # Custom XY0
+        # X
+        setx0_label = ttk.Label(xy0_frame, text='X0 [mm]')
         setx0_label.grid(column=0, row=1, sticky='E', **self._options)
 
-        # X var
         self._setx0 = tk.DoubleVar()
         self._setx0.set(self._xy0.x)
 
-        self.setx0_entry = ttk.Entry(xy0_frame, textvariable=self._setx0, width=5)
+        self.setx0_entry = ttk.Entry(xy0_frame, textvariable=self._setx0, width=5, state='disabled')
         self.setx0_entry.config(validate="key", validatecommand=(reg, '%P'))
         self.setx0_entry.grid(column=1, row=1, **self._options)
 
-        # Y label
-        sety0_label = ttk.Label(xy0_frame, text='Set Y0 [mm]')
+        # Y
+        sety0_label = ttk.Label(xy0_frame, text='Y0 [mm]')
         sety0_label.grid(column=0, row=2, sticky='E', **self._options)
 
-        # y var
         self._sety0 = tk.DoubleVar()
         self._sety0.set(self._xy0.y)
 
-        self.sety0_entry = ttk.Entry(xy0_frame, textvariable=self._sety0, width=5)
+        self.sety0_entry = ttk.Entry(xy0_frame, textvariable=self._sety0, width=5, state='disabled')
         self.sety0_entry.config(validate="key", validatecommand=(reg, '%P'))
         self.sety0_entry.grid(column=1, row=2, **self._options)
 
@@ -83,6 +128,21 @@ class GuiConfigureXy0:
 
     # EVENT HANDLERS ----------------------------
 
+    def _radiobutton_selection_changed(self):
+        option = self._xy_option.get()
+        if option == Offset.CUSTOM:
+            self.setx0_entry.config(state='enabled')
+            self.sety0_entry.config(state='enabled')
+            return
+
+        self.setx0_entry.config(state='disabled')
+        self.sety0_entry.config(state='disabled')
+        offset = self._get_xy_offset(option)
+        self._setx0.set(offset.x)
+        self._sety0.set(offset.y)
+        self.setx0_entry.update()
+        self.sety0_entry.update()
+
     def _cancel_button_clicked(self):
         """Button callback event handler. Handles cancel button click."""
         self._xy0_dialog.destroy()
@@ -93,3 +153,17 @@ class GuiConfigureXy0:
         if self._validate_entries():
             self._caller.set_xy0_parameters(self._xy0)
             self._xy0_dialog.destroy()
+
+    def _get_xy_offset(self, offset):
+        qr = self._qr_dimension[0]
+        d = self._qr_dimension[1]
+        offsets = {Offset.CENTER: Point((d - qr) / 2, (qr - d) / 2),
+                   Offset.TOPLEFT: Point(d / 2, -d / 2),
+                   Offset.TOPRIGHT: Point(d / 2 - qr, -d / 2),
+                   Offset.BOTTOMLEFT: Point(d / 2, qr - d / 2),
+                   Offset.BOTTOMRIGHT: Point(d / 2 - qr, qr - d / 2)
+                   }
+
+        if offset in offsets:
+            return offsets[offset]
+        return Point()

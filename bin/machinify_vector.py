@@ -130,8 +130,9 @@ class MachinifyVector:
 
         return xy_moves_sec + z_moves_sec
 
-    def get_qr_size_mm(self):
-        return self._get_xy_move_per_step() * self._qr_path[0].get_xy_line().get_abs_length()
+    def get_dimension_info(self):
+        return tuple((self._get_xy_move_per_step() * self._qr_path[0].get_xy_line().get_abs_length(),
+                      self._get_xy_move_per_step()))
 
     def generate_gcode(self):
         print('x0 = ' + str(self._xy_zero.x) + ' y0 = ' + str(self._xy_zero.y))

@@ -24,7 +24,6 @@ class GuiEngraveManager:
     def set_engrave_parameters(self, params):
         """Setter function.
         to be called by child window to refresh parameters"""
-        self._main.update_status('Set EngraveParams')
         self._z_params = params
         self._engrave.config(text=str(self._z_params.z_engrave))
         self._hover.config(text=str(self._z_params.z_hover))
@@ -73,4 +72,5 @@ class GuiEngraveManager:
 
     def _set_button_clicked(self):
         """Handle set xy0 button click event"""
+        self._main.update_status('Parameter')
         GuiEngraveConfigure(self._params_frame, self, self._options, self._z_params)

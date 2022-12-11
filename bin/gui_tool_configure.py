@@ -13,7 +13,7 @@ class GuiConfigureTool:
         self._options = options
         self._tool_dialog = tk.Toplevel(main)
         self._tool_dialog.attributes('-topmost', 'true')
-        self._tool_dialog.geometry('557x180')
+        self._tool_dialog.geometry('530x195')
         self._tool_dialog.title('Add/Edit tool')
         self._tool_dialog.iconbitmap('../assets/qruwu.ico')
 
