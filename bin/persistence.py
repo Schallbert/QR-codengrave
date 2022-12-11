@@ -20,6 +20,8 @@ class Persistence:
             cls._tool_list = data
         elif type(data) == EngraveParams:
             cls._z_params = data
+        elif type(data) == Point:
+            cls._xy0 = data
         else:
             raise ValueError(str(data) + " is no type known to Persistence")
 

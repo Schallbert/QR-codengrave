@@ -13,7 +13,8 @@ class GuiConfigureXy0:
         self._options = options
         self._xy0_dialog = tk.Toplevel(main)
         self._xy0_dialog.attributes('-topmost', 'true')
-        self._xy0_dialog.geometry('400x600')
+        self._xy0_dialog.resizable(width=False, height=False)
+        self._xy0_dialog.geometry('600x400')
         self._xy0_dialog.title('Edit Workpiece XY Zero offset')
         self._xy0_dialog.iconbitmap('../assets/qruwu.ico')
 
@@ -28,13 +29,9 @@ class GuiConfigureXy0:
         """init method that creates the frame with all gui elements"""
         xy0_frame = tk.Frame(self._xy0_dialog, bd=5)
         xy0_frame['relief'] = 'ridge'
-        xy0_frame.grid(column=0, row=0, sticky='NW', **self._options)
+        xy0_frame.grid(column=0, row=0, sticky='NE', **self._options)
 
         reg = xy0_frame.register(validate_number)
-
-        # Set XY zero position label
-        setxy0_label = tk.Label(xy0_frame, text='Set X and Y zero relative to QR-code center')
-        setxy0_label.grid(column=0, row=0, columnspan=2, sticky='W', **self._options)
 
         # X label
         setx0_label = ttk.Label(xy0_frame, text='Set X0 [mm]')
@@ -62,12 +59,12 @@ class GuiConfigureXy0:
 
         # Cancel button
         cancel_button = ttk.Button(xy0_frame, text='Cancel')
-        cancel_button.grid(column=0, row=3, sticky='W', **self._options)
+        cancel_button.grid(column=0, row=3, sticky='E', **self._options)
         cancel_button.configure(command=self._cancel_button_clicked)
 
         # OK button
         ok_button = ttk.Button(xy0_frame, text='OK')
-        ok_button.grid(column=2, row=3, sticky='W', **self._options)
+        ok_button.grid(column=1, row=3, sticky='W', **self._options)
         ok_button.configure(command=self._ok_button_clicked)
 
         return xy0_frame

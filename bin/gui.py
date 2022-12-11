@@ -2,7 +2,7 @@ from bin.gui_generate_qr import *
 from bin.gui_tool_manage import *
 from bin.gui_generate_gcode import *
 from bin.gui_status_bar import *
-from bin.gui_engrave_set import *
+from bin.gui_engrave_manage import *
 from bin.gui_xy0_manage import *
 
 from bin.machinify_vector import MachinifyVector
@@ -26,7 +26,7 @@ class App:
 
         self.gui_qr_generator = GuiGenerateQr(self, self._options)
         self.gui_tool_manager = GuiToolManager(self, self._options)
-        self.gui_engrave_params = GuiSetEngrave(self, self._options)
+        self.gui_engrave_params = GuiEngraveManager(self, self._options)
         self.gui_xy0_manager = GuiXy0Manager(self, self._options)
         self.gui_gcode_generator = GuiGenerateGcode(self, self._options)
         self.gui_status_bar = GuiStatusBar(self, self._options)

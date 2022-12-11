@@ -24,9 +24,12 @@ class GuiXy0Manager:
 
     def set_xy0_parameters(self, xy0):
         """Setter function. To be called by child: configure window"""
+        self._main.update_status('Set Workpiece Zero')
         self._xy0 = xy0
         self._setx0.config(text=str(self._xy0.x))
         self._sety0.config(text=str(self._xy0.y))
+        Persistence.save(self._xy0)
+        self._main.update_status()
 
     def _init_frame_params_section(self):
         """create all items within the parameters frame section"""
