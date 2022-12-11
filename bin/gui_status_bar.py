@@ -36,7 +36,7 @@ class GuiStatusBar:
     def _init_status_bar(self):
         status_bar_frame = tk.Frame(bd=5)
         status_bar_frame['relief'] = 'flat'
-        status_bar_frame.grid(column=0, row=4, columnspan=5, sticky='SW', **self._options)
+        status_bar_frame.grid(column=0, row=5, columnspan=5, sticky='SW', **self._options)
 
         # Status
         self._status_label = ttk.Label(status_bar_frame, width=18)

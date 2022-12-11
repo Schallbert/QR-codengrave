@@ -81,22 +81,6 @@ class EngraveParams:
         self.z_hover = hover
         self.z_engrave = engrave  # this value will actually be negative because it's below workpiece surface
 
-
-class XzeroYzero:
-    """Very simple POD class to keep a XY-0 reference point for the G-code"""
-    def __init__(self):
-        self._xy = Point(0, 0)
-
-    def set_x0(self, x):
-        self._xy.x = x
-
-    def set_y0(self, y):
-        self._xy.y = y
-
-    def get(self):
-        return self._xy
-
-
 class MachinifyVector:
     def __init__(self):
         self._qr_path = None
@@ -147,9 +131,9 @@ class MachinifyVector:
         return self._get_xy_move_per_step() * self._qr_path[0].get_xy_line().get_abs_length()
 
     def generate_gcode(self):
-        print('x0 = ' + str(self._xy_zero.get().x) + ' y0 = ' + str(self._xy_zero.get().y))
+        print('x0 = ' + str(self._xy_zero.x) + ' y0 = ' + str(self._xy_zero.y))
         print('engrave = ' + str(self._engrave_params.z_engrave) + ' hover = ' + str(self._engrave_params.z_hover) +
-              'flyover = ' + str(self._engrave_params.z_flyover))
+              ' flyover = ' + str(self._engrave_params.z_flyover))
 
     def _get_xy_move_per_step(self):
         if self._tool.tip > 0:

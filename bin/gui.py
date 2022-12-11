@@ -2,7 +2,8 @@ from bin.gui_generate_qr import *
 from bin.gui_tool_manage import *
 from bin.gui_generate_gcode import *
 from bin.gui_status_bar import *
-from bin.gui_engrave_params import *
+from bin.gui_engrave_set import *
+from bin.gui_xy0_manage import *
 
 from bin.machinify_vector import MachinifyVector
 
@@ -19,15 +20,16 @@ class App:
         self.canvas.config(width=600, height=600)
 
         self.frame = ttk.Frame(self.root)
-        self.options = {'padx': 5, 'pady': 5}
+        self._options = {'padx': 5, 'pady': 5}
 
         self._machinify = MachinifyVector()
 
-        self.gui_qr_generator = GuiGenerateQr(self, self.options)
-        self.gui_tool_manager = GuiToolManager(self, self.options)
-        self.gui_status_bar = GuiStatusBar(self, self.options)
-        self.gui_engrave_params = GuiEngraveParams(self, self.options)
-        self.gui_gcode_generator = GuiGenerateGcode(self, self.options)
+        self.gui_qr_generator = GuiGenerateQr(self, self._options)
+        self.gui_tool_manager = GuiToolManager(self, self._options)
+        self.gui_engrave_params = GuiSetEngrave(self, self._options)
+        self.gui_xy0_manager = GuiXy0Manager(self, self._options)
+        self.gui_gcode_generator = GuiGenerateGcode(self, self._options)
+        self.gui_status_bar = GuiStatusBar(self, self._options)
 
     def update_status(self, text=''):
         if text != '':
@@ -58,7 +60,7 @@ class App:
 
     def _collect_optional_data(self):
         engrave = self.gui_engrave_params.get_engrave_parameters()
-        xy0 = None  # TODO implement
+        xy0 = self.gui_xy0_manager.get_xy0_parameters()
 
         if engrave is None:
             return False

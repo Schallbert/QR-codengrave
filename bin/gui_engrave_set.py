@@ -3,13 +3,13 @@ from tkinter import ttk
 from tkinter.messagebox import showerror
 from tkinter.messagebox import showinfo
 
+from bin.gui_helpers import validate_number
 from bin.machinify_vector import EngraveParams
-from bin.gui_tool_configure import validate_number
 
 from bin.persistence import Persistence
 
 
-class GuiEngraveParams:
+class GuiSetEngrave:
     def __init__(self, main, options):
         self._main = main
         self._options = options
