@@ -50,10 +50,9 @@ class App:
 
         if paths is None:
             return False
+        self._machinify.set_qr_path(paths)
         if tool is None:
             return False
-
-        self._machinify.set_qr_path(paths)
         self._machinify.set_tool(tool)
         return True
 
@@ -61,14 +60,11 @@ class App:
         engrave = self.gui_engrave_params.get_engrave_parameters()
         xy0 = None  # TODO implement
 
-        if self._machinify is None:
-            return False
         if engrave is None:
             return False
+        self._machinify.set_engrave_params(engrave)
         if xy0 is None:
             return False
-
-        self._machinify.set_engrave_params(engrave)
         self._machinify.set_xy_zero(xy0)
         return True
 
@@ -76,7 +72,7 @@ class App:
         error = self._machinify.report_data_missing()
         if error != '':
             showerror(title='Error: ' + error + ' missing', message='Error: could not locate ' + error + '. \n '
-                                                                   'Did you set the according entries?')
+                                                                    'Did you set the according entries?')
             return False
         return True
 
