@@ -1,3 +1,6 @@
+from tkinter.filedialog import asksaveasfile
+from shutil import copyfileobj
+
 from bin.gui_generate_qr import *
 from bin.gui_tool_manage import *
 from bin.gui_generate_gcode import *
@@ -51,8 +54,9 @@ class App:
         self._machinify.set_project_name(text)
 
     def run_gcode_generator(self):
-        if self._validate_data():
-            self._machinify.generate_gcode()
+        if not self._validate_data():
+            return
+        self._save_file(self._machinify.generate_gcode())
 
     def _collect_necessary_data(self):
         paths = self.gui_qr_generator.get_qr_spiral_paths()
@@ -81,10 +85,19 @@ class App:
     def _validate_data(self):
         error = self._machinify.report_data_missing()
         if error != '':
-            showerror(title='Error: ' + error + ' missing', message='Error: could not locate ' + error + '. \n '
-                                                                    'Did you set the according entries?')
+            showerror(title='Error: ' + error + ' missing',
+                      message='Error: could not locate ' + error + '. \nDid you set the according entries?')
             return False
         return True
+
+    def _save_file(self, gcode):
+        file = asksaveasfile(mode='w', initialfile=self._machinify.get_project_name() + '.tap',
+                             defaultextension='.tap', filetypes=[('CNC gcode', '*.tap'), ('Text Document', '*.txt')])
+        if file is None:  # asksaveasfile return `None` if dialog closed with "cancel".
+            return
+        gcode.seek(0)
+        copyfileobj(gcode, file)
+        file.close()
 
 
 if __name__ == '__main__':

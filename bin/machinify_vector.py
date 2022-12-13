@@ -97,12 +97,9 @@ class MachinifyVector:
         self._engrave_params = None  # Z-information for engraving
         self._xy_zero = None         # XY0-offset
 
-        self._gcode = StringIO()
-        self._project_Name = ''
+        self._project_name = ''
         self._job_duration = timedelta(0)
-
         self._pos = Point(0, 0)  # current position of tool tip
-
         self._time_buffer = 1
 
     def report_data_missing(self):
@@ -117,7 +114,12 @@ class MachinifyVector:
         return ''
 
     def set_project_name(self, text):
-        self._project_Name = text
+        if len(text) > 25:
+            text = text[0:25]
+        self._project_name = text
+
+    def get_project_name(self):
+        return self._project_name
 
     def set_qr_path(self, path):
         self._qr_path = path
@@ -143,9 +145,8 @@ class MachinifyVector:
         xy_moves_sec = xy_moves_mm / self._tool.fxy * 60 * self._time_buffer
         z_moves_sec = z_moves_mm / self._tool.fz * 60 * self._time_buffer
 
-        td = timedelta(seconds=xy_moves_sec + z_moves_sec)
-        td -= timedelta(microseconds=td.microseconds)
-        self._job_duration = td
+        self._job_duration = timedelta(seconds=xy_moves_sec + z_moves_sec)
+        self._job_duration -= timedelta(microseconds=self._job_duration.microseconds)
         return self._job_duration
 
     def get_dimension_info(self):
@@ -153,11 +154,12 @@ class MachinifyVector:
                       self._get_xy_move_per_step()))
 
     def generate_gcode(self):
-        self._gcode.write(self._gcode_header())
-        self._gcode.write(self._gcode_prepare())
-        self._gcode.write(self._gcode_engrave())
-        self._gcode.write(self._gcode_finalize())
-        print(self._gcode.getvalue())
+        gcode = StringIO()
+        gcode.write(self._gcode_header())
+        gcode.write(self._gcode_prepare())
+        gcode.write(self._gcode_engrave())
+        gcode.write(self._gcode_finalize())
+        return gcode
 
     def _get_xy_move_per_step(self):
         if self._tool.tip > 0:
@@ -207,7 +209,7 @@ class MachinifyVector:
             return 'Y' + str(self._pos.y)  # Y+ changes
 
     def _gcode_header(self):
-        header = '(Project: ' + self._project_Name + ')\n'
+        header = '(Project: ' + self._project_name + ')\n'
         header += '(Created with Schallbert\'s QR-codengrave Version ' + str(self._version) + ')\n'
         header += '(Job duration ca. ' + str(self._job_duration) + ')\n\n'
         header += '(Required tool: ' + self._tool.get_description() + ')\n\n'
