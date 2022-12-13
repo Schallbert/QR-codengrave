@@ -1,8 +1,6 @@
 import tkinter as tk
 import webbrowser
 from tkinter import ttk
-from datetime import timedelta
-
 
 def _callback(url):
     webbrowser.open_new(url)
@@ -25,9 +23,7 @@ class GuiStatusBar:
     def set_status_text(self, text):
         self._status_label.config(foreground='black', text='Status: ' + text)
 
-    def set_job_duration(self, sec):
-        td = timedelta(seconds=sec)
-        td -= timedelta(microseconds=td.microseconds)
+    def set_job_duration(self, td):
         self._duration_label.config(text='Estimated job duration: ' + str(td))
 
     def set_qr_size(self, millimeters):

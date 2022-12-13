@@ -11,6 +11,9 @@ from bin.machinify_vector import MachinifyVector
 class App:
     def __init__(self, root):
         self.root = root
+
+        self.version = 1.0
+
         self.style = ttk.Style()
         self.style.theme_use('classic')
         self.style.configure('teal.Horizontal.TProgressbar', foreground='black', background='#00A877')
@@ -22,7 +25,7 @@ class App:
         self.frame = ttk.Frame(self.root)
         self._options = {'padx': 5, 'pady': 5}
 
-        self._machinify = MachinifyVector()
+        self._machinify = MachinifyVector(self.version)
 
         self.gui_qr_generator = GuiGenerateQr(self, self._options)
         self.gui_tool_manager = GuiToolManager(self, self._options)
@@ -43,6 +46,9 @@ class App:
                 self.gui_status_bar.set_status_ready()
         else:
             self.gui_status_bar.set_status_not_ready()
+
+    def set_project_name(self, text):
+        self._machinify.set_project_name(text)
 
     def run_gcode_generator(self):
         if self._validate_data():

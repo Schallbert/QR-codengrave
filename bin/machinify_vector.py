@@ -1,4 +1,7 @@
-from bin.vectorize_qr import Point, QrCode
+from io import StringIO
+from datetime import timedelta
+
+from bin.vectorize_qr import Point, QrCode, Direction
 
 
 class Tool:
@@ -84,12 +87,21 @@ class EngraveParams:
         self.z_hover = hover
         self.z_engrave = engrave  # this value will actually be negative because it's below workpiece surface
 
+
 class MachinifyVector:
-    def __init__(self):
-        self._qr_path = None
-        self._tool = None
-        self._engrave_params = None
-        self._xy_zero = None
+    def __init__(self, version):
+        self._version = version
+
+        self._qr_path = None         # List of QRpathSegment objects
+        self._tool = None            # Selected Tool
+        self._engrave_params = None  # Z-information for engraving
+        self._xy_zero = None         # XY0-offset
+
+        self._gcode = StringIO()
+        self._project_Name = ''
+        self._job_duration = timedelta(0)
+
+        self._pos = Point(0, 0)  # current position of tool tip
 
         self._time_buffer = 1
 
@@ -103,6 +115,9 @@ class MachinifyVector:
         if self._xy_zero is None:
             return 'XY Zero offsets'
         return ''
+
+    def set_project_name(self, text):
+        self._project_Name = text
 
     def set_qr_path(self, path):
         self._qr_path = path
@@ -128,19 +143,94 @@ class MachinifyVector:
         xy_moves_sec = xy_moves_mm / self._tool.fxy * 60 * self._time_buffer
         z_moves_sec = z_moves_mm / self._tool.fz * 60 * self._time_buffer
 
-        return xy_moves_sec + z_moves_sec
+        td = timedelta(seconds=xy_moves_sec + z_moves_sec)
+        td -= timedelta(microseconds=td.microseconds)
+        self._job_duration = td
+        return self._job_duration
 
     def get_dimension_info(self):
         return tuple((self._get_xy_move_per_step() * self._qr_path[0].get_xy_line().get_abs_length(),
                       self._get_xy_move_per_step()))
 
     def generate_gcode(self):
-        print('x0 = ' + str(self._xy_zero.x) + ' y0 = ' + str(self._xy_zero.y))
-        print('engrave = ' + str(self._engrave_params.z_engrave) + ' hover = ' + str(self._engrave_params.z_hover) +
-              ' flyover = ' + str(self._engrave_params.z_flyover))
+        self._gcode.write(self._gcode_header())
+        self._gcode.write(self._gcode_prepare())
+        self._gcode.write(self._gcode_engrave())
+        self._gcode.write(self._gcode_finalize())
+        print(self._gcode.getvalue())
 
     def _get_xy_move_per_step(self):
         if self._tool.tip > 0:
             return self._tool.tip
         else:
             return self._tool.diameter
+
+    def _gcode_engrave(self):
+        engrave = ''
+
+        self._pos = self._xy_zero
+        for path in self._qr_path:
+            direction = path.get_xy_line().get_direction()
+            for vector in path.get_z_vector():
+                engrave += (self._get_command_from_vector(vector, direction))
+
+        return engrave
+
+    def _get_command_from_vector(self, vector, direction):
+        cmd = ''
+
+        move = self._get_move(vector, direction)
+        if vector.get_state():
+            #  Engrave: Z down, move necessary steps, Z up
+            cmd += 'G01 Z-' + str(self._engrave_params.z_engrave) + '\n'
+            cmd += 'G01 ' + str(move) + '\n'
+            cmd += 'G01 Z' + str(self._engrave_params.z_hover) + '\n'
+        else:
+            # Hover: Fast move to next engrave position
+            cmd += 'G00 ' + str(move) + '\n'
+        return cmd
+
+    def _get_move(self, vector, heading):
+        length = vector.get_length() * self._get_xy_move_per_step()
+
+        if heading == Direction.RIGHT:
+            self._pos.x += length
+            return 'X' + str(self._pos.x)  # X+ changes
+        elif heading == Direction.DOWN:
+            self._pos.y -= length
+            return 'Y' + str(self._pos.y)  # Y- changes
+        elif heading == Direction.LEFT:
+            self._pos.x -= length
+            return 'X' + str(self._pos.x)  # X- changes
+        elif heading == Direction.UP:
+            self._pos.y += length
+            return 'Y' + str(self._pos.y)  # Y+ changes
+
+    def _gcode_header(self):
+        header = '(Project: ' + self._project_Name + ')\n'
+        header += '(Created with Schallbert\'s QR-codengrave Version ' + str(self._version) + ')\n'
+        header += '(Job duration ca. ' + str(self._job_duration) + ')\n\n'
+        header += '(Required tool: ' + self._tool.get_description() + ')\n\n'
+        return header
+
+    def _gcode_prepare(self):
+        prepare = 'G90 \n'                                                 # Set absolute coordinates (modal)
+        prepare += 'MSG "Tool: ' + self._tool.get_description() + '"\n'    # Tool message for user
+        prepare += 'T' + str(self._tool.number) + '\n'                     # Tool select
+        prepare += 'M06 \n'                                                # Tool change
+        prepare += 'M03 \n'                                                # Spindle on
+        prepare += 'S' + str(self._tool.speed) + '\n'                      # Set spindle speed
+
+        prepare += 'G00 Z' + str(self._engrave_params.z_flyover) + '\n\n'  # Go to flyover height
+        prepare += 'G00 Y0 X0 \n'                                          # Go to workpiece XY0
+        prepare += 'G00 X' + str(self._xy_zero.x) + ' Y' + \
+                   str(self._xy_zero.y) + ' \n'                            # Go to QR-code begin position
+        prepare += 'G00 Z' + str(self._engrave_params.z_hover) + '\n\n'    # Go to hover Z height
+        return prepare
+
+    def _gcode_finalize(self):
+        finalize = '\nM05 \n'                                              # Spindle Stop
+        finalize += 'G00 Z' + str(self._engrave_params.z_flyover) + '\n'  # Go to flyover height
+        finalize += 'G00 Y0 X0 \n'                                        # Go to workpiece XY0
+        finalize += 'M30 \n'                                              # End of Program
+        return finalize

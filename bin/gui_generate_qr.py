@@ -135,6 +135,7 @@ class GuiGenerateQr:
             showerror(title='Text Parse Error', message='Error: Could not convert the text to as string:\n' + error)
             return
         self._create_qr_from_input(text)
+        self._main.set_project_name(text)
         self._prepare_turtle()
         self._prepare_screen_for_drawing(self._qr.get_size())
         self._draw_qr_turtle()
