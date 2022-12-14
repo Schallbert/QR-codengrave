@@ -61,12 +61,10 @@ class GuiGenerateQr:
         drawing_frame = tk.LabelFrame(bd=5, text='QR-code drawing screen')
         drawing_frame['relief'] = 'ridge'
         drawing_frame.grid(column=0, row=1, rowspan=3, sticky='NSEW', **self._options)
-        turtle_canvas = tk.Canvas(drawing_frame, height=300, width=300)
-        turtle_canvas.pack()
-        self.turtle = RawTurtle(turtle_canvas)
-        self.turtle.hideturtle()
-        self.turtle.speed(0)
-        self.turtle.up()
+        self._turtle_canvas = tk.Canvas(drawing_frame, height=300, width=300)
+        self._turtle_canvas.pack()
+        self._img = tk.PhotoImage(file='../assets/qruwu.png')
+        self._turtle_canvas.create_image(152, 152, image=self._img)
         return drawing_frame
 
     def _create_qr_from_input(self, text_to_qr):
@@ -105,6 +103,10 @@ class GuiGenerateQr:
 
     def _prepare_turtle(self):
         """Prepares the turtle tool for another drawing, i.e. clearing the screen"""
+        self.turtle = RawTurtle(self._turtle_canvas)
+        self.turtle.hideturtle()
+        self.turtle.speed(0)
+        self.turtle.up()
         self._stop_draw = True
         self.progress.stop()
         self.turtle.up()
