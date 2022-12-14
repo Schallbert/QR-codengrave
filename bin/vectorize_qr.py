@@ -69,10 +69,12 @@ class Line:
 
 class QrLineData:
     """Data representation for a section of consecutive bits with the same value, optimized for milling.
-    In this representation: False = mill bit up, and True = mill bit down meaning that True would have the
-    surface engraved the size of the bit diameter at specified engraving depth.
     NOTE: On __init__, section length is initialized with 'zero' for True's (no move is necessary for first engraving
-     command) and with 'one' for False's (as to reach the position of next True, it has to move by one step more)"""
+     command) and with 'one' for False's (as to reach the position of next True, it has to move by one step more)
+     :param state in this representation False = mill bit up, and True = mill bit down meaning that True would have the
+    surface engraved the size of the bit diameter at specified engraving depth.
+    :param start at the start of a new path, the tool doesn't have to move two steps but just one to reach the next
+    possible bit state"""
 
     def __init__(self, state, start=False):
         self._state = state
@@ -107,7 +109,6 @@ class QrPathSegment:
     Data container combining a Line object with the corresponding QrLineData object.
     Inputs are Line and QrLineData.
     """
-
     def __init__(self, xy_line, z_vector):
         self._xy_line = xy_line
         self._z_vector = z_vector

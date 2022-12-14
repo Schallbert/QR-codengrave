@@ -99,6 +99,7 @@ class MachinifyVector:
 
         self._project_name = ''
         self._job_duration = timedelta(0)
+        self._state = False  # current Z state (True = engraving)
         self._pos = Point(0, 0)  # current position of tool tip
         self._time_buffer = 1
 
@@ -114,26 +115,40 @@ class MachinifyVector:
         return ''
 
     def set_project_name(self, text):
+        """Setter function. Used for default file naming
+        :param text the text to be stored"""
         if len(text) > 25:
             text = text[0:25]
         self._project_name = text
 
     def get_project_name(self):
+        """Getter function.
+        :returns the project name"""
         return self._project_name
 
     def set_qr_path(self, path):
+        """Setter function.
+        :param path: a list of QrPathSegment objects"""
         self._qr_path = path
 
     def set_tool(self, tool):
+        """Setter function.
+        :param tool: a Tool POD object"""
         self._tool = tool
 
     def set_engrave_params(self, engraveparams):
+        """Setter function.
+        :param engraveparams: an EngraveParams POD object"""
         self._engrave_params = engraveparams
 
     def set_xy_zero(self, xy_zero):
+        """Setter function.
+        :param xy_zero: a Point POD object"""
         self._xy_zero = xy_zero
 
     def get_job_duration_sec(self):
+        """Calculates the estimated job duration for an engrave path set.
+        :returns _job_duration: a timedelta object representing seconds."""
         count_z_moves = 0
 
         for path in self._qr_path:
@@ -150,10 +165,14 @@ class MachinifyVector:
         return self._job_duration
 
     def get_dimension_info(self):
+        """Getter function.
+        :returns tuple: returns a tuple of QR engrave dimension and engrave bit size"""
         return tuple((self._get_xy_move_per_step() * self._qr_path[0].get_xy_line().get_abs_length(),
                       self._get_xy_move_per_step()))
 
     def generate_gcode(self):
+        """Calls G-code boilerplate methods and the engrave method that converts a path into CNC-readable commands.
+        :returns gcode: a StringIO object that can be saved to a file."""
         gcode = StringIO()
         gcode.write(self._gcode_header())
         gcode.write(self._gcode_prepare())
@@ -162,12 +181,16 @@ class MachinifyVector:
         return gcode
 
     def _get_xy_move_per_step(self):
+        """Helper method.
+        :returns float: a value representing the tool diameter relevant for engraving."""
         if self._tool.tip > 0:
             return self._tool.tip
         else:
             return self._tool.diameter
 
     def _gcode_engrave(self):
+        """Converts a list of paths into G-code instructions for the CNC.
+        :returns engrave: A String object"""
         engrave = ''
 
         self._pos = self._xy_zero
@@ -179,20 +202,26 @@ class MachinifyVector:
         return engrave
 
     def _get_command_from_vector(self, vector, direction):
+        """Converts a vector (a path segment with the identical engrave depth) into G-code instructions for the CNC.
+        :param vector: a QrLineData object. direction: enum taken from a Line object
+        :returns cmd: a string object"""
         cmd = ''
 
         move = self._get_move(vector, direction)
         if vector.get_state():
             #  Engrave: Z down, move necessary steps, Z up
-            cmd += 'G01 Z-' + str(self._engrave_params.z_engrave) + '\n'
-            cmd += 'G01 ' + str(move) + '\n'
-            cmd += 'G01 Z' + str(self._engrave_params.z_hover) + '\n'
+            cmd += 'G01 Z-' + str(self._engrave_params.z_engrave) + ' F' + str(self._tool.fz) + '\n'
+            cmd += 'G01 ' + str(move) + ' F' + str(self._tool.f) + '\n'
+            cmd += 'G00 Z' + str(self._engrave_params.z_hover) + ' F' + str(self._tool.fz) + '\n'
         else:
             # Hover: Fast move to next engrave position
             cmd += 'G00 ' + str(move) + '\n'
         return cmd
 
     def _get_move(self, vector, heading):
+        """Converts a vector into G-code commands for CNC with help of tool diameter, length, and heading.
+        :param vector: a QrLineData object. heading: enum taken from a Line object.
+        :returns a String object"""
         length = vector.get_length() * self._get_xy_move_per_step()
 
         if heading == Direction.RIGHT:
@@ -209,6 +238,9 @@ class MachinifyVector:
             return 'Y' + str(self._pos.y)  # Y+ changes
 
     def _gcode_header(self):
+        """Creates boilerplate code that is sent into the G-code file. It creates human-readable comments to
+        identify project information.
+        :returns header: a String object"""
         header = '(Project: ' + self._project_name + ')\n'
         header += '(Created with Schallbert\'s QR-codengrave Version ' + str(self._version) + ')\n'
         header += '(Job duration ca. ' + str(self._job_duration) + ')\n\n'
@@ -216,6 +248,9 @@ class MachinifyVector:
         return header
 
     def _gcode_prepare(self):
+        """Creates boilerplate G-code to initialize the CNC with correct tool, spindle speed, and moves to Qr-code's
+         targeted position.
+         :returns prepare: a String object"""
         prepare = 'G90 \n'                                                 # Set absolute coordinates (modal)
         prepare += 'MSG "Tool: ' + self._tool.get_description() + '"\n'    # Tool message for user
         prepare += 'T' + str(self._tool.number) + '\n'                     # Tool select
@@ -231,6 +266,8 @@ class MachinifyVector:
         return prepare
 
     def _gcode_finalize(self):
+        """Creates boilerplate G-code to finalize the CNC job. Commands spindle stop, returns to workpiece zero.
+        :returns finalize, a String object"""
         finalize = '\nM05 \n'                                              # Spindle Stop
         finalize += 'G00 Z' + str(self._engrave_params.z_flyover) + '\n'  # Go to flyover height
         finalize += 'G00 Y0 X0 \n'                                        # Go to workpiece XY0
