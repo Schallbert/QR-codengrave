@@ -122,6 +122,10 @@ class MachinifyVector:
     def set_project_name(self, text):
         """Setter function. Used for default file naming
         :param text the text to be stored"""
+        text = text.replace('https:', '')
+        text = text.replace('www.', '')
+        text = text.replace('/', '')
+        text = text.replace('.', '_')
         if len(text) > 25:
             text = text[0:25]
         self._project_name = text

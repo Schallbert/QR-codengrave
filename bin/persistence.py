@@ -7,6 +7,7 @@ from bin.machinify_vector import ToolList, EngraveParams
 
 
 class Persistence:
+    """Class that interfaces Pickle module to save application parameters to a file."""
     _pathname = '../assets/'
     _filename = 'persistence.dat'
     _tool_list = ToolList()
@@ -16,6 +17,9 @@ class Persistence:
 
     @classmethod
     def save(cls, data):
+        """Saves an application object to file via automated serialization. Holds copies of the objects as static
+        member variables.
+        :param data: the input object of type ToolList, EngraveParams, or Point (XY0 workpiece offset)"""
         if type(data) == ToolList:
             cls._tool_list = data
         elif type(data) == EngraveParams:
@@ -33,6 +37,10 @@ class Persistence:
 
     @classmethod
     def load(cls, data):
+        """Loads an application object from file via automated derialization through Pickle module.
+        Holds copies of the objects as static member variables.
+        :param data: the input object type ToolList, EngraveParams, or Point (XY0 workpiece offset)
+        :returns the object of requested datatype."""
         if not cls._has_loaded:
             try:
                 with open(cls._pathname + cls._filename, 'rb') as file:
