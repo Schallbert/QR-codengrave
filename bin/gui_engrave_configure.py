@@ -40,7 +40,7 @@ class GuiEngraveConfigure:
         reg = params_frame.register(validate_number)
 
         # Engrave
-        engrave_label = ttk.Label(params_frame, text='Z-engrave depth [mm]')
+        engrave_label = tk.Label(params_frame, text='Z-engrave depth [mm]')
         engrave_label.grid(column=0, row=1, sticky='E', **self._options)
 
         self._engrave = tk.DoubleVar()
@@ -51,7 +51,7 @@ class GuiEngraveConfigure:
         engrave_entry.grid(column=1, row=1, **self._options)
 
         # Hover
-        hover_label = ttk.Label(params_frame, text='Z-hoverOver [mm]')
+        hover_label = tk.Label(params_frame, text='Z-hoverOver [mm]')
         hover_label.grid(column=0, row=2, sticky='E', **self._options)
 
         self._hover = tk.DoubleVar()
@@ -62,7 +62,7 @@ class GuiEngraveConfigure:
         hover_entry.grid(column=1, row=2, **self._options)
 
         # Flyover
-        flyover_label = ttk.Label(params_frame, text='Z-flyOver [mm]')
+        flyover_label = tk.Label(params_frame, text='Z-flyOver [mm]')
         flyover_label.grid(column=0, row=3, sticky='E', **self._options)
 
         self._flyover = tk.IntVar()

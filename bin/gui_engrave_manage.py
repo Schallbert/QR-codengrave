@@ -38,39 +38,37 @@ class GuiEngraveManager:
         params_frame.grid(column=1, row=2, sticky='NW', **self._options)
 
         # Engrave label
-        engrave_label = ttk.Label(params_frame, text='Z-Engrave depth [mm]:')
+        engrave_label = tk.Label(params_frame, text='Z-Engrave depth [mm]:')
         engrave_label.grid(column=0, row=0, sticky='E', **self._options)
 
         # Engrave var
         self._engrave = ttk.Label(params_frame, text=str(self._z_params.z_engrave), width=6)
         self._engrave.grid(column=1, row=0, sticky='W', **self._options)
+        self._engrave.bind('<Button-1>', lambda click: self._label_clicked())
 
         # Hover label
-        hover_label = ttk.Label(params_frame, text='Z-HoverOver [mm]')
+        hover_label = tk.Label(params_frame, text='Z-HoverOver [mm]')
         hover_label.grid(column=0, row=1, sticky='E', **self._options)
 
         # Hover var
         self._hover = ttk.Label(params_frame, text=str(self._z_params.z_hover), width=6)
         self._hover.grid(column=1, row=1, sticky='W', **self._options)
+        self._hover.bind('<Button-1>', lambda click: self._label_clicked())
 
         # Flyover label
-        flyover_label = ttk.Label(params_frame, text='Z-FlyOver [mm]')
+        flyover_label = tk.Label(params_frame, text='Z-FlyOver [mm]')
         flyover_label.grid(column=0, row=2, sticky='E', **self._options)
 
         # Flyover var
         self._flyover = ttk.Label(params_frame, text=str(self._z_params.z_flyover), width=6)
         self._flyover.grid(column=1, row=2, sticky='W', **self._options)
-
-        # set button
-        set_button = ttk.Button(params_frame, text='Set Parameters')
-        set_button.grid(column=1, row=3, sticky='E', **self._options)
-        set_button.configure(command=self._set_button_clicked)
+        self._flyover.bind('<Button-1>', lambda click: self._label_clicked())
 
         return params_frame
 
     # EVENT HANDLERS ----------------------------
 
-    def _set_button_clicked(self):
-        """Handle set xy0 button click event"""
+    def _label_clicked(self):
+        """Handle label click event"""
         self._main.update_status('Parameter')
         GuiEngraveConfigure(self._params_frame, self, self._options, self._z_params)

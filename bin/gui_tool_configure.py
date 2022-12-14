@@ -33,7 +33,7 @@ class GuiConfigureTool:
         reg = config_tool_frame.register(validate_number)
 
         # tool number
-        tool_nr_label = ttk.Label(config_tool_frame, text='Tool Nr.')
+        tool_nr_label = tk.Label(config_tool_frame, text='Tool Nr.')
         tool_nr_label.grid(column=0, row=0, **self._options)
         self.tool_nr = tk.IntVar()
         self.tool_nr.set(self.tool.number)
@@ -43,7 +43,7 @@ class GuiConfigureTool:
         tool_nr_entry.focus()
 
         # tool name
-        tool_name_label = ttk.Label(config_tool_frame, text='Tool Name')
+        tool_name_label = tk.Label(config_tool_frame, text='Tool Name')
         tool_name_label.grid(column=1, row=0, **self._options)
         self.tool_name = tk.StringVar()
         self.tool_name.set(self.tool.name)
@@ -51,7 +51,7 @@ class GuiConfigureTool:
         tool_name_entry.grid(column=1, row=1, **self._options)
 
         # tool diameter
-        tool_dia_label = ttk.Label(config_tool_frame, text='\u2300 [mm]')
+        tool_dia_label = tk.Label(config_tool_frame, text='\u2300 [mm]')
         tool_dia_label.grid(column=2, row=0, **self._options)
         self.tool_dia = tk.DoubleVar()
         self.tool_dia.set(self.tool.diameter)
@@ -60,7 +60,7 @@ class GuiConfigureTool:
         tool_dia_entry.config(validate="key", validatecommand=(reg, '%P'))
 
         # tool xy feed
-        tool_xyfeed_label = ttk.Label(config_tool_frame, text='Fxy\u2192 [mm/min]')
+        tool_xyfeed_label = tk.Label(config_tool_frame, text='Fxy\u2192 [mm/min]')
         tool_xyfeed_label.grid(column=3, row=0, **self._options)
         self.tool_xyfeed = tk.IntVar()
         self.tool_xyfeed.set(self.tool.fxy)
@@ -69,7 +69,7 @@ class GuiConfigureTool:
         tool_xyfeed_entry.config(validate="key", validatecommand=(reg, '%P'))
 
         # tool z feed
-        tool_zfeed_label = ttk.Label(config_tool_frame, text='Fz\u2193 [mm/min]')
+        tool_zfeed_label = tk.Label(config_tool_frame, text='Fz\u2193 [mm/min]')
         tool_zfeed_label.grid(column=4, row=0, **self._options)
         self.tool_zfeed = tk.IntVar()
         self.tool_zfeed.set(self.tool.fz)
@@ -78,7 +78,7 @@ class GuiConfigureTool:
         tool_zfeed_entry.config(validate="key", validatecommand=(reg, '%P'))
 
         # tool speed
-        tool_speed_label = ttk.Label(config_tool_frame, text='S\u2B6E [RPM]')
+        tool_speed_label = tk.Label(config_tool_frame, text='S\u2B6E [RPM]')
         tool_speed_label.grid(column=5, row=0, **self._options)
         self.tool_speed = tk.IntVar()
         self.tool_speed.set(self.tool.speed)
@@ -89,19 +89,19 @@ class GuiConfigureTool:
         # tool isTapered
         self.is_tool_tapered = tk.BooleanVar()
         self.is_tool_tapered.set(self.tool.angle != 0)  # checkbox pre-set when tool is tapered
-        tool_tapered_check = ttk.Checkbutton(config_tool_frame, variable=self.is_tool_tapered, onvalue=True,
+        tool_tapered_check = tk.Checkbutton(config_tool_frame, variable=self.is_tool_tapered, onvalue=True,
                                              offvalue=False, text='Tapered tool / V-cut', command=self._checkbox_check)
         tool_tapered_check.grid(column=1, row=4, **self._options)
 
         # tool taper angle
-        self.tool_angle_label = ttk.Label(config_tool_frame, text='Angle \u2314 [°]')
+        self.tool_angle_label = tk.Label(config_tool_frame, text='Angle \u2314 [°]')
         self.tool_angle = tk.IntVar()
         self.tool_angle.set(self.tool.angle)
         self.tool_angle_entry = ttk.Entry(config_tool_frame, textvariable=self.tool_angle, width=5)
         self.tool_angle_entry.config(validate="key", validatecommand=(reg, '%P'))
 
         # tool tip width
-        self.tool_tip_label = ttk.Label(config_tool_frame, text='Tip width [mm]')
+        self.tool_tip_label = tk.Label(config_tool_frame, text='Tip width [mm]')
         self.tool_tip = tk.DoubleVar()
         self.tool_tip.set(self.tool.tip)
         self.tool_tip_entry = ttk.Entry(config_tool_frame, textvariable=self.tool_tip, width=5)

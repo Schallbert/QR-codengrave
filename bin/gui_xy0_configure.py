@@ -76,7 +76,7 @@ class GuiConfigureXy0:
 
         # Custom XY0
         # X
-        setx0_label = ttk.Label(xy0_frame, text='X0 [mm]')
+        setx0_label = tk.Label(xy0_frame, text='X0 [mm]')
         setx0_label.grid(column=0, row=1, sticky='E', **self._options)
 
         self._setx0 = tk.DoubleVar()
@@ -87,7 +87,7 @@ class GuiConfigureXy0:
         self.setx0_entry.grid(column=1, row=1, **self._options)
 
         # Y
-        sety0_label = ttk.Label(xy0_frame, text='Y0 [mm]')
+        sety0_label = tk.Label(xy0_frame, text='Y0 [mm]')
         sety0_label.grid(column=0, row=2, sticky='E', **self._options)
 
         self._sety0 = tk.DoubleVar()

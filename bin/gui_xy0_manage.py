@@ -44,32 +44,29 @@ class GuiXy0Manager:
         reg = params_frame.register(validate_number)
 
         # X label
-        setx0_label = ttk.Label(params_frame, text='Set X0 [mm]')
+        setx0_label = tk.Label(params_frame, text='Set X0 [mm]')
         setx0_label.grid(column=0, row=0, sticky='E', **self._options)
 
         # X var
         self._setx0 = ttk.Label(params_frame, text=str(self._xy0.x), width=6)
         self._setx0.grid(column=1, row=0, sticky='W', **self._options)
+        self._setx0.bind('<Button-1>', lambda click: self._label_clicked())
 
         # Y label
-        sety0_label = ttk.Label(params_frame, text='Set Y0 [mm]')
+        sety0_label = tk.Label(params_frame, text='Set Y0 [mm]')
         sety0_label.grid(column=0, row=1, sticky='E', **self._options)
 
         # y var
         self._sety0 = ttk.Label(params_frame, text=str(self._xy0.y), width=6)
         self._sety0.grid(column=1, row=1, sticky='W', **self._options)
-
-        # set button
-        set_button = ttk.Button(params_frame, text='Set XY zero')
-        set_button.grid(column=1, row=2, sticky='E', **self._options)
-        set_button.configure(command=self._set_button_clicked)
+        self._sety0.bind('<Button-1>', lambda click: self._label_clicked())
 
         return params_frame
 
     # EVENT HANDLERS ----------------------------
 
-    def _set_button_clicked(self):
-        """Handle set xy0 button click event"""
+    def _label_clicked(self):
+        """Handle XY0 label click event"""
         if self._qr_dimension is None:
             showinfo(title="QR not set", message='Warning: QR has not been provided thus XY0 can not be set. \n'
                                                  'Please have a QR-code generated first.')
