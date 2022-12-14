@@ -35,7 +35,7 @@ class GuiEngraveManager:
         """create all items within the parameters frame section"""
         params_frame = tk.LabelFrame(bd=5, text='Set Engrave parameters for machining')
         params_frame['relief'] = 'ridge'
-        params_frame.grid(column=1, row=2, sticky='NW', **self._options)
+        params_frame.grid(column=1, row=1, sticky='NEWS', **self._options)
 
         # Engrave label
         engrave_label = tk.Label(params_frame, text='Z-Engrave depth [mm]:')

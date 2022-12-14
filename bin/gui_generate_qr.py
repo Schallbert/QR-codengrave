@@ -27,10 +27,10 @@ class GuiGenerateQr:
         """Initializes the Text-to-QR-code generator section of the GUI"""
         text_convert_frame = tk.LabelFrame(bd=5, text='Convert Text to QR-Code')
         text_convert_frame['relief'] = 'ridge'
-        text_convert_frame.grid(column=0, row=0, sticky='NSEW', **self._options)
+        text_convert_frame.grid(column=0, row=0, sticky='NEWS', **self._options)
 
         # qr text label
-        qr_text_label = ttk.Label(text_convert_frame, text='Text: ')
+        qr_text_label = tk.Label(text_convert_frame, text='Text: ')
         qr_text_label.grid(column=0, row=0, sticky='W', **self._options)
 
         # qr text entry
@@ -60,7 +60,7 @@ class GuiGenerateQr:
         """Initializes the Turtle drawing section of the GUI"""
         drawing_frame = tk.LabelFrame(bd=5, text='QR-code drawing screen')
         drawing_frame['relief'] = 'ridge'
-        drawing_frame.grid(column=0, row=1, rowspan=3, sticky='NSEW', **self._options)
+        drawing_frame.grid(column=0, row=1, rowspan=3, sticky='NEWS', **self._options)
         self._turtle_canvas = tk.Canvas(drawing_frame, height=300, width=300)
         self._turtle_canvas.pack()
         self._img = tk.PhotoImage(file='../assets/qruwu.png')
