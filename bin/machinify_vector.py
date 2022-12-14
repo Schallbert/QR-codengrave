@@ -89,6 +89,8 @@ class EngraveParams:
 
 
 class MachinifyVector:
+    """Class that processes QR-code path data, tool data, engrave depth data, and Workpiece zero coordinates
+    to create a CNC machine readable file containing G-code instructions."""
     def __init__(self, version):
         self._version = version
 
@@ -104,6 +106,9 @@ class MachinifyVector:
         self._time_buffer = 1
 
     def report_data_missing(self):
+        """Reports to GUI in case there's data missing so that G-code cannot be generated.
+        :returns a String object that contains info about what's missing,
+        or an empty string when everything has been provided."""
         if self._qr_path is None:
             return 'QR-code data'
         if self._tool is None:
