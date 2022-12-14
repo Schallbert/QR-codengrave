@@ -197,33 +197,47 @@ class MachinifyVector:
         """Converts a list of paths into G-code instructions for the CNC.
         :returns engrave: A String object"""
         engrave = ''
-
         self._pos = self._xy_zero
         for path in self._qr_path:
             direction = path.get_xy_line().get_direction()
+            is_new_line = True
             for vector in path.get_z_vector():
-                engrave += (self._get_command_from_vector(vector, direction))
-
+                engrave += self._engrave(vector.get_state(), is_new_line)
+                engrave += self._move(vector, direction)
+                is_new_line = False
         return engrave
 
-    def _get_command_from_vector(self, vector, direction):
-        """Converts a vector (a path segment with the identical engrave depth) into G-code instructions for the CNC.
+    def _engrave(self, state, is_new_line):
+        """Converts a QR-code bit state into G-code Z moves for the CNC.
+        :param state: bit representation. True: Engraved, False: HoverOver. is_new_line: boolean to ommit Z instructions
+        that have been given already.
+        :returns cmd: a string object"""
+        cmd = ''
+        if not is_new_line:
+            # For a new line, Z information does not need to be sent again.
+            if state:
+                #  Engrave: Z down
+                cmd += 'G01 Z-' + str(self._engrave_params.z_engrave) + ' F' + str(self._tool.fz) + '\n'
+            else:
+                #  Hover: Z up
+                cmd += 'G00 Z' + str(self._engrave_params.z_hover) + '\n'
+        return cmd
+
+    def _move(self, vector, direction):
+        """Converts a vector (a path segment with the identical engrave depth) into G-code XY moves for the CNC.
         :param vector: a QrLineData object. direction: enum taken from a Line object
         :returns cmd: a string object"""
         cmd = ''
-
-        move = self._get_move(vector, direction)
+        move = self._linear_move(vector, direction)
         if vector.get_state():
-            #  Engrave: Z down, move necessary steps, Z up
-            cmd += 'G01 Z-' + str(self._engrave_params.z_engrave) + ' F' + str(self._tool.fz) + '\n'
-            cmd += 'G01 ' + str(move) + ' F' + str(self._tool.f) + '\n'
-            cmd += 'G00 Z' + str(self._engrave_params.z_hover) + ' F' + str(self._tool.fz) + '\n'
+            # Engrave: With Z down, move steps to reflect vector length with this state
+            cmd += 'G01 ' + str(move) + ' F' + str(self._tool.fxy) + '\n'
         else:
             # Hover: Fast move to next engrave position
             cmd += 'G00 ' + str(move) + '\n'
         return cmd
 
-    def _get_move(self, vector, heading):
+    def _linear_move(self, vector, heading):
         """Converts a vector into G-code commands for CNC with help of tool diameter, length, and heading.
         :param vector: a QrLineData object. heading: enum taken from a Line object.
         :returns a String object"""
