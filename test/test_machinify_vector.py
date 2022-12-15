@@ -25,6 +25,8 @@ def set_path_default_tool(pathvar):
         path = [QrPathSegment(line, [v1, v2, v3, v4, v5]), QrPathSegment(line2, [v1, v4, v1])]
     elif pathvar == 3:
         path = [QrPathSegment(line, [v1, v2, v3, v4, v5]), QrPathSegment(line2, [v4, v1, v4])]
+    elif pathvar == 4:
+        path = [QrPathSegment(line, [v4, v1, v4]), QrPathSegment(line2, [v1, v4, v1])]
     machinify = MachinifyVector(1.0)
     machinify.set_tool(tool)
     machinify.set_qr_path(path)
@@ -232,4 +234,18 @@ class TesPublics(unittest.TestCase):
                          'G01 X1.4 F1000\n'
                          'G00 Z0.5\n'
                          'G00 X2.1\n', machinify._gcode_engrave())
+
+    def test_gcode_engrave_2paths_firstendshover_secondstartswithengrave_returns_correct_string(self):
+        machinify = set_path_default_tool(4)
+        self.assertEqual('G00 Y0.7\n'  # new path begins here (0, 1, 0)
+                         'G01 Z-0.4 F500\n'
+                         'G01 Y1.4 F1000\n'
+                         'G00 Z0.5\n'
+                         'G00 Y2.1\n'
+                         'G01 Z-0.4 F500\n'  # new path begins here (1, 0, 1)
+                         'G01 X0.7 F1000\n'
+                         'G00 Z0.5\n'
+                         'G00 X1.4\n'
+                         'G01 Z-0.4 F500\n'
+                         'G01 X2.1 F1000\n', machinify._gcode_engrave())
 
