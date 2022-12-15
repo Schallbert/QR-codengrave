@@ -21,7 +21,7 @@ class App:
         self.version = 1.0
 
         self.style = ttk.Style()
-        self.style.theme_use('classic')
+        self.style.theme_use('alt')
         self.style.configure('teal.Horizontal.TProgressbar', foreground='black', background='#00A877')
         self.root.iconbitmap('../assets/qruwu.ico')
         self.root.title("EngraveQr")

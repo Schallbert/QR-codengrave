@@ -158,6 +158,8 @@ class MachinifyVector:
     def get_job_duration_sec(self):
         """Calculates the estimated job duration for an engrave path set.
         :returns _job_duration: a timedelta object representing seconds."""
+        if self._qr_path is None or self._tool is None:
+            return timedelta(0)
         count_z_moves = 0
 
         for path in self._qr_path:
@@ -176,7 +178,9 @@ class MachinifyVector:
     def get_dimension_info(self):
         """Getter function.
         :returns tuple: returns a tuple of QR engrave dimension and engrave bit size"""
-        return tuple((self._get_xy_move_per_step() * self._qr_path[0].get_xy_line().get_abs_length(),
+        if self._qr_path is None or self._tool is None:
+            return tuple((0, 0))
+        return tuple((self._get_xy_move_per_step() * (self._qr_path[0].get_xy_line().get_abs_length() - 1),
                       self._get_xy_move_per_step()))
 
     def generate_gcode(self):
@@ -250,16 +254,16 @@ class MachinifyVector:
 
         if heading == Direction.RIGHT:
             self._pos.x += length
-            return 'X' + str(self._pos.x)  # X+ changes
+            return 'X' + str(round(self._pos.x, 3))  # X+ changes
         elif heading == Direction.DOWN:
             self._pos.y -= length
-            return 'Y' + str(self._pos.y)  # Y- changes
+            return 'Y' + str(round(self._pos.y, 3))  # Y- changes
         elif heading == Direction.LEFT:
             self._pos.x -= length
-            return 'X' + str(self._pos.x)  # X- changes
+            return 'X' + str(round(self._pos.x, 3))  # X- changes
         elif heading == Direction.UP:
             self._pos.y += length
-            return 'Y' + str(self._pos.y)  # Y+ changes
+            return 'Y' + str(round(self._pos.y, 3))  # Y+ changes
 
     def _gcode_header(self):
         """Creates boilerplate code that is sent into the G-code file. It creates human-readable comments to
