@@ -202,13 +202,14 @@ class MachinifyVector:
         :returns engrave: A String object"""
         engrave = ''
         self._pos = self._xy_zero
+        is_new_line = False
         for path in self._qr_path:
             direction = path.get_xy_line().get_direction()
-            is_new_line = True
             for vector in path.get_z_vector():
                 engrave += self._engrave(vector.get_state(), is_new_line)
                 engrave += self._move(vector, direction)
                 is_new_line = False
+            is_new_line = True
         return engrave
 
     def _engrave(self, state, is_new_line):
