@@ -5,9 +5,10 @@ from bin.machinify_vector import MachinifyVector, Tool, EngraveParams
 from bin.vectorize_qr import QrPathSegment, Point, Line, QrLineData, Direction
 
 
-def set_simple_path_and_tool():
+def set_path_default_tool(pathvar):
     tool = Tool()
     line = Line(Point(0, 0), Point(0, 21))
+    line2 = Line(Point(0, 21), Point(21, 21))
     v1 = QrLineData(True)
     v1._length = 7
     v2 = QrLineData(False)
@@ -18,7 +19,12 @@ def set_simple_path_and_tool():
     v4._length = 7
     v5 = QrLineData(True)
     v5._length = 0
-    path = [QrPathSegment(line, [v1, v2, v4, v4, v5]), ]
+    if pathvar == 1:
+        path = [QrPathSegment(line, [v1, v2, v3, v4, v5]), ]
+    elif pathvar == 2:
+        path = [QrPathSegment(line, [v1, v2, v3, v4, v5]), QrPathSegment(line2, [v1, v4, v1])]
+    elif pathvar == 3:
+        path = [QrPathSegment(line, [v1, v2, v3, v4, v5]), QrPathSegment(line2, [v4, v1, v4])]
     machinify = MachinifyVector(1.0)
     machinify.set_tool(tool)
     machinify.set_qr_path(path)
@@ -80,7 +86,7 @@ class TesPublics(unittest.TestCase):
         self.assertEqual(timedelta(seconds=0), machinify.get_job_duration_sec())
 
     def test_duration_machinify_5vect_length21_returns_4sec(self):
-        machinify = set_simple_path_and_tool()
+        machinify = set_path_default_tool(1)
         t = Tool()
         e = EngraveParams()
         #  Touch every pixel (21^2) with feedXY, plus amount of Z-moves with feedZ of hover + engravedepth
@@ -94,49 +100,49 @@ class TesPublics(unittest.TestCase):
         self.assertEqual(tuple((0, 0)), machinify.get_dimension_info())
 
     def test_dimensions_machinify_length21_tool100um_returns2mm(self):
-        machinify = set_simple_path_and_tool()
+        machinify = set_path_default_tool(1)
         t = Tool()
         self.assertEqual(tuple((21 * t.tip, 0.1)), machinify.get_dimension_info())
 
     def test_dimensions_machinify_length21_tool8mm_returns168mm(self):
-        machinify = set_simple_path_and_tool()
+        machinify = set_path_default_tool(1)
         t = Tool(number=2, name='huge_tool', dia=8, fxy=4000, fz=2000, angle=0, tip=0)
         machinify.set_tool(t)
         self.assertEqual(tuple((21 * t.diameter, 8)), machinify.get_dimension_info())
 
     def test_linear_move_right_length7_tool100um_returns_x700um(self):
-        machinify = set_simple_path_and_tool()
+        machinify = set_path_default_tool(1)
         vect = QrLineData(False, False)
         vect._length = 7
         self.assertEqual('X0.7', machinify._linear_move(vect, Direction.RIGHT))
 
     def test_linear_move_down_length0_tool100um_returns_x20mm(self):
-        machinify = set_simple_path_and_tool()
+        machinify = set_path_default_tool(1)
         vect = QrLineData(True, True)
         vect._length = 200
         self.assertEqual('Y-20.0', machinify._linear_move(vect, Direction.DOWN))
 
     def test_linear_move_left_length1_tool100um_returns_xminus100um(self):
-        machinify = set_simple_path_and_tool()
+        machinify = set_path_default_tool(1)
         vect = QrLineData(True, True)
         vect._length = 1
         self.assertEqual('X-0.1', machinify._linear_move(vect, Direction.LEFT))
 
-    def test_linear_move_up_length0_tool100um_returns_0(self):
-        machinify = set_simple_path_and_tool()
+    def test_linear_move_up_length0_tool100um_returns_empty_string(self):
+        machinify = set_path_default_tool(1)
         vect = QrLineData(True, True)
         vect._length = 0
-        self.assertEqual('Y0.0', machinify._linear_move(vect, Direction.UP))
+        self.assertEqual('', machinify._linear_move(vect, Direction.UP))
 
     def test_linear_move_offset10mmy_up_length12_tool100um_returns_2200um(self):
-        machinify = set_simple_path_and_tool()
+        machinify = set_path_default_tool(1)
         machinify._pos = Point(0, 1)
         vect = QrLineData(True, True)
         vect._length = 12
         self.assertEqual('Y2.2', machinify._linear_move(vect, Direction.UP))
 
     def test_linear_move_offset100mmy_left_length12_tool8mm_returns_neg96mm(self):
-        machinify = set_simple_path_and_tool()
+        machinify = set_path_default_tool(1)
         t = Tool(number=2, name='huge_tool', dia=8, fxy=4000, fz=2000, angle=0, tip=0)
         machinify.set_tool(t)
         machinify._pos = Point(0, 100)
@@ -145,14 +151,85 @@ class TesPublics(unittest.TestCase):
         self.assertEqual('X-96', machinify._linear_move(vect, Direction.LEFT))
 
     def test_move_engrave_up_length10_tool100um_returns_g01y1mm(self):
-        machinify = set_simple_path_and_tool()
+        machinify = set_path_default_tool(1)
         vect = QrLineData(True, True)
         vect._length = 10
         self.assertEqual('G01 Y1.0 F1000\n', machinify._move(vect, Direction.UP))
 
+    def test_move_engrave_different_tool_returns_adjusted_feedrate(self):
+        machinify = set_path_default_tool(1)
+        t = Tool(number=2, name='huge_tool', dia=8, fxy=4000, fz=2000, angle=0, tip=0)
+        machinify.set_tool(t)
+        vect = QrLineData(True, True)
+        vect._length = 10
+        self.assertEqual('G01 Y80 F4000\n', machinify._move(vect, Direction.UP))
+
     def test_move_hover_left_length10_tool100um_returns_g00xneg1mm(self):
-        machinify = set_simple_path_and_tool()
+        machinify = set_path_default_tool(1)
         vect = QrLineData(False, True)
         vect._length = 10
         self.assertEqual('G00 X-1.0\n', machinify._move(vect, Direction.LEFT))
+
+    def test_engrave_engrave_states_both_true_returns_empty_string(self):
+        machinify = set_path_default_tool(1)
+        self.assertEqual('', machinify._engrave(True, True))
+
+    def test_engrave_hover_states_both_false_returns_empty_string(self):
+        machinify = set_path_default_tool(1)
+        self.assertEqual('', machinify._engrave(False, False))
+
+    def test_engrave_engrave_returns_g01negz_engrave_param(self):
+        machinify = set_path_default_tool(1)
+        self.assertEqual('G01 Z-0.4 F500\n', machinify._engrave(True, False))
+
+    def test_engrave_hover_returns_g00z_hover_param(self):
+        machinify = set_path_default_tool(1)
+        self.assertEqual('G00 Z0.5\n', machinify._engrave(False, True))
+
+    def test_gcode_engrave_1path_returns_correct_string(self):
+        machinify = set_path_default_tool(1)
+        self.assertEqual('G01 Z-0.4 F500\n'
+                         'G01 Y0.7 F1000\n'
+                         'G00 Z0.5\n'
+                         'G00 Y1.1\n'
+                         'G01 Z-0.4 F500\n'
+                         'G01 Y1.3 F1000\n'
+                         'G00 Z0.5\n'
+                         'G00 Y2.0\n'
+                         'G01 Z-0.4 F500\n', machinify._gcode_engrave())
+
+    def test_gcode_engrave_2paths_bothendbeginwithengrave_returns_correct_string(self):
+        machinify = set_path_default_tool(2)
+        self.assertEqual('G01 Z-0.4 F500\n'  # first path (1, 0, 1, 0, 1)
+                         'G01 Y0.7 F1000\n'
+                         'G00 Z0.5\n'
+                         'G00 Y1.1\n'
+                         'G01 Z-0.4 F500\n'
+                         'G01 Y1.3 F1000\n'
+                         'G00 Z0.5\n'
+                         'G00 Y2.0\n'
+                         'G01 Z-0.4 F500\n'  # new path begins here (1, 0, 1)
+                         'G01 X0.7 F1000\n'
+                         'G00 Z0.5\n'
+                         'G00 X1.4\n'
+                         'G01 Z-0.4 F500\n'
+                         'G01 X2.1 F1000\n', machinify._gcode_engrave())
+
+    def test_gcode_engrave_2paths_firstendswithengrave_secondstartswithhover_returns_correct_string(self):
+        machinify = set_path_default_tool(3)
+        self.assertEqual('G01 Z-0.4 F500\n'  # first path (1, 0, 1, 0, 1)
+                         'G01 Y0.7 F1000\n'
+                         'G00 Z0.5\n'
+                         'G00 Y1.1\n'
+                         'G01 Z-0.4 F500\n'
+                         'G01 Y1.3 F1000\n'
+                         'G00 Z0.5\n'
+                         'G00 Y2.0\n'
+                         'G01 Z-0.4 F500\n'  # new path begins here (0, 1, 0)
+                         'G00 Z0.5\n'
+                         'G00 X0.7\n'
+                         'G01 Z-0.4 F500\n'
+                         'G01 X1.4 F1000\n'
+                         'G00 Z0.5\n'
+                         'G00 X2.1\n', machinify._gcode_engrave())
 

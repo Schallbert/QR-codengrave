@@ -205,31 +205,32 @@ class MachinifyVector:
         """Converts a list of paths into G-code instructions for the CNC.
         :returns engrave: A String object"""
         engrave = ''
+        previous_state = False
         self._pos = self._xy_zero
-        is_new_line = False
         for path in self._qr_path:
             direction = path.get_xy_line().get_direction()
             for vector in path.get_z_vector():
-                engrave += self._engrave(vector.get_state(), is_new_line)
+                engrave += self._engrave(vector.get_state(), previous_state)
                 engrave += self._move(vector, direction)
-                is_new_line = False
-            is_new_line = True
+                previous_state = vector.get_state()
         return engrave
 
-    def _engrave(self, state, is_new_line):
+    def _engrave(self, state, previous_state):
         """Converts a QR-code bit state into G-code Z moves for the CNC.
         :param state: bit representation. True: Engraved, False: HoverOver. is_new_line: boolean to ommit Z instructions
         that have been given already.
         :returns cmd: a string object"""
         cmd = ''
-        if not is_new_line:
-            # For a new line, Z information does not need to be sent again.
-            if state:
-                #  Engrave: Z down
-                cmd += 'G01 Z-' + str(self._engrave_params.z_engrave) + ' F' + str(self._tool.fz) + '\n'
-            else:
-                #  Hover: Z up
-                cmd += 'G00 Z' + str(self._engrave_params.z_hover) + '\n'
+        if state == previous_state:
+            #   For a state, Z information does not need to be sent again.
+            return ''
+
+        if state:
+            #  Engrave: Z down
+            cmd += 'G01 Z-' + str(self._engrave_params.z_engrave) + ' F' + str(self._tool.fz) + '\n'
+        else:
+            #  Hover: Z up
+            cmd += 'G00 Z' + str(self._engrave_params.z_hover) + '\n'
         return cmd
 
     def _move(self, vector, direction):
@@ -238,6 +239,9 @@ class MachinifyVector:
         :returns cmd: a string object"""
         cmd = ''
         move = self._linear_move(vector, direction)
+        if move == '':
+            return cmd
+
         if vector.get_state():
             # Engrave: With Z down, move steps to reflect vector length with this state
             cmd += 'G01 ' + str(move) + ' F' + str(self._tool.fxy) + '\n'
@@ -251,6 +255,8 @@ class MachinifyVector:
         :param vector: a QrLineData object. heading: enum taken from a Line object.
         :returns a String object"""
         length = vector.get_length() * self._get_xy_move_per_step()
+        if length == 0:
+            return ''
 
         if heading == Direction.RIGHT:
             self._pos.x += length
