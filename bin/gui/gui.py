@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+from tkinter.messagebox import showerror
 from tkinter.filedialog import asksaveasfile
 from shutil import copyfileobj
 
@@ -107,7 +108,7 @@ class App:
         error = self._machinify.report_data_missing()
         if error != '':
             showerror(title='Error: ' + error + ' missing',
-                      message='Error: could not locate ' + error + '. \nDid you set the according entries?')
+                         message='Error: could not locate ' + error + '. \nDid you set the according entries?')
             return False
         return True
 
