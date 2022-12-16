@@ -52,7 +52,7 @@ class TesPublics(unittest.TestCase):
         machinify.set_tool(1)
         self.assertEqual('Engrave parameters', machinify.report_data_missing())
 
-    def test_report_data_missing_engrave_none_returns_correct_error(self):
+    def test_report_data_missing_offsets_none_returns_correct_error(self):
         machinify = MachinifyVector(1.0)
         machinify.set_qr_path(1)
         machinify.set_tool(1)

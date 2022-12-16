@@ -2,8 +2,9 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter.messagebox import showinfo
 
-from bin.helpers.persistence import *
+from bin.helpers.persistence import Persistence
 
+from bin.platform.vectorize_qr import Point
 from bin.gui.gui_xy0_configure import GuiConfigureXy0
 from bin.helpers.gui_helpers import validate_number
 
@@ -44,8 +45,6 @@ class GuiXy0Manager:
         # Center label entries
         params_frame.columnconfigure(0, weight=1)
         params_frame.columnconfigure(3, weight=1)
-
-        reg = params_frame.register(validate_number)
 
         # X label
         setx0_label = tk.Label(params_frame, text='Set X0 [mm]')

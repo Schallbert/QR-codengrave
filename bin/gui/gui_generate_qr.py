@@ -3,7 +3,8 @@ from tkinter import ttk
 from turtle import RawTurtle
 from tkinter.messagebox import showerror
 
-from bin.platform.vectorize_qr import *
+from qrcodegen import QrCode
+from bin.platform.vectorize_qr import VectorizeQr
 
 
 class GuiGenerateQr:

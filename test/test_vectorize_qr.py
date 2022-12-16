@@ -1,7 +1,8 @@
 import unittest
 from unittest.mock import MagicMock
 
-from bin.platform.vectorize_qr import *
+from qrcodegen import QrCode
+from bin.platform.vectorize_qr import Direction, Point, Line, VectorizeQr, create_spiral
 
 
 class TestLine(unittest.TestCase):
