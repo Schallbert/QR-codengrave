@@ -1,14 +1,16 @@
+import tkinter as tk
+from tkinter import ttk
 from tkinter.filedialog import asksaveasfile
 from shutil import copyfileobj
 
-from bin.gui_generate_qr import *
-from bin.gui_tool_manage import *
-from bin.gui_generate_gcode import *
-from bin.gui_status_bar import *
-from bin.gui_engrave_manage import *
-from bin.gui_xy0_manage import *
+from bin.gui.gui_generate_qr import GuiGenerateQr
+from bin.gui.gui_tool_manage import GuiToolManager
+from bin.gui.gui_generate_gcode import GuiGenerateGcode
+from bin.gui.gui_status_bar import GuiStatusBar
+from bin.gui.gui_engrave_manage import GuiEngraveManager
+from bin.gui.gui_xy0_manage import GuiXy0Manager
 
-from bin.machinify_vector import MachinifyVector
+from bin.platform.machinify_vector import MachinifyVector
 
 
 class App:
@@ -23,7 +25,7 @@ class App:
         self.style = ttk.Style()
         self.style.theme_use('alt')
         self.style.configure('teal.Horizontal.TProgressbar', foreground='black', background='#00A877')
-        self.root.iconbitmap('../assets/qruwu.ico')
+        self.root.iconbitmap('assets/qruwu.ico')
         self.root.title("EngraveQr")
         self.canvas = tk.Canvas(root)
         self.canvas.config(width=600, height=600)
@@ -120,9 +122,3 @@ class App:
         gcode.seek(0)
         copyfileobj(gcode, file)
         file.close()
-
-
-if __name__ == '__main__':
-    main = tk.Tk()
-    app = App(main)
-    main.mainloop()

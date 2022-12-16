@@ -1,10 +1,10 @@
 import tkinter as tk
 from tkinter import ttk
 
-from bin.gui_tool_configure import GuiConfigureTool
+from bin.gui.gui_tool_configure import GuiConfigureTool
 
-from bin.machinify_vector import ToolList
-from bin.persistence import Persistence
+from bin.platform.machinify_vector import ToolList
+from bin.helpers.persistence import Persistence
 
 
 class GuiToolManager:

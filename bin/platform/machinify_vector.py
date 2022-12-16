@@ -1,7 +1,7 @@
 from io import StringIO
 from datetime import timedelta
 
-from bin.vectorize_qr import Point, QrCode, Direction
+from bin.platform.vectorize_qr import Point, QrCode, Direction
 
 
 class Tool:
@@ -302,7 +302,7 @@ class MachinifyVector:
     def _gcode_finalize(self):
         """Creates boilerplate G-code to finalize the CNC job. Commands spindle stop, returns to workpiece zero.
         :returns finalize, a String object"""
-        finalize = '\nM05 \n'                                              # Spindle Stop
+        finalize = '\nM05 \n'                                             # Spindle Stop
         finalize += 'G00 Z' + str(self._engrave_params.z_flyover) + '\n'  # Go to flyover height
         finalize += 'G00 Y0 X0 \n'                                        # Go to workpiece XY0
         finalize += 'M30 \n'                                              # End of Program

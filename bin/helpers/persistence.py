@@ -2,13 +2,13 @@ import pickle
 
 from tkinter.messagebox import showerror
 
-from bin.vectorize_qr import Point
-from bin.machinify_vector import ToolList, EngraveParams
+from bin.platform.vectorize_qr import Point
+from bin.platform.machinify_vector import ToolList, EngraveParams
 
 
 class Persistence:
     """Class that interfaces Pickle module to save application parameters to a file."""
-    _pathname = '../assets/'
+    _pathname = 'assets/'
     _filename = 'persistence.dat'
     _tool_list = ToolList()
     _z_params = EngraveParams()

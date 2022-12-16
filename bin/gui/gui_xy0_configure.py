@@ -2,8 +2,8 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter.messagebox import showerror
 
-from bin.gui_helpers import validate_number
-from bin.vectorize_qr import Point
+from bin.helpers.gui_helpers import validate_number
+from bin.platform.vectorize_qr import Point
 
 
 class Offset:
@@ -28,7 +28,7 @@ class GuiConfigureXy0:
         self._xy0_dialog.resizable(width=False, height=False)
         self._xy0_dialog.geometry('175x390')
         self._xy0_dialog.title('XY0')
-        self._xy0_dialog.iconbitmap('../assets/qruwu.ico')
+        self._xy0_dialog.iconbitmap('assets/qruwu.ico')
 
         if xy0 is None:
             self._xy0 = Point()

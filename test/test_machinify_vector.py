@@ -1,8 +1,8 @@
 import unittest
 from datetime import timedelta
 
-from bin.machinify_vector import MachinifyVector, Tool, EngraveParams
-from bin.vectorize_qr import QrPathSegment, Point, Line, QrLineData, Direction
+from bin.platform.machinify_vector import MachinifyVector, Tool, EngraveParams
+from bin.platform.vectorize_qr import QrPathSegment, Point, Line, QrLineData, Direction
 
 
 def set_path_default_tool(pathvar):

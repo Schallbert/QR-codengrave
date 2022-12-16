@@ -2,6 +2,7 @@ import tkinter as tk
 import webbrowser
 from tkinter import ttk
 
+
 def _callback(url):
     webbrowser.open_new(url)
 

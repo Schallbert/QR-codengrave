@@ -3,8 +3,8 @@ from tkinter import ttk
 from tkinter.messagebox import showerror
 from tkinter.messagebox import showinfo
 
-from bin.gui_helpers import validate_number
-from bin.machinify_vector import EngraveParams
+from bin.helpers.gui_helpers import validate_number
+from bin.platform.machinify_vector import EngraveParams
 
 
 class GuiEngraveConfigure:
@@ -17,7 +17,7 @@ class GuiEngraveConfigure:
         self._dialog.resizable(width=False, height=False)
         self._dialog.geometry('220x172')
         self._dialog.title('Engrave')
-        self._dialog.iconbitmap('../assets/qruwu.ico')
+        self._dialog.iconbitmap('assets/qruwu.ico')
 
         if params is not None:
             self._z_params = params

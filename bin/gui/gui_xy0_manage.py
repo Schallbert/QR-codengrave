@@ -1,10 +1,11 @@
-
+import tkinter as tk
+from tkinter import ttk
 from tkinter.messagebox import showinfo
 
-from bin.persistence import *
+from bin.helpers.persistence import *
 
-from bin.gui_xy0_configure import *
-from bin.gui_helpers import validate_number
+from bin.gui.gui_xy0_configure import GuiConfigureXy0
+from bin.helpers.gui_helpers import validate_number
 
 
 class GuiXy0Manager:

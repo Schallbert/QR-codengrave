@@ -3,7 +3,7 @@ from tkinter import ttk
 from turtle import RawTurtle
 from tkinter.messagebox import showerror
 
-from bin.vectorize_qr import *
+from bin.platform.vectorize_qr import *
 
 
 class GuiGenerateQr:
@@ -63,7 +63,7 @@ class GuiGenerateQr:
         drawing_frame.grid(column=0, row=1, rowspan=3, sticky='NEWS', **self._options)
         self._turtle_canvas = tk.Canvas(drawing_frame, height=300, width=300)
         self._turtle_canvas.pack()
-        self._img = tk.PhotoImage(file='../assets/qruwu.png')
+        self._img = tk.PhotoImage(file='assets/qruwu.png')
         self._turtle_canvas.create_image(152, 152, image=self._img)
         return drawing_frame
 

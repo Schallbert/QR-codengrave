@@ -1,10 +1,10 @@
 import tkinter as tk
 from tkinter import ttk
 
-from bin.gui_engrave_configure import *
-from bin.machinify_vector import EngraveParams
+from bin.gui.gui_engrave_configure import GuiEngraveConfigure
+from bin.platform.machinify_vector import EngraveParams
 
-from bin.persistence import Persistence
+from bin.helpers.persistence import Persistence
 
 
 class GuiEngraveManager:
