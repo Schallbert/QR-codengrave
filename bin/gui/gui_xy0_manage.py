@@ -6,7 +6,6 @@ from bin.helpers.persistence import Persistence
 
 from bin.platform.vectorize_qr import Point
 from bin.gui.gui_xy0_configure import GuiConfigureXy0
-from bin.helpers.gui_helpers import validate_number
 
 
 class GuiXy0Manager:
@@ -35,7 +34,7 @@ class GuiXy0Manager:
     def set_dimension_info(self, dimension):
         """Setter function.
         to be called by parent to enable XY0 changes"""
-        self._qr_dimension= dimension
+        self._qr_dimension = dimension
 
     def _init_frame_params_section(self):
         """create all items within the parameters frame section"""

@@ -1,5 +1,3 @@
-from qrcodegen import QrCode
-from enum import Enum
 
 
 class Direction:

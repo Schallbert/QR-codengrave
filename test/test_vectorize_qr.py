@@ -50,7 +50,7 @@ class TestLine(unittest.TestCase):
     def test_create_spiral_undersized_raises(self):
         self.assertRaises(Exception, create_spiral, 20)
 
-    def test_create_spiral_undersized_raises(self):
+    def test_create_spiral_oversized_raises(self):
         self.assertRaises(Exception, create_spiral, 200)
 
     def test_create_spiral_21_returns_41_paths(self):

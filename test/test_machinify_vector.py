@@ -248,4 +248,3 @@ class TesPublics(unittest.TestCase):
                          'G00 X1.4\n'
                          'G01 Z-0.4 F500\n'
                          'G01 X2.1 F1000\n', machinify._gcode_engrave())
-

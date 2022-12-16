@@ -116,8 +116,8 @@ class GuiConfigureXy0:
             self._xy0.x = self._setx0.get()
             self._xy0.y = self._sety0.get()
         except tk.TclError:
-            tk.messagebox.showerror('Workpiece Zero Error', 'Error: Invalid value in Workpiece X-zero '
-                                                            'or Y-zero offset detected.')
+            showerror('Workpiece Zero Error', 'Error: Invalid value in Workpiece X-zero '
+                                              'or Y-zero offset detected.')
             return False
         return True
 
