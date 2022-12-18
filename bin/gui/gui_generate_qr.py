@@ -4,6 +4,8 @@ from turtle import RawTurtle
 from tkinter.messagebox import showerror
 
 from qrcodegen import QrCode
+
+from bin.helpers.gui_helpers import app_image_path
 from bin.platform.vectorize_qr import VectorizeQr
 
 
@@ -64,7 +66,7 @@ class GuiGenerateQr:
         drawing_frame.grid(column=0, row=1, rowspan=3, sticky='NEWS', **self._options)
         self._turtle_canvas = tk.Canvas(drawing_frame, height=300, width=300)
         self._turtle_canvas.pack()
-        self._img = tk.PhotoImage(file='assets/qruwu.png')
+        self._img = tk.PhotoImage(file=app_image_path)
         self._turtle_canvas.create_image(152, 152, image=self._img)
         return drawing_frame
 

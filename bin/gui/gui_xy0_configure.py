@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter.messagebox import showerror
 
-from bin.helpers.gui_helpers import validate_number
+from bin.helpers.gui_helpers import validate_number, app_icon_path
 from bin.platform.vectorize_qr import Point
 
 
@@ -28,7 +28,7 @@ class GuiConfigureXy0:
         self._xy0_dialog.resizable(width=False, height=False)
         self._xy0_dialog.geometry('175x390')
         self._xy0_dialog.title('XY0')
-        self._xy0_dialog.iconbitmap('assets/qruwu.ico')
+        self._xy0_dialog.iconbitmap(app_icon_path)
 
         if xy0 is None:
             self._xy0 = Point()

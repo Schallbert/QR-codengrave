@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter.messagebox import showinfo
 
-from bin.helpers.gui_helpers import validate_number
+from bin.helpers.gui_helpers import validate_number, app_icon_path
 from bin.platform.machinify_vector import Tool
 
 
@@ -17,7 +17,7 @@ class GuiConfigureTool:
         self._tool_dialog.resizable(width=False, height=False)
         self._tool_dialog.geometry('530x195')
         self._tool_dialog.title('Add/Edit tool')
-        self._tool_dialog.iconbitmap('assets/qruwu.ico')
+        self._tool_dialog.iconbitmap(app_icon_path)
 
         if tool is None:
             self.tool = Tool()

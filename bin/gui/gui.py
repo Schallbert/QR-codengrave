@@ -10,6 +10,7 @@ from bin.gui.gui_generate_gcode import GuiGenerateGcode
 from bin.gui.gui_status_bar import GuiStatusBar
 from bin.gui.gui_engrave_manage import GuiEngraveManager
 from bin.gui.gui_xy0_manage import GuiXy0Manager
+from bin.helpers.gui_helpers import app_icon_path
 
 from bin.platform.machinify_vector import MachinifyVector
 
@@ -26,7 +27,7 @@ class App:
         self.style = ttk.Style()
         self.style.theme_use('alt')
         self.style.configure('teal.Horizontal.TProgressbar', foreground='black', background='#00A877')
-        self.root.iconbitmap('assets/qruwu.ico')
+        self.root.iconbitmap(app_icon_path)
         self.root.title("EngraveQr")
         self.canvas = tk.Canvas(root)
         self.canvas.config(width=600, height=600)
