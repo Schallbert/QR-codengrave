@@ -26,7 +26,7 @@ class GuiConfigureXy0:
         self._xy0_dialog = tk.Toplevel(main)
         self._xy0_dialog.attributes('-topmost', 'true')
         self._xy0_dialog.resizable(width=False, height=False)
-        self._xy0_dialog.geometry('175x390')
+        self._xy0_dialog.geometry('198x382')
         self._xy0_dialog.title('XY0')
         self._xy0_dialog.iconbitmap(app_icon_path)
 

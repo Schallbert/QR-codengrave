@@ -70,8 +70,8 @@ class GuiXy0Manager:
     def _label_clicked(self):
         """Handle XY0 label click event"""
         if self._qr_dimension is None:
-            showinfo(title="QR not set", message='Warning: QR has not been provided thus XY0 can not be set. \n'
-                                                 'Please have a QR-code generated first.')
+            showinfo(title="QR or Tool not set", message='Warning: QR not provided and/or Tool not set. \n'
+                                                         'Thus XY0 can not be defined.')
             return
         self._main.update_status('Set XY0')
         GuiConfigureXy0(self._params_frame, self, self._options, self._qr_dimension, self._xy0)

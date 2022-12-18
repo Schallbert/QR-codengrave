@@ -15,7 +15,7 @@ class GuiEngraveConfigure:
         self._dialog = tk.Toplevel(main)
         self._dialog.attributes('-topmost', 'true')
         self._dialog.resizable(width=False, height=False)
-        self._dialog.geometry('220x172')
+        self._dialog.geometry('248x153')
         self._dialog.title('Engrave')
         self._dialog.iconbitmap(app_icon_path)
 
