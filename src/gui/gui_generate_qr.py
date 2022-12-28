@@ -68,6 +68,7 @@ class GuiGenerateQr:
         self._turtle_canvas.pack()
         self._img = tk.PhotoImage(file=app_image_path)
         self._turtle_canvas.create_image(152, 152, image=self._img)
+        self._prepare_turtle()
         return drawing_frame
 
     def _create_qr_from_input(self, text_to_qr):
@@ -109,15 +110,17 @@ class GuiGenerateQr:
         self.turtle = RawTurtle(self._turtle_canvas)
         self.turtle.hideturtle()
         self.turtle.speed(0)
-        self.turtle.up()
+
+    def _stop_drawing(self):
         self._stop_draw = True
-        self.progress.stop()
         self.turtle.up()
-        self.turtle.clear()
+        self.progress.stop()
         self.turtle.setheading(0)
 
     def _prepare_screen_for_drawing(self, qr_size):
         """Scales pensize to fit QR-code to screen by scaling. Centers for drawing"""
+        self._stop_drawing()
+        self.turtle.clear()
 
         if qr_size > 100:
             self.pen_size = 1
@@ -128,6 +131,7 @@ class GuiGenerateQr:
         # center turtle on screen
         offset = (qr_size * self.pen_size) / 2
         self.turtle.goto(0 - offset, 0 + offset)
+
         self.turtle.showturtle()
 
         # EVENT HANDLERS ----------------------------
@@ -141,10 +145,9 @@ class GuiGenerateQr:
             return
         self._create_qr_from_input(text)
         self._main.set_project_name(text)
-        self._prepare_turtle()
         self._prepare_screen_for_drawing(self._qr.get_size())
         self._draw_qr_turtle()
 
     def _stop_draw_button_clicked(self):
         """Handle stop draw button click event"""
-        self._prepare_turtle()
+        self._stop_drawing()
