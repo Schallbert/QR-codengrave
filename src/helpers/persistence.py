@@ -2,14 +2,13 @@ import pickle
 
 from tkinter.messagebox import showerror
 
+from src.helpers.gui_helpers import app_persistence_path
 from src.platform.vectorize_qr import Point
 from src.platform.machinify_vector import ToolList, EngraveParams
 
 
 class Persistence:
     """Class that interfaces Pickle module to save application parameters to a file."""
-    _pathname = 'assets/'
-    _filename = 'persistence.dat'
     _tool_list = ToolList()
     _z_params = EngraveParams()
     _xy0 = Point()
@@ -29,7 +28,7 @@ class Persistence:
         else:
             raise ValueError(str(data) + " is no type known to Persistence")
 
-        with open(cls._pathname + cls._filename, 'wb') as file:
+        with open(app_persistence_path, 'wb') as file:
             pickle.dump([cls._tool_list,
                          cls._z_params,
                          cls._xy0],
@@ -43,14 +42,14 @@ class Persistence:
         :returns the object of requested datatype."""
         if not cls._has_loaded:
             try:
-                with open(cls._pathname + cls._filename, 'rb') as file:
+                with open(app_persistence_path, 'rb') as file:
                     cls._tool_list, \
                         cls._z_params, \
                         cls._xy0 \
                         = pickle.load(file)
             except FileNotFoundError:
                 showerror(title='Database file not found', message='Could not locate saved data under'
-                                                                   + cls._pathname + cls._filename + '. \n' +
+                                                                   + app_persistence_path + '. \n' +
                                                                    'Starting with a blank database...')
                 pass
             cls._has_loaded = True
