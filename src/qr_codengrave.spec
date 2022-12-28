@@ -3,8 +3,8 @@
 block_cipher = None
 
 
-a = Analysis(['QR-codengrave.py'],
-             pathex=['../bin'],
+a = Analysis(['main.py'],
+             pathex=['../src'],
              binaries=[],
              datas=[],
              hiddenimports=[],

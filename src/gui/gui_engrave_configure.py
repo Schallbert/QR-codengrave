@@ -3,8 +3,8 @@ from tkinter import ttk
 from tkinter.messagebox import showerror
 from tkinter.messagebox import showinfo
 
-from bin.helpers.gui_helpers import validate_number, app_icon_path
-from bin.platform.machinify_vector import EngraveParams
+from src.helpers.gui_helpers import validate_number, app_icon_path
+from src.platform.machinify_vector import EngraveParams
 
 
 class GuiEngraveConfigure:

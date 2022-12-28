@@ -2,8 +2,8 @@ import pickle
 
 from tkinter.messagebox import showerror
 
-from bin.platform.vectorize_qr import Point
-from bin.platform.machinify_vector import ToolList, EngraveParams
+from src.platform.vectorize_qr import Point
+from src.platform.machinify_vector import ToolList, EngraveParams
 
 
 class Persistence:

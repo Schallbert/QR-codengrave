@@ -2,10 +2,10 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter.messagebox import showinfo
 
-from bin.helpers.persistence import Persistence
+from src.helpers.persistence import Persistence
 
-from bin.platform.vectorize_qr import Point
-from bin.gui.gui_xy0_configure import GuiConfigureXy0
+from src.platform.vectorize_qr import Point
+from src.gui.gui_xy0_configure import GuiConfigureXy0
 
 
 class GuiXy0Manager:

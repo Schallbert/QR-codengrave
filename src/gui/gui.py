@@ -4,15 +4,15 @@ from tkinter.messagebox import showerror
 from tkinter.filedialog import asksaveasfile
 from shutil import copyfileobj
 
-from bin.gui.gui_generate_qr import GuiGenerateQr
-from bin.gui.gui_tool_manage import GuiToolManager
-from bin.gui.gui_generate_gcode import GuiGenerateGcode
-from bin.gui.gui_status_bar import GuiStatusBar
-from bin.gui.gui_engrave_manage import GuiEngraveManager
-from bin.gui.gui_xy0_manage import GuiXy0Manager
-from bin.helpers.gui_helpers import app_icon_path
+from src.gui.gui_generate_qr import GuiGenerateQr
+from src.gui.gui_tool_manage import GuiToolManager
+from src.gui.gui_generate_gcode import GuiGenerateGcode
+from src.gui.gui_status_bar import GuiStatusBar
+from src.gui.gui_engrave_manage import GuiEngraveManager
+from src.gui.gui_xy0_manage import GuiXy0Manager
+from src.helpers.gui_helpers import app_icon_path
 
-from bin.platform.machinify_vector import MachinifyVector
+from src.platform.machinify_vector import MachinifyVector
 
 
 class App:
