@@ -10,23 +10,36 @@ The project is written in Python. The program is not very fast or creates super 
 but special care has to be taken to get the machining time as low as possible.
 
 ## Disclaimer
-This application outputs instruction for real-world machinery that does actually do things in the physical world.
-Although I created this software with all due care, I cannot take any responsibility for how and for what this software
-is used. Of course there might be bugs that potentially crashes your machine or worse. It is your liability to carefully
-check the outputs of this software and to make sure that it does not cause any harm.
+This software is provided to users as-is. Although I created this application with all due care, created unit tests,
+and tested its output code on my own machine, I cannot take any responsibility for how and for what this software is used.
+
+*WARNING* 
+
+This application outputs `G-code` instructions for real machinery that does actually do things
+in the physical world. Of course there might be bugs that potentially crashes your machine or worse. 
+I do not take liability for work accidents, system failures, equipment breakdown, loss of production, flow disturbances
+or other negative effects that may be caused by the code this application generates.
+
+*NOTE*
+
+It is the machine operator's responsibility to carefully review the output `G-code` of this application, 
+and to make sure that it works as intended without causing any harm.
 
 ## Usage
 
-### Install
-I'm planning on providing a pyinstaller single-file application via Github Actions. This can simple be downloaded and executed.
+### Installation
+Download the latest release (button on the panel on the right). It provides a `.zip` file containing the application
+and all related files. Start the application by double-clicking `QR-codengrave.exe`. 
+
+Alternatively, clone the repository and run from within your favourite python interpreter.
 
 ### QR-Code
 Once running, just enter the text for the QR-code you want to have engraved. Press `Create Qr`. For drawing I used the (slow)
 turtle provided with tkinter, so you can optionally skip this by pressing `Stop Draw`. 
 
 ### Tool selection
-Then add or select the tool
-you want to use for engraving. The QR-code's workpiece size directly depends on tool tip diameter. The tool list is
+Then add or select the tool you want to use for engraving. 
+The QR-code's workpiece size directly depends on tool tip diameter. The tool list is
 persisted so no data is lost on application restart.
 
 ### Engrave parameters
