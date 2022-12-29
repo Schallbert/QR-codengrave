@@ -1,6 +1,6 @@
 # QR-codengrave
 
-![QR-codengrave picture of main app window](assets/main_application.jpg)
+![QR-codengrave picture of main app window](src/assets/main_application.jpg)
 
 This is a small python application that takes a string, converts
 it into a QR-code (with help of @nayuki 's excellent QR-code generator)
