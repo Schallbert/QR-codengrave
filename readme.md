@@ -3,21 +3,22 @@
 ![QR-codengrave picture of main app window](src/assets/main_application.jpg)
 
 This is a small python application that takes a string, converts
-it into a QR-code (with help of @nayuki 's excellent QR-code generator)
+it into a QR-code (with help of @nayuki's excellent QR-code generator)
 and then allows to create CNC toolpaths that enables efficient and quick engraving.
 
 The project is written in Python. The program is not very fast or creates super elegant tool paths,
-but special care has to be taken to get the machining time as low as possible.
+but special care has to be taken to get the machining time low while maintaining a high readability of the 
+QR-code.
 
 ## Disclaimer
-This software is provided to users as-is. Although I created this application with all due care, created unit tests,
+Releases of this software are provided to users as-is. Although I created this application with all due care, created unit tests,
 and tested its output code on my own machine, I cannot take any responsibility for how and for what this software is used.
 
 *WARNING* 
 
 This application outputs `G-code` instructions for real machinery that does actually do things
-in the physical world. Of course there might be bugs that potentially crashes your machine or worse. 
-I do not take liability for work accidents, system failures, equipment breakdown, loss of production, flow disturbances
+in the physical world. There might be code errors or bugs that could potentially lead to machine crashes or even worse. 
+I do not take liability for work accidents, system failures, equipment breakdown, loss of production, flow disturbances,
 or other negative effects that may be caused by the code this application generates.
 
 *NOTE*
@@ -32,6 +33,7 @@ Download the latest release (button on the panel on the right). It provides a `.
 and all related files. Start the application by double-clicking `QR-codengrave.exe`. 
 
 Alternatively, clone the repository and run from within your favourite python interpreter.
+Of course you're free to fork this repository and modify the code under your own responsibility.
 
 ### QR-Code
 Once running, just enter the text for the QR-code you want to have engraved. Press `Create Qr`. For drawing I used the (slow)
@@ -57,6 +59,11 @@ value, e.g. relevant if the qr-code is to be placed somewhere on a larger workpi
 This will run a `StringIO` generator that creates a file object containing the instructions for a milling machine 
 to engrave your QR-code. Currently, it is optimized for my machine type and uses no postprocessor (I'm not familiar 
 with other machines and their control software, so you might have to adjust the generator for your machine.)
+
+### Have it manufactured on your machine
+For testing purposes I created a QR-code to my website [schallbert.de](https://schallbert.de) and had it engraved to
+a piece of coated pylwood. I used an `6mm` endmill which resulted in a qr-code size of `144x144 mm`.
+![QR-codengrave G-code executed on my CNC portal milling machine](src/assets/engravedqr_schallbert_website.jpg)
 
 ## Code modules
 The application consists of three modules:
