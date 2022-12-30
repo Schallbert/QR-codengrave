@@ -28,7 +28,7 @@ class App:
         self.style.theme_use('alt')
         self.style.configure('teal.Horizontal.TProgressbar', foreground='black', background='#00A877')
         self.root.iconbitmap(app_icon_path)
-        self.root.title("EngraveQr")
+        self.root.title("QR-Codengrave")
         self.canvas = tk.Canvas(root)
         self.canvas.config(width=600, height=600)
 
