@@ -35,7 +35,7 @@ def set_path_default_tool(pathvar):
     return machinify
 
 
-class TesPublics(unittest.TestCase):
+class TestMachinify(unittest.TestCase):
 
     def test_report_data_missing_qr_none_returns_correct_error(self):
         machinify = MachinifyVector(1.0)
