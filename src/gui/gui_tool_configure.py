@@ -186,10 +186,12 @@ class GuiConfigureTool:
                 self.tool_tip.get()
                 if not ((self.tool_angle.get() > 0) and (self.tool_angle.get() < 180)):
                     raise tk.TclError
+                if not self.tool_tip.get() >= 0 :
+                    raise tk.TclError
             except tk.TclError:
                 showinfo('Tapered Tool warning', 'Info: Tool Angle must be a positive integer \n'
                                                  'between 1° and 180°.\n'
-                                                 'Tool tip width must be a positive value.')
+                                                 'Tool tip width must be >= 0.')
                 return False
         else:
             # make sure everything is properly zeroed
