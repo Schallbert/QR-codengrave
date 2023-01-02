@@ -98,6 +98,12 @@ class EngraveParams:
         self.z_hover = hover
         self.z_engrave = engrave  # this value will actually be negative because it's below workpiece surface
 
+    def __eq__(self, other):
+        eq = (self.z_flyover == other.z_flyover)
+        eq &= (self.z_hover == other.z_hover)
+        eq &= (self.z_engrave == other.z_engrave)
+        return eq
+
 
 class MachinifyVector:
     """Class that processes QR-code path data, tool data, engrave depth data, and Workpiece zero coordinates
