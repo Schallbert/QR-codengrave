@@ -5,7 +5,7 @@ from tkinter.messagebox import showerror
 
 from qrcodegen import QrCode
 
-from src.helpers.gui_helpers import app_image_path
+from src.resources import app_image_path
 from src.platform.vectorize_qr import VectorizeQr
 
 

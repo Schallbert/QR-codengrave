@@ -2,7 +2,8 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter.messagebox import showerror
 
-from src.helpers.gui_helpers import validate_number, app_icon_path
+from src.helpers.gui_helpers import validate_number
+from src.resources import app_icon_path
 from src.platform.vectorize_qr import Point
 
 

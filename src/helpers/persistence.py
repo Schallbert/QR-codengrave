@@ -1,8 +1,6 @@
 import pickle
 
-from tkinter.messagebox import showerror
-
-from src.helpers.gui_helpers import app_persistence_path
+#from src.resources import app_persistence_path
 from src.platform.vectorize_qr import Point
 from src.platform.machinify_vector import ToolList, EngraveParams
 
@@ -28,7 +26,7 @@ class Persistence:
         else:
             raise ValueError(str(data) + " is no type known to Persistence")
 
-        with open(app_persistence_path, 'wb') as file:
+        with open('assets/persistence.dat', 'wb') as file:
             pickle.dump([cls._tool_list,
                          cls._z_params,
                          cls._xy0],
@@ -41,17 +39,11 @@ class Persistence:
         :param data: the input object type ToolList, EngraveParams, or Point (XY0 workpiece offset)
         :returns the object of requested datatype."""
         if not cls._has_loaded:
-            try:
-                with open(app_persistence_path, 'rb') as file:
-                    cls._tool_list, \
-                        cls._z_params, \
-                        cls._xy0 \
-                        = pickle.load(file)
-            except FileNotFoundError:
-                showerror(title='Database file not found', message='Could not locate saved data under'
-                                                                   + app_persistence_path + '. \n' +
-                                                                   'Starting with a blank database...')
-                pass
+            with open('assets/persistence.dat', 'rb') as file:
+                cls._tool_list, \
+                    cls._z_params, \
+                    cls._xy0 \
+                    = pickle.load(file)
             cls._has_loaded = True
 
         if type(data) == ToolList:

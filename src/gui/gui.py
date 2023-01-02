@@ -10,7 +10,7 @@ from src.gui.gui_generate_gcode import GuiGenerateGcode
 from src.gui.gui_status_bar import GuiStatusBar
 from src.gui.gui_engrave_manage import GuiEngraveManager
 from src.gui.gui_xy0_manage import GuiXy0Manager
-from src.helpers.gui_helpers import app_icon_path
+from src.resources import app_icon_path
 
 from src.platform.machinify_vector import MachinifyVector
 

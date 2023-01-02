@@ -2,7 +2,8 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter.messagebox import showinfo
 
-from src.helpers.gui_helpers import validate_number, app_icon_path
+from src.helpers.gui_helpers import validate_number
+from src.resources import app_icon_path
 from src.platform.machinify_vector import Tool
 
 

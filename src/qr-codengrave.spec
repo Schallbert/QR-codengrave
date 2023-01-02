@@ -10,6 +10,7 @@ a = Analysis(
     binaries=[],
     datas=[ ( 'assets/qruwu.ico', 'assets' ),
             ( 'assets/qruwu.png', 'assets' ),
+            ( 'assets/persistence.dat', 'assets' ),
             ( '../readme.md', '.' ) ],
     hiddenimports=[],
     hookspath=[],
