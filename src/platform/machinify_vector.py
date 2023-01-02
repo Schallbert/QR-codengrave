@@ -16,6 +16,17 @@ class Tool:
         self.angle = angle
         self.tip = tip
 
+    def __eq__(self, other):
+        eq = (self.number == other.number)
+        eq &= (self.name == other.name)
+        eq &= (self.diameter == other.diameter)
+        eq &= (self.fxy == other.fxy)
+        eq &= (self.fz == other.fz)
+        eq &= (self.speed == other.speed)
+        eq &= (self.angle == other.angle)
+        eq &= (self.tip == other.tip)
+        return eq
+
     def get_description(self):
         """Helper method that generates a short tool description from number, name and diameter
         :returns the tool description string"""
