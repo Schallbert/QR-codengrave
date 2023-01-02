@@ -1,6 +1,6 @@
 import pickle
 
-#from src.resources import app_persistence_path
+from src.resources import app_persistence_path
 from src.platform.vectorize_qr import Point
 from src.platform.machinify_vector import ToolList, EngraveParams
 
@@ -26,7 +26,7 @@ class Persistence:
         else:
             raise ValueError(str(data) + " is no type known to Persistence")
 
-        with open('assets/persistence.dat', 'wb') as file:
+        with open(app_persistence_path, 'wb') as file:
             pickle.dump([cls._tool_list,
                          cls._z_params,
                          cls._xy0],
@@ -39,7 +39,7 @@ class Persistence:
         :param data: the input object type ToolList, EngraveParams, or Point (XY0 workpiece offset)
         :returns the object of requested datatype."""
         if not cls._has_loaded:
-            with open('assets/persistence.dat', 'rb') as file:
+            with open(app_persistence_path, 'rb') as file:
                 cls._tool_list, \
                     cls._z_params, \
                     cls._xy0 \
