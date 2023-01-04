@@ -99,17 +99,18 @@ class GuiEngraveConfigure:
             if self._hover.get() < z_safe.z_hover:
                 raise tk.TclError
         except tk.TclError:
-            showinfo('Warning: Hover height', 'Warning: Please make sure your Hover height \n'
-                                              'for rapid G00 movement is safe (positive value >' +
-                     str(z_safe.z_hover) + 'mm)')
+            showinfo(title='Warning: Hover height',
+                     message='Warning: Please make sure your Hover height \n'
+                             'for rapid G00 movement is safe (positive value >' +
+                             str(z_safe.z_hover) + 'mm)')
             return False
         try:
             if self._flyover.get() < z_safe.z_flyover:
                 raise tk.TclError
         except tk.TclError:
-            showinfo('Flyover height low', 'Warning: Please make sure your Flyover height \n'
-                                           'for rapid G00 movement is safe (positive value >' +
-                     str(z_safe.z_flyover) + 'mm).')
+            showinfo(title='Flyover height low', message='Warning: Please make sure your Flyover height \n'
+                                                         'for rapid G00 movement is safe (positive value >' +
+                                                         str(z_safe.z_flyover) + 'mm).')
             return False
         return True
 
