@@ -19,6 +19,7 @@ class App:
     """Main application and entry point for QR-codengrave. Creates a main window that is able to spawn child
     windows on demand for parameter input. Provides the user interface to creating G-code CNC machine instructions
     from Text that is converted into a QR-code."""
+
     def __init__(self, root):
         self.root = root
 
@@ -51,9 +52,9 @@ class App:
         if text != '':
             self.gui_status_bar.set_status_text(text)
         elif self._collect_necessary_data():
-            size = self._machinify.get_dimension_info()
-            self.gui_status_bar.set_qr_size(size[0])
-            self.gui_xy0_manager.set_dimension_info(size)
+            qr_dimensions = self._machinify.get_dimension_info()
+            self.gui_status_bar.set_qr_size(qr_dimensions[0])
+            self.gui_xy0_manager.set_dimension_info(qr_dimensions)
             if self._collect_optional_data():
                 self.gui_status_bar.set_job_duration(self._machinify.get_job_duration_sec())
                 self.gui_status_bar.set_status_ready()

@@ -151,6 +151,9 @@ class GuiConfigureXy0:
             self._xy0_dialog.destroy()
 
     def _get_xy_offset(self, offset):
+        """calculates an XY coordinate offset from a preset point, taking the selected tool diameter into account.
+        :param offset the selected offset from the above enum class
+        :returns a XY Point where XY0 is assumed for the engraving."""
         qr = self._qr_dimension[0]
         d = self._qr_dimension[1]
         offsets = {Offset.CENTER: Point((d - qr) / 2, (qr - d) / 2),

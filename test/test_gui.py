@@ -5,7 +5,6 @@ from src.platform.machinify_vector import Tool, EngraveParams
 from src.gui.gui_tool_configure import GuiConfigureTool
 from src.gui.gui_engrave_configure import GuiEngraveConfigure
 
-
 class TestIntegrationCongigureTool(unittest.TestCase):
 
     @patch('src.gui.gui_tool_manage.GuiToolManager')
@@ -101,4 +100,4 @@ class TestIntegrationConfigureEngrave(unittest.TestCase):
         config_engrave._ok_button_clicked()
         mock_guiengravemanager.set_engrave_parameters.assert_not_called()
 
-    
+
