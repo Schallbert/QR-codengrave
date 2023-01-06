@@ -71,7 +71,8 @@ class GuiToolManager:
     # EVENT HANDLERS ----------------------------
 
     def _update_tool_options(self):
-        """callback handler for updating the tool dropdown box"""
+        """callback handler for updating the tool dropdown box.
+        Basically this method redraws the contents of the dropdown with latest data"""
         menu = self.tool_dropdown['menu']
         menu.delete(0, 'end')
         options_update = self._tool_list.get_tool_list_string()

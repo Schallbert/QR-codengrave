@@ -156,11 +156,11 @@ class GuiConfigureXy0:
         :returns a XY Point where XY0 is assumed for the engraving."""
         qr = self._qr_dimension[0]
         d = self._qr_dimension[1]
-        offsets = {Offset.CENTER: Point((d - qr) / 2, (qr - d) / 2),
-                   Offset.TOPLEFT: Point(d / 2, -d / 2),
-                   Offset.TOPRIGHT: Point(d / 2 - qr, -d / 2),
-                   Offset.BOTTOMLEFT: Point(d / 2, qr - d / 2),
-                   Offset.BOTTOMRIGHT: Point(d / 2 - qr, qr - d / 2)
+        offsets = {Offset.CENTER: Point((d - qr)/2, (qr - d)/2),
+                   Offset.TOPLEFT: Point(d/2, -d/2),
+                   Offset.TOPRIGHT: Point(d/2 - qr, -d/2),
+                   Offset.BOTTOMLEFT: Point(d/2, qr - d/2),
+                   Offset.BOTTOMRIGHT: Point(d/2 - qr, qr - d/2)
                    }
 
         if offset in offsets:
