@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import ttk
-from tkinter.messagebox import showerror
 from tkinter.filedialog import asksaveasfile
 from shutil import copyfileobj
 
@@ -11,6 +10,8 @@ from src.gui.gui_status_bar import GuiStatusBar
 from src.gui.gui_engrave_manage import GuiEngraveManager
 from src.gui.gui_xy0_manage import GuiXy0Manager
 from src.resources import app_icon_path
+
+from src.helpers.gui_helpers import MsgBox
 
 from src.platform.machinify_vector import MachinifyVector
 
@@ -35,11 +36,12 @@ class App:
 
         self.frame = ttk.Frame(self.root)
         self._options = {'padx': 5, 'pady': 5}
+        self._msgbox = MsgBox()
 
         self._machinify = MachinifyVector(self.version)
 
         self.gui_qr_generator = GuiGenerateQr(self, self._options)
-        self.gui_tool_manager = GuiToolManager(self, self._options)
+        self.gui_tool_manager = GuiToolManager(self, self._msgbox, self._options)
         self.gui_engrave_params = GuiEngraveManager(self, self._options)
         self.gui_xy0_manager = GuiXy0Manager(self, self._options)
         self.gui_gcode_generator = GuiGenerateGcode(self, self._options)
@@ -109,8 +111,8 @@ class App:
         :returns True if all necessary data is available, else returns False."""
         error = self._machinify.report_data_missing()
         if error != '':
-            showerror(title='Error: ' + error + ' missing',
-                      message='Error: could not locate ' + error + '. \nDid you set the according entries?')
+            self._msgbox.error(title='Error: ' + error + ' missing',
+                               message='Error: could not locate ' + error + '. \nDid you set the according entries?')
             return False
         return True
 

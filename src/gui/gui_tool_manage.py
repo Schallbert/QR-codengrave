@@ -8,9 +8,10 @@ from src.helpers.persistence import Persistence
 
 
 class GuiToolManager:
-    def __init__(self, main, options):
+    def __init__(self, main, msgbox, options):
         """displays the tool handling section within the main gui window"""
         self._main = main
+        self._msgbox = msgbox
         self._options = options
 
         self._tool_list = Persistence.load(ToolList())
@@ -84,9 +85,9 @@ class GuiToolManager:
         """Handle add tool button click event"""
         self._main.update_status('\u27f1 Tool')
         if self._tool_list.is_tool_in_list(self._tool_selection_get_to_int()):
-            GuiConfigureTool(self._tool_frame, self, self._options, self._tool_list.get_selected_tool())
+            GuiConfigureTool(self._tool_frame, self, self._msgbox, self._options, self._tool_list.get_selected_tool())
         else:
-            GuiConfigureTool(self._tool_frame, self, self._options)
+            GuiConfigureTool(self._tool_frame, self, self._msgbox, self._options)
 
     def _remove_tool_button_clicked(self):
         """Handle add tool button click event"""
