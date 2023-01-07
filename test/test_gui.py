@@ -77,7 +77,7 @@ class TestIntegrationCongigureTool(unittest.TestCase):
         self.mock_msg.warning.assert_called()
 
 
-class TestIntegrationCongigureEngraveParameters(unittest.TestCase):
+class TestIntegrationConfigureEngraveParameters(unittest.TestCase):
     def setUp(self):
         self.mock_msg = MsgBox()
         self.mock_msg.warning = MagicMock()
@@ -219,6 +219,17 @@ class TestXy0Configure(unittest.TestCase):
         self.mock_msg.error.assert_called()
 
 
+class TestXy0Manage(unittest.TestCase):
+    def setUp(self):
+        self.mock_msg = MsgBox()
+        self.mock_msg.warning = MagicMock()
+
+    def test_setxy0_preconditions_not_met_shows_warning(self):
+        xy0_manage = GuiXy0Manager(None, self.mock_msg, {'padx': 5, 'pady': 5})
+        xy0_manage._label_clicked()
+        self.mock_msg.warning.assert_called()
+
+
 class TestIntegrationMain(unittest.TestCase):
     """The following test simulate a callback from the respective child windows of ToolManager, EngraveManager,
     XY0Manager and check whether the data is correctly stored and the main app updated so the changes are
@@ -261,7 +272,6 @@ class TestIntegrationMain(unittest.TestCase):
         tool_manage.tool_selection.set(tool_manage._tool_list.get_selected_tool_description())
         tool_manage._remove_tool_button_clicked()
         self.assertFalse(tool_manage._tool_list.is_tool_in_list(4))
-
         mock_main.update_status.assert_called()
 
     @patch('src.gui.gui.App')
@@ -273,7 +283,6 @@ class TestIntegrationMain(unittest.TestCase):
         self.assertEqual(params.z_engrave, engrave_manage.get_engrave_parameters().z_engrave)
         self.assertEqual(params.z_hover, engrave_manage.get_engrave_parameters().z_hover)
         self.assertEqual(params.z_flyover, engrave_manage.get_engrave_parameters().z_flyover)
-
         mock_main.update_status.assert_called()
 
     @patch('src.gui.gui.App')
@@ -285,16 +294,22 @@ class TestIntegrationMain(unittest.TestCase):
         self.assertEqual(params.z_engrave, engrave_manage.get_engrave_parameters().z_engrave)
         self.assertEqual(params.z_hover, engrave_manage.get_engrave_parameters().z_hover)
         self.assertEqual(params.z_flyover, engrave_manage.get_engrave_parameters().z_flyover)
-
         mock_main.update_status.assert_called()
 
     @patch('src.gui.gui.App')
     def test_update_xy0_updates_status(self, mock_main):
         params = Point(2, 4)
-        engrave_manage = GuiXy0Manager(mock_main, None, {'padx': 5, 'pady': 5})
-        engrave_manage.set_xy0_parameters(params)
+        xy0_manage = GuiXy0Manager(mock_main, None, {'padx': 5, 'pady': 5})
+        xy0_manage.set_xy0_parameters(params)
 
-        self.assertEqual(params.x, engrave_manage.get_xy0_parameters().x)
-        self.assertEqual(params.y, engrave_manage.get_xy0_parameters().y)
-
+        self.assertEqual(params.x, xy0_manage.get_xy0_parameters().x)
+        self.assertEqual(params.y, xy0_manage.get_xy0_parameters().y)
         mock_main.update_status.assert_called()
+
+    @patch('src.gui.gui.App')
+    def test_setxy0_happy_path_updates_status(self, mock_main):
+        xy0_manage = GuiXy0Manager(mock_main, None, {'padx': 5, 'pady': 5})
+        xy0_manage.set_dimension_info((10, 1))
+        xy0_manage._label_clicked()
+        mock_main.update_status.assert_called()
+

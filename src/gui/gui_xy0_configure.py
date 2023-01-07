@@ -18,7 +18,6 @@ class Offset:
 
 class GuiConfigureXy0:
     """GUI class that makes a workpiece XY0 offset configuration window."""
-
     def __init__(self, main, caller, msgbox, options, qr_dimension, xy0=None):
         self._caller = caller
         self._options = options

@@ -74,4 +74,4 @@ class GuiXy0Manager:
                                                                      'Thus XY0 can not be defined.')
             return
         self._main.update_status('Set XY0')
-        GuiConfigureXy0(self._params_frame, self, self._options, self._qr_dimension, self._xy0)
+        GuiConfigureXy0(self._params_frame, self, self._msgbox, self._options, self._qr_dimension, self._xy0)
