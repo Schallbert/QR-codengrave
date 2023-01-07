@@ -18,4 +18,4 @@ class MsgBox:
         showinfo(title=title, message=message)
 
     def error(self, title, message):
-        showerror(self, title=title, message=message)
+        showerror(title=title, message=message)

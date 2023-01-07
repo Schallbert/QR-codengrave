@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import ttk
-from tkinter.messagebox import showinfo
 
 from src.helpers.persistence import Persistence
 
@@ -9,8 +8,9 @@ from src.gui.gui_xy0_configure import GuiConfigureXy0
 
 
 class GuiXy0Manager:
-    def __init__(self, main, options):
+    def __init__(self, main, msgbox, options):
         self._main = main
+        self._msgbox = msgbox
         self._options = options
 
         self._qr_dimension = None
@@ -70,8 +70,8 @@ class GuiXy0Manager:
     def _label_clicked(self):
         """Handle XY0 label click event"""
         if self._qr_dimension is None:
-            showinfo(title="QR or Tool not set", message='Warning: QR not provided and/or Tool not set. \n'
-                                                         'Thus XY0 can not be defined.')
+            self._msgbox.warning(title="QR or Tool not set", message='Warning: QR not provided and/or Tool not set. \n'
+                                                                     'Thus XY0 can not be defined.')
             return
         self._main.update_status('Set XY0')
         GuiConfigureXy0(self._params_frame, self, self._options, self._qr_dimension, self._xy0)

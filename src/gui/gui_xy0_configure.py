@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import ttk
-from tkinter.messagebox import showerror
 
 from src.helpers.gui_helpers import validate_number
 from src.resources import app_icon_path
@@ -20,9 +19,10 @@ class Offset:
 class GuiConfigureXy0:
     """GUI class that makes a workpiece XY0 offset configuration window."""
 
-    def __init__(self, main, caller, options, qr_dimension, xy0=None):
+    def __init__(self, main, caller, msgbox, options, qr_dimension, xy0=None):
         self._caller = caller
         self._options = options
+        self._msgbox = msgbox
         self._qr_dimension = qr_dimension
         self._xy0_dialog = tk.Toplevel(main)
         self._xy0_dialog.attributes('-topmost', 'true')
@@ -117,8 +117,8 @@ class GuiConfigureXy0:
             self._xy0.x = self._setx0.get()
             self._xy0.y = self._sety0.get()
         except tk.TclError:
-            showerror('Workpiece Zero Error', 'Error: Invalid value in Workpiece X-zero '
-                                              'or Y-zero offset detected.')
+            self._msgbox.error('Workpiece Zero Error', 'Error: Invalid value in Workpiece X-zero '
+                                                       'or Y-zero offset detected.')
             return False
         return True
 
@@ -156,11 +156,11 @@ class GuiConfigureXy0:
         :returns a XY Point where XY0 is assumed for the engraving."""
         qr = self._qr_dimension[0]
         d = self._qr_dimension[1]
-        offsets = {Offset.CENTER: Point((d - qr)/2, (qr - d)/2),
-                   Offset.TOPLEFT: Point(d/2, -d/2),
-                   Offset.TOPRIGHT: Point(d/2 - qr, -d/2),
-                   Offset.BOTTOMLEFT: Point(d/2, qr - d/2),
-                   Offset.BOTTOMRIGHT: Point(d/2 - qr, qr - d/2)
+        offsets = {Offset.CENTER: Point((d - qr) / 2, (qr - d) / 2),
+                   Offset.TOPLEFT: Point(d / 2, -d / 2),
+                   Offset.TOPRIGHT: Point(d / 2 - qr, -d / 2),
+                   Offset.BOTTOMLEFT: Point(d / 2, qr - d / 2),
+                   Offset.BOTTOMRIGHT: Point(d / 2 - qr, qr - d / 2)
                    }
 
         if offset in offsets:

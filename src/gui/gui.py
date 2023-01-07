@@ -42,8 +42,8 @@ class App:
 
         self.gui_qr_generator = GuiGenerateQr(self, self._options)
         self.gui_tool_manager = GuiToolManager(self, self._msgbox, self._options)
-        self.gui_engrave_params = GuiEngraveManager(self, self._options)
-        self.gui_xy0_manager = GuiXy0Manager(self, self._options)
+        self.gui_engrave_params = GuiEngraveManager(self, self._msgbox, self._options)
+        self.gui_xy0_manager = GuiXy0Manager(self, self._msgbox, self._options)
         self.gui_gcode_generator = GuiGenerateGcode(self, self._options)
         self.gui_status_bar = GuiStatusBar(self, self._options)
 

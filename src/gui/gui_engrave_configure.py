@@ -1,7 +1,5 @@
 import tkinter as tk
 from tkinter import ttk
-from tkinter.messagebox import showerror
-from tkinter.messagebox import showinfo
 
 from src.helpers.gui_helpers import validate_number
 from src.resources import app_icon_path
@@ -9,9 +7,10 @@ from src.platform.machinify_vector import EngraveParams
 
 
 class GuiEngraveConfigure:
-    def __init__(self, main, caller, options, params=None):
+    def __init__(self, main, caller, msgbox, options, params=None):
         self._main = main
         self._caller = caller
+        self._msgbox = msgbox
         self._options = options
         self._dialog = tk.Toplevel(main)
         self._dialog.attributes('-topmost', 'true')
@@ -92,25 +91,26 @@ class GuiEngraveConfigure:
         try:
             self._engrave.get()
         except tk.TclError:
-            showerror(title='Error: Engrave depth', message='Error: invalid input for Engrave Depth. \n'
-                                                            'Please update the value.')
+            self._msgbox.error(title='Error: Engrave depth', message='Error: invalid input for Engrave Depth. \n'
+                                                                     'Please update the value.')
             return False
         try:
             if self._hover.get() < z_safe.z_hover:
                 raise tk.TclError
         except tk.TclError:
-            showinfo(title='Warning: Hover height',
-                     message='Warning: Please make sure your Hover height \n'
-                             'for rapid G00 movement is safe (positive value >' +
-                             str(z_safe.z_hover) + 'mm)')
+            self._msgbox.warning(title='Warning: Hover height',
+                                 message='Warning: Please make sure your Hover height \n'
+                                         'for rapid G00 movement is safe (positive value >' +
+                                         str(z_safe.z_hover) + 'mm)')
             return False
         try:
             if self._flyover.get() < z_safe.z_flyover:
                 raise tk.TclError
         except tk.TclError:
-            showinfo(title='Flyover height low', message='Warning: Please make sure your Flyover height \n'
-                                                         'for rapid G00 movement is safe (positive value >' +
-                                                         str(z_safe.z_flyover) + 'mm).')
+            self._msgbox.warning(title='Flyover height low',
+                                 message='Warning: Please make sure your Flyover height \n'
+                                         'for rapid G00 movement is safe (positive value >' +
+                                         str(z_safe.z_flyover) + 'mm).')
             return False
         return True
 
