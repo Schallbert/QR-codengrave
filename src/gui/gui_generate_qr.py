@@ -141,7 +141,7 @@ class GuiGenerateQr:
         try:
             text = self.qr_text.get()
         except ValueError as error:
-            showerror(title='Text Parse Error', message='Error: Could not convert the text to as string:\n' + error)
+            showerror(title='Text Parse Error', message='Error: Could not convert the text to string:\n' + error)
             return
         self._create_qr_from_input(text)
         self._main.set_project_name(text)
