@@ -6,7 +6,6 @@
 *.exe
 *.o
 *.so
-*.dat
 
 # Folders
 ###################
@@ -18,4 +17,4 @@ venv/
 
 # Files
 ###################
-persistence.dat
+add_lib.py

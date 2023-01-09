@@ -8,8 +8,9 @@ from src.helpers.persistence import Persistence
 
 
 class GuiEngraveManager:
-    def __init__(self, main, options):
+    def __init__(self, main, msgbox, options):
         self._main = main
+        self._msgbox = msgbox
         self._options = options
 
         self._z_params = Persistence.load(EngraveParams())
@@ -71,4 +72,4 @@ class GuiEngraveManager:
     def _label_clicked(self):
         """Handle label click event"""
         self._main.update_status('Parameter')
-        GuiEngraveConfigure(self._params_frame, self, self._options, self._z_params)
+        GuiEngraveConfigure(self._params_frame, self, self._msgbox, self._options, self._z_params)

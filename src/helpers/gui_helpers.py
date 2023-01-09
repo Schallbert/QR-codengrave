@@ -1,6 +1,4 @@
-app_icon_path = 'assets/qruwu.ico'
-app_image_path = 'assets/qruwu.png'
-app_persistence_path = 'assets/persistence.dat'
+from tkinter.messagebox import showinfo, showerror
 
 
 def validate_number(entry):
@@ -13,3 +11,11 @@ def validate_number(entry):
         return True
     except ValueError:
         return False
+
+
+class MsgBox:
+    def warning(self, title, message):
+        showinfo(title=title, message=message)
+
+    def error(self, title, message):
+        showerror(title=title, message=message)

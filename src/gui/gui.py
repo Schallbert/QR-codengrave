@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import ttk
-from tkinter.messagebox import showerror
 from tkinter.filedialog import asksaveasfile
 from shutil import copyfileobj
 
@@ -10,7 +9,9 @@ from src.gui.gui_generate_gcode import GuiGenerateGcode
 from src.gui.gui_status_bar import GuiStatusBar
 from src.gui.gui_engrave_manage import GuiEngraveManager
 from src.gui.gui_xy0_manage import GuiXy0Manager
-from src.helpers.gui_helpers import app_icon_path
+from src.resources import app_icon_path
+
+from src.helpers.gui_helpers import MsgBox
 
 from src.platform.machinify_vector import MachinifyVector
 
@@ -19,6 +20,7 @@ class App:
     """Main application and entry point for QR-codengrave. Creates a main window that is able to spawn child
     windows on demand for parameter input. Provides the user interface to creating G-code CNC machine instructions
     from Text that is converted into a QR-code."""
+
     def __init__(self, root):
         self.root = root
 
@@ -28,19 +30,20 @@ class App:
         self.style.theme_use('alt')
         self.style.configure('teal.Horizontal.TProgressbar', foreground='black', background='#00A877')
         self.root.iconbitmap(app_icon_path)
-        self.root.title("EngraveQr")
+        self.root.title("QR-Codengrave")
         self.canvas = tk.Canvas(root)
         self.canvas.config(width=600, height=600)
 
         self.frame = ttk.Frame(self.root)
         self._options = {'padx': 5, 'pady': 5}
+        self._msgbox = MsgBox()
 
         self._machinify = MachinifyVector(self.version)
 
         self.gui_qr_generator = GuiGenerateQr(self, self._options)
-        self.gui_tool_manager = GuiToolManager(self, self._options)
-        self.gui_engrave_params = GuiEngraveManager(self, self._options)
-        self.gui_xy0_manager = GuiXy0Manager(self, self._options)
+        self.gui_tool_manager = GuiToolManager(self, self._msgbox, self._options)
+        self.gui_engrave_params = GuiEngraveManager(self, self._msgbox, self._options)
+        self.gui_xy0_manager = GuiXy0Manager(self, self._msgbox, self._options)
         self.gui_gcode_generator = GuiGenerateGcode(self, self._options)
         self.gui_status_bar = GuiStatusBar(self, self._options)
 
@@ -51,9 +54,9 @@ class App:
         if text != '':
             self.gui_status_bar.set_status_text(text)
         elif self._collect_necessary_data():
-            size = self._machinify.get_dimension_info()
-            self.gui_status_bar.set_qr_size(size[0])
-            self.gui_xy0_manager.set_dimension_info(size)
+            qr_dimensions = self._machinify.get_dimension_info()
+            self.gui_status_bar.set_qr_size(qr_dimensions[0])
+            self.gui_xy0_manager.set_dimension_info(qr_dimensions)
             if self._collect_optional_data():
                 self.gui_status_bar.set_job_duration(self._machinify.get_job_duration_sec())
                 self.gui_status_bar.set_status_ready()
@@ -108,8 +111,8 @@ class App:
         :returns True if all necessary data is available, else returns False."""
         error = self._machinify.report_data_missing()
         if error != '':
-            showerror(title='Error: ' + error + ' missing',
-                      message='Error: could not locate ' + error + '. \nDid you set the according entries?')
+            self._msgbox.error(title='Error: ' + error + ' missing',
+                               message='Error: could not locate ' + error + '. \nDid you set the according entries?')
             return False
         return True
 

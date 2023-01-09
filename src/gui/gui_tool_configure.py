@@ -1,16 +1,18 @@
 import tkinter as tk
 from tkinter import ttk
-from tkinter.messagebox import showinfo
 
-from src.helpers.gui_helpers import validate_number, app_icon_path
+from src.helpers.gui_helpers import validate_number
+from src.resources import app_icon_path
 from src.platform.machinify_vector import Tool
 
 
 class GuiConfigureTool:
     """GUI class that makes a tool configuration window."""
 
-    def __init__(self, main, caller, options, tool=None):
+    def __init__(self, main, caller, msgbox, options, tool=None):
+        self._main = main
         self._caller = caller
+        self._msgbox = msgbox
         self._options = options
         self._tool_dialog = tk.Toplevel(main)
         self._tool_dialog.attributes('-topmost', 'true')
@@ -137,10 +139,12 @@ class GuiConfigureTool:
         """Check tool number for irregularities
         :returns False if an error is found, else True"""
         try:
-            if self.tool_nr.get() < 1:
+            number = self.tool_nr.get()
+            if (number < 1) or (number > 99):
                 raise tk.TclError
         except tk.TclError:
-            showinfo('Tool number warning', 'Info: Tool Number must be a positive integer.')
+            self._msgbox.warning(title='Tool number warning',
+                                 message='Info: Tool Number must be a positive integer below 100')
             return False
         return True
 
@@ -151,7 +155,8 @@ class GuiConfigureTool:
             if self.tool_dia.get() <= 0:
                 raise tk.TclError
         except tk.TclError:
-            showinfo('Tool diameter warning', 'Info: Tool Diameter must be a positive numerical value.')
+            self._msgbox.warning(title='Tool diameter warning',
+                                 message='Info: Tool Diameter must be a positive numerical value.')
             return False
         return True
 
@@ -162,7 +167,7 @@ class GuiConfigureTool:
             if self.tool_xyfeed.get() < 1 or self.tool_zfeed.get() < 1:
                 raise tk.TclError
         except tk.TclError:
-            showinfo('Tool Feed warning', 'Info: Tool Feed must be a positive integer.')
+            self._msgbox.warning(title='Tool Feed warning', message='Info: Tool Feed must be a positive integer.')
             return False
         return True
 
@@ -173,7 +178,7 @@ class GuiConfigureTool:
             if self.tool_speed.get() < 1:
                 raise tk.TclError
         except tk.TclError:
-            showinfo('Tool speed warning', 'Info: Tool Speed must be a positive integer.')
+            self._msgbox.warning(title='Tool speed warning', message='Info: Tool Speed must be a positive integer.')
             return False
         return True
 
@@ -183,12 +188,15 @@ class GuiConfigureTool:
         if self.is_tool_tapered.get():
             try:
                 self.tool_tip.get()
-                if not ((self.tool_angle.get() > 0) and (self.tool_angle.get() < 180)):
+                if (self.tool_angle.get() < 0) or (self.tool_angle.get() > 180):
+                    raise tk.TclError
+                if self.tool_tip.get() < 0:
                     raise tk.TclError
             except tk.TclError:
-                showinfo('Tapered Tool warning', 'Info: Tool Angle must be a positive integer \n'
-                                                 'between 1° and 180°.\n'
-                                                 'Tool tip width must be a positive value.')
+                self._msgbox.warning(title='Tapered Tool warning',
+                                     message='Info: Tool Angle must be a positive integer \n'
+                                             'between 1° and 180°.\n'
+                                             'Tool tip width must be >= 0.')
                 return False
         else:
             # make sure everything is properly zeroed
