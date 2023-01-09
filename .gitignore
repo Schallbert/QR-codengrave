@@ -17,4 +17,4 @@ venv/
 
 # Files
 ###################
-persistence.dat
+add_bin.py
