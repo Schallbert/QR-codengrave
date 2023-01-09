@@ -40,5 +40,5 @@ jobs:
       with:
         working-directory: ${{ github.workspace }}
         run: |
-          ls -la
+          ls -la src/assets/
           pytest
