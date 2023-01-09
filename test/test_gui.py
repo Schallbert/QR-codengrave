@@ -1,6 +1,7 @@
 import unittest
 from unittest.mock import patch, MagicMock
 
+from src import assets
 from src.helpers.gui_helpers import MsgBox
 from src.platform.vectorize_qr import Point
 from src.platform.machinify_vector import Tool, EngraveParams
@@ -312,4 +313,3 @@ class TestIntegrationMain(unittest.TestCase):
         xy0_manage.set_dimension_info((10, 1))
         xy0_manage._label_clicked()
         mock_main.update_status.assert_called()
-
