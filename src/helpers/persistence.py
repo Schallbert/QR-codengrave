@@ -1,5 +1,7 @@
 import pickle
 
+from tkinter.messagebox import showinfo
+
 from src.resources import app_persistence_path
 from src.platform.vectorize_qr import Point
 from src.platform.machinify_vector import ToolList, EngraveParams
@@ -39,11 +41,17 @@ class Persistence:
         :param data: the input object type ToolList, EngraveParams, or Point (XY0 workpiece offset)
         :returns the object of requested datatype."""
         if not cls._has_loaded:
-            with open(app_persistence_path, 'rb') as file:
-                cls._tool_list, \
+            try:
+                with open(app_persistence_path, 'rb') as file:
+                    cls._tool_list, \
                     cls._z_params, \
                     cls._xy0 \
-                    = pickle.load(file)
+                        = pickle.load(file)
+            except FileNotFoundError:
+                showinfo(title='Persistence file not found', message='Could not locate saved data under'
+                                                                     + app_persistence_path + '. \n' +
+                                                                     'Starting with a blank database.')
+                pass
             cls._has_loaded = True
 
         if type(data) == ToolList:
