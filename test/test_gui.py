@@ -4,6 +4,7 @@ from unittest.mock import patch, MagicMock
 from src.helpers.gui_helpers import MsgBox
 from src.platform.vectorize_qr import Point
 from src.platform.machinify_vector import Tool, EngraveParams
+from src.helpers.persistence import Persistence
 
 from src.gui.gui_tool_configure import GuiConfigureTool
 from src.gui.gui_engrave_configure import GuiEngraveConfigure
@@ -18,7 +19,8 @@ class TestIntegrationCongigureTool(unittest.TestCase):
 
     def setUp(self):
         self.mock_msg = MsgBox()
-        self.mock_msg.warning = MagicMock()
+        self.mock_msg.showinfo = MagicMock()
+        Persistence.set_mock_msgbox(self.mock_msg)
 
     @patch('src.gui.gui_tool_manage.GuiToolManager')
     def test_add_edit_tool_existing_tool_returns_tool(self, mock_guitoolmanager):
@@ -38,50 +40,51 @@ class TestIntegrationCongigureTool(unittest.TestCase):
         tool = Tool(0, 'Invalid', 3, 1000, 2000, 24000, 0, 0)
         config_tool = GuiConfigureTool(None, None, self.mock_msg, {'padx': 5, 'pady': 5}, tool)
         config_tool._ok_button_clicked()
-        self.mock_msg.warning.assert_called()
+        self.mock_msg.showinfo.assert_called()
 
     def test_add_edit_tool_invaliddiameter_shows_warning(self):
         tool = Tool(1, 'Invalid', -3, 1000, 2000, 24000, 0, 0)
         config_tool = GuiConfigureTool(None, None, self.mock_msg, {'padx': 5, 'pady': 5}, tool)
         config_tool._ok_button_clicked()
-        self.mock_msg.warning.assert_called()
+        self.mock_msg.showinfo.assert_called()
 
     def test_add_edit_tool_invalidfeed_shows_warning(self):
         tool = Tool(1, 'Invalid', 2, 0, 2000, 24000, 0, 0)
         config_tool = GuiConfigureTool(None, None, self.mock_msg, {'padx': 5, 'pady': 5}, tool)
         config_tool._ok_button_clicked()
-        self.mock_msg.warning.assert_called()
+        self.mock_msg.showinfo.assert_called()
 
     def test_add_edit_tool_invalidzfeed_shows_warning(self):
         tool = Tool(1, 'Invalid', 2, 2000, -5, 24000, 0, 0)
         config_tool = GuiConfigureTool(None, None, self.mock_msg, {'padx': 5, 'pady': 5}, tool)
         config_tool._ok_button_clicked()
-        self.mock_msg.warning.assert_called()
+        self.mock_msg.showinfo.assert_called()
 
     def test_add_edit_tool_invalidspeedd_shows_warning(self):
         tool = Tool(1, 'Invalid', 2, 2000, 1000, -1, 0, 0)
         config_tool = GuiConfigureTool(None, None, self.mock_msg, {'padx': 5, 'pady': 5}, tool)
         config_tool._ok_button_clicked()
-        self.mock_msg.warning.assert_called()
+        self.mock_msg.showinfo.assert_called()
 
     def test_add_edit_tool_invalidangle_shows_warning(self):
         tool = Tool(1, 'Invalid', 2, 2000, 1000, 24000, 182, 0)
         config_tool = GuiConfigureTool(None, None, self.mock_msg, {'padx': 5, 'pady': 5}, tool)
         config_tool._ok_button_clicked()
-        self.mock_msg.warning.assert_called()
+        self.mock_msg.showinfo.assert_called()
 
     def test_add_edit_tool_invalidtip_shows_warning(self):
         tool = Tool(1, 'Invalid', 2, 2000, 1000, 24000, 90, -1)
         config_tool = GuiConfigureTool(None, None, self.mock_msg, {'padx': 5, 'pady': 5}, tool)
         config_tool._ok_button_clicked()
-        self.mock_msg.warning.assert_called()
+        self.mock_msg.showinfo.assert_called()
 
 
 class TestIntegrationConfigureEngraveParameters(unittest.TestCase):
     def setUp(self):
         self.mock_msg = MsgBox()
-        self.mock_msg.warning = MagicMock()
+        self.mock_msg.showinfo = MagicMock()
         self.mock_msg.error = MagicMock()
+        Persistence.set_mock_msgbox(self.mock_msg)
 
     @patch('src.gui.gui_engrave_manage.GuiEngraveManager')
     def test_validate_entries_already_existing_engraveparams_returns_true(self, mock_guiengravemanager):
@@ -110,19 +113,20 @@ class TestIntegrationConfigureEngraveParameters(unittest.TestCase):
         params = EngraveParams(1, 0.1, 20)
         config_engrave = GuiEngraveConfigure(None, None, self.mock_msg, {'padx': 5, 'pady': 5}, params)
         config_engrave._ok_button_clicked()
-        self.mock_msg.warning.assert_called()
+        self.mock_msg.showinfo.assert_called()
 
     def test_validate_entries_invalidflyover_shows_warning(self):
         params = EngraveParams(1, 1, 0)
         config_engrave = GuiEngraveConfigure(None, None, self.mock_msg, {'padx': 5, 'pady': 5}, params)
         config_engrave._ok_button_clicked()
-        self.mock_msg.warning.assert_called()
+        self.mock_msg.showinfo.assert_called()
 
 
 class TestXy0Configure(unittest.TestCase):
     def setUp(self):
         self.mock_msg = MsgBox()
         self.mock_msg.error = MagicMock()
+        Persistence.set_mock_msgbox(self.mock_msg)
 
     @patch('src.gui.gui_xy0_manage.GuiXy0Manager')
     def test_setxy0_topleft_calculates_correctly(self, mock_guixy0manager):
@@ -222,12 +226,13 @@ class TestXy0Configure(unittest.TestCase):
 class TestXy0Manage(unittest.TestCase):
     def setUp(self):
         self.mock_msg = MsgBox()
-        self.mock_msg.warning = MagicMock()
+        self.mock_msg.showinfo = MagicMock()
+        Persistence.set_mock_msgbox(self.mock_msg)
 
     def test_setxy0_preconditions_not_met_shows_warning(self):
         xy0_manage = GuiXy0Manager(None, self.mock_msg, {'padx': 5, 'pady': 5})
         xy0_manage._label_clicked()
-        self.mock_msg.warning.assert_called()
+        self.mock_msg.showinfo.assert_called()
 
 
 class TestIntegrationMain(unittest.TestCase):

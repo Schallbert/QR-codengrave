@@ -1,7 +1,6 @@
 import pickle
 
-from tkinter.messagebox import showinfo
-
+from tkinter import messagebox
 from src.resources import app_persistence_path
 from src.platform.vectorize_qr import Point
 from src.platform.machinify_vector import ToolList, EngraveParams
@@ -13,6 +12,11 @@ class Persistence:
     _z_params = EngraveParams()
     _xy0 = Point()
     _has_loaded = False
+    _msgbox = messagebox
+
+    @classmethod
+    def set_mock_msgbox(cls, msgbox):
+        cls._msgbox = msgbox
 
     @classmethod
     def save(cls, data):
@@ -43,14 +47,11 @@ class Persistence:
         if not cls._has_loaded:
             try:
                 with open(app_persistence_path, 'rb') as file:
-                    cls._tool_list, \
-                    cls._z_params, \
-                    cls._xy0 \
-                        = pickle.load(file)
+                    cls._tool_list, cls._z_params, cls._xy0 = pickle.load(file)
             except FileNotFoundError:
-                showinfo(title='Persistence file not found', message='Could not locate saved data under'
-                                                                     + app_persistence_path + '. \n' +
-                                                                     'Starting with a blank database.')
+                cls._msgbox.showinfo(title='Persistence file not found', message='Could not locate saved data under'
+                                                                                 + app_persistence_path + '. \n' +
+                                                                                 'Starting with a blank database.')
                 pass
             cls._has_loaded = True
 

@@ -144,8 +144,8 @@ class GuiConfigureTool:
             if (number < 1) or (number > 99):
                 raise tk.TclError
         except tk.TclError:
-            self._msgbox.warning(title='Tool number warning',
-                                 message='Info: Tool Number must be a positive integer below 100')
+            self._msgbox.showinfo(title='Tool number warning',
+                                  message='Info: Tool Number must be a positive integer below 100')
             return False
         return True
 
@@ -156,8 +156,8 @@ class GuiConfigureTool:
             if self.tool_dia.get() <= 0:
                 raise tk.TclError
         except tk.TclError:
-            self._msgbox.warning(title='Tool diameter warning',
-                                 message='Info: Tool Diameter must be a positive numerical value.')
+            self._msgbox.showinfo(title='Tool diameter warning',
+                                  message='Info: Tool Diameter must be a positive numerical value.')
             return False
         return True
 
@@ -168,7 +168,7 @@ class GuiConfigureTool:
             if self.tool_xyfeed.get() < 1 or self.tool_zfeed.get() < 1:
                 raise tk.TclError
         except tk.TclError:
-            self._msgbox.warning(title='Tool Feed warning', message='Info: Tool Feed must be a positive integer.')
+            self._msgbox.showinfo(title='Tool Feed warning', message='Info: Tool Feed must be a positive integer.')
             return False
         return True
 
@@ -179,7 +179,7 @@ class GuiConfigureTool:
             if self.tool_speed.get() < 1:
                 raise tk.TclError
         except tk.TclError:
-            self._msgbox.warning(title='Tool speed warning', message='Info: Tool Speed must be a positive integer.')
+            self._msgbox.showinfo(title='Tool speed warning', message='Info: Tool Speed must be a positive integer.')
             return False
         return True
 
@@ -194,10 +194,10 @@ class GuiConfigureTool:
                 if self.tool_tip.get() < 0:
                     raise tk.TclError
             except tk.TclError:
-                self._msgbox.warning(title='Tapered Tool warning',
-                                     message='Info: Tool Angle must be a positive integer \n'
-                                             'between 1° and 180°.\n'
-                                             'Tool tip width must be >= 0.')
+                self._msgbox.showinfo(title='Tapered Tool warning',
+                                      message='Info: Tool Angle must be a positive integer \n'
+                                              'between 1° and 180°.\n'
+                                              'Tool tip width must be >= 0.')
                 return False
         else:
             # make sure everything is properly zeroed
