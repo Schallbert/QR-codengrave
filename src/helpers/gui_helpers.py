@@ -1,6 +1,6 @@
-app_icon_path = 'assets/qruwu.ico'
-app_image_path = 'assets/qruwu.png'
-app_persistence_path = 'assets/persistence.dat'
+app_icon_path = 'src/assets/qruwu.ico'
+app_image_path = 'src/assets/qruwu.png'
+app_persistence_path = 'src/assets/persistence.dat'
 
 
 def validate_number(entry):
