@@ -14,6 +14,8 @@ from src.gui.gui_tool_manage import GuiToolManager
 from src.gui.gui_engrave_manage import GuiEngraveManager
 from src.gui.gui_xy0_manage import GuiXy0Manager
 
+from os import getcwd
+
 
 class TestIntegrationCongigureTool(unittest.TestCase):
 
@@ -21,6 +23,7 @@ class TestIntegrationCongigureTool(unittest.TestCase):
         self.mock_msg = MsgBox()
         self.mock_msg.showinfo = MagicMock()
         Persistence.set_mock_msgbox(self.mock_msg)
+        print(getcwd())
 
     @patch('src.gui.gui_tool_manage.GuiToolManager')
     def test_add_edit_tool_existing_tool_returns_tool(self, mock_guitoolmanager):
