@@ -20,6 +20,7 @@ class GuiConfigureTool:
         self._tool_dialog.geometry('570x190')
         self._tool_dialog.title('Add/Edit tool')
         self._tool_dialog.iconbitmap(app_icon_path)
+        self._tool_dialog.grab_set()
 
         if tool is None:
             self.tool = Tool()

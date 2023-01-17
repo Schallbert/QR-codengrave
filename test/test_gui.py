@@ -1,7 +1,6 @@
 import unittest
 from unittest.mock import patch, MagicMock
 
-from src import assets
 from src.helpers.gui_helpers import MsgBox
 from src.platform.vectorize_qr import Point
 from src.platform.machinify_vector import Tool, EngraveParams

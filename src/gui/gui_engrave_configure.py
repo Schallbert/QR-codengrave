@@ -18,6 +18,7 @@ class GuiEngraveConfigure:
         self._dialog.geometry('248x153')
         self._dialog.title('Engrave')
         self._dialog.iconbitmap(app_icon_path)
+        self._dialog.grab_set()
 
         if params is not None:
             self._z_params = params

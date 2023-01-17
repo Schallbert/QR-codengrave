@@ -29,6 +29,7 @@ class GuiConfigureXy0:
         self._xy0_dialog.geometry('198x382')
         self._xy0_dialog.title('XY0')
         self._xy0_dialog.iconbitmap(app_icon_path)
+        self._xy0_dialog.grab_set()
 
         if xy0 is None:
             self._xy0 = Point()
