@@ -13,9 +13,12 @@ class GuiEngraveManager:
         self._msgbox = msgbox
         self._options = options
 
-        self._z_params = Persistence.load(EngraveParams())
+        self._engrave_configure = GuiEngraveConfigure(self, self._msgbox, self._options)
 
-        self._params_frame = self._init_frame_params_section()
+        self._z_params = Persistence.load(EngraveParams())
+        self._engrave_configure.set_params(self._z_params)
+
+        self._init_frame_params_section()
 
     def get_engrave_parameters(self):
         """Getter function.
@@ -72,4 +75,4 @@ class GuiEngraveManager:
     def _label_clicked(self):
         """Handle label click event"""
         self._main.update_status('Parameter')
-        GuiEngraveConfigure(self._params_frame, self, self._msgbox, self._options, self._z_params)
+        self._engrave_configure.show()

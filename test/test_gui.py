@@ -1,4 +1,5 @@
 import unittest
+import tkinter as tk
 from unittest.mock import patch, MagicMock
 
 from src.helpers.gui_helpers import MsgBox
@@ -14,18 +15,16 @@ from src.gui.gui_tool_manage import GuiToolManager
 from src.gui.gui_engrave_manage import GuiEngraveManager
 from src.gui.gui_xy0_manage import GuiXy0Manager
 
-from os import getcwd
-
 
 class TestIntegrationConfigureTool(unittest.TestCase):
-
     @patch('src.gui.gui_tool_manage.GuiToolManager')
     def setUp(self, mock_guitoolmanager):
+        tk.Tk()  # required to have tk variables properly instantiated
+        self.mock_guitoolmanager = mock_guitoolmanager
         self.mock_msg = MsgBox()
         self.mock_msg.showinfo = MagicMock()
-        self.mock_guitoolmanager = mock_guitoolmanager
         Persistence.set_mock_msgbox(self.mock_msg)
-        self.config_tool = GuiConfigureTool(mock_guitoolmanager, self.mock_msg, {'padx': 5, 'pady': 5})
+        self.config_tool = GuiConfigureTool(self.mock_guitoolmanager, self.mock_msg, {'padx': 5, 'pady': 5})
 
     def test_add_edit_tool_existing_tool_returns_tool(self):
         tool = Tool(2, 'Test', 4, 1200, 600, 24000)
@@ -82,50 +81,52 @@ class TestIntegrationConfigureTool(unittest.TestCase):
 
 
 class TestIntegrationConfigureEngraveParameters(unittest.TestCase):
-    def setUp(self):
+    @patch('src.gui.gui_engrave_manage.GuiEngraveManager')
+    def setUp(self, mock_guiengravemanager):
+        tk.Tk()  # required to have tk variables properly instantiated
+        self.mock_guiengravemanager = mock_guiengravemanager
         self.mock_msg = MsgBox()
         self.mock_msg.showinfo = MagicMock()
         self.mock_msg.error = MagicMock()
         Persistence.set_mock_msgbox(self.mock_msg)
+        self.config_engrave = GuiEngraveConfigure(self.mock_guiengravemanager,
+                                                  self.mock_msg, {'padx': 5, 'pady': 5})
 
-    @patch('src.gui.gui_engrave_manage.GuiEngraveManager')
-    def test_validate_entries_already_existing_engraveparams_returns_true(self, mock_guiengravemanager):
+    def test_validate_entries_already_existing_engraveparams_returns_true(self):
         params = EngraveParams(1, 1, 10)
-        config_engrave = GuiEngraveConfigure(None, mock_guiengravemanager,
-                                             self.mock_msg, {'padx': 5, 'pady': 5}, params)
-        config_engrave._ok_button_clicked()
-        mock_guiengravemanager.set_engrave_parameters.assert_called_with(params)
+        self.config_engrave.set_params(params)
+        self.config_engrave._ok_button_clicked()
+        self.mock_guiengravemanager.set_engrave_parameters.assert_called_with(params)
 
-    @patch('src.gui.gui_engrave_manage.GuiEngraveManager')
-    def test_validate_entries_default_engraveparams_returns_true(self, mock_guiengravemanager):
+    def test_validate_entries_default_engraveparams_returns_true(self):
         params = EngraveParams()
-        config_engrave = GuiEngraveConfigure(None, mock_guiengravemanager,
-                                             self.mock_msg, {'padx': 5, 'pady': 5}, params)
-        config_engrave._ok_button_clicked()
-        mock_guiengravemanager.set_engrave_parameters.assert_called_with(params)
+        self.config_engrave.set_params(params)
+        self.config_engrave._ok_button_clicked()
+        self.mock_guiengravemanager.set_engrave_parameters.assert_called_with(params)
 
     def test_validate_entries_invalidinput_shows_warning(self):
         params = EngraveParams(1, 0.1, 20)
-        config_engrave = GuiEngraveConfigure(None, None, self.mock_msg, {'padx': 5, 'pady': 5}, params)
-        config_engrave._engrave.set('Only doubles allowed here')
-        config_engrave._ok_button_clicked()
+        self.config_engrave.set_params(params)
+        self.config_engrave._engrave.set('Only doubles allowed here')
+        self.config_engrave._ok_button_clicked()
         self.mock_msg.error.assert_called()
 
     def test_validate_entries_invalidzhover_shows_warning(self):
         params = EngraveParams(1, 0.1, 20)
-        config_engrave = GuiEngraveConfigure(None, None, self.mock_msg, {'padx': 5, 'pady': 5}, params)
-        config_engrave._ok_button_clicked()
+        self.config_engrave.set_params(params)
+        self.config_engrave._ok_button_clicked()
         self.mock_msg.showinfo.assert_called()
 
     def test_validate_entries_invalidflyover_shows_warning(self):
         params = EngraveParams(1, 1, 0)
-        config_engrave = GuiEngraveConfigure(None, None, self.mock_msg, {'padx': 5, 'pady': 5}, params)
-        config_engrave._ok_button_clicked()
+        self.config_engrave.set_params(params)
+        self.config_engrave._ok_button_clicked()
         self.mock_msg.showinfo.assert_called()
 
 
 class TestXy0Configure(unittest.TestCase):
     def setUp(self):
+        tk.Tk()  # required to have tk variables properly instantiated
         self.mock_msg = MsgBox()
         self.mock_msg.error = MagicMock()
         Persistence.set_mock_msgbox(self.mock_msg)
