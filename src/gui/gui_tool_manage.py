@@ -15,6 +15,9 @@ class GuiToolManager:
         self._options = options
 
         self._tool_list = Persistence.load(ToolList())
+        self._config_gui = GuiConfigureTool(self,
+                                            self._msgbox,
+                                            self._options)
 
         self._tool_frame = self._init_frame_tool_section()
 
@@ -85,9 +88,8 @@ class GuiToolManager:
         """Handle add tool button click event"""
         self._main.update_status('\u27f1 Tool')
         if self._tool_list.is_tool_in_list(self._tool_selection_get_to_int()):
-            GuiConfigureTool(self._tool_frame, self, self._msgbox, self._options, self._tool_list.get_selected_tool())
-        else:
-            GuiConfigureTool(self._tool_frame, self, self._msgbox, self._options)
+            self._config_gui.set_tool(self._tool_list.get_selected_tool())
+        self._config_gui.show()
 
     def _remove_tool_button_clicked(self):
         """Handle add tool button click event"""

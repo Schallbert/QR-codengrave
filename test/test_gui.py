@@ -17,68 +17,67 @@ from src.gui.gui_xy0_manage import GuiXy0Manager
 from os import getcwd
 
 
-class TestIntegrationCongigureTool(unittest.TestCase):
+class TestIntegrationConfigureTool(unittest.TestCase):
 
-    def setUp(self):
+    @patch('src.gui.gui_tool_manage.GuiToolManager')
+    def setUp(self, mock_guitoolmanager):
         self.mock_msg = MsgBox()
         self.mock_msg.showinfo = MagicMock()
+        self.mock_guitoolmanager = mock_guitoolmanager
         Persistence.set_mock_msgbox(self.mock_msg)
-        print(getcwd())
+        self.config_tool = GuiConfigureTool(mock_guitoolmanager, self.mock_msg, {'padx': 5, 'pady': 5})
 
-    @patch('src.gui.gui_tool_manage.GuiToolManager')
-    def test_add_edit_tool_existing_tool_returns_tool(self, mock_guitoolmanager):
+    def test_add_edit_tool_existing_tool_returns_tool(self):
         tool = Tool(2, 'Test', 4, 1200, 600, 24000)
-        config_tool = GuiConfigureTool(None, mock_guitoolmanager, self.mock_msg, {'padx': 5, 'pady': 5}, tool)
-        config_tool._ok_button_clicked()
-        mock_guitoolmanager.add_or_edit_tool.assert_called_with(tool)
+        self.config_tool.set_tool(tool)
+        self.config_tool._ok_button_clicked()
+        self.mock_guitoolmanager.add_or_edit_tool.assert_called_with(tool)
 
-    @patch('src.gui.gui_tool_manage.GuiToolManager')
-    def test_add_edit_tool_no_tool_returns_default(self, mock_guitoolmanager):
+    def test_add_edit_tool_no_tool_returns_default(self):
         tool = Tool()
-        config_tool = GuiConfigureTool(None, mock_guitoolmanager, self.mock_msg, {'padx': 5, 'pady': 5})
-        config_tool._ok_button_clicked()
-        mock_guitoolmanager.add_or_edit_tool.assert_called_with(tool)
+        self.config_tool._ok_button_clicked()
+        self.mock_guitoolmanager.add_or_edit_tool.assert_called_with(tool)
 
     def test_add_edit_tool_invalidtoolnr_shows_warning(self):
         tool = Tool(0, 'Invalid', 3, 1000, 2000, 24000, 0, 0)
-        config_tool = GuiConfigureTool(None, None, self.mock_msg, {'padx': 5, 'pady': 5}, tool)
-        config_tool._ok_button_clicked()
+        self.config_tool.set_tool(tool)
+        self.config_tool._ok_button_clicked()
         self.mock_msg.showinfo.assert_called()
 
     def test_add_edit_tool_invaliddiameter_shows_warning(self):
         tool = Tool(1, 'Invalid', -3, 1000, 2000, 24000, 0, 0)
-        config_tool = GuiConfigureTool(None, None, self.mock_msg, {'padx': 5, 'pady': 5}, tool)
-        config_tool._ok_button_clicked()
+        self.config_tool.set_tool(tool)
+        self.config_tool._ok_button_clicked()
         self.mock_msg.showinfo.assert_called()
 
     def test_add_edit_tool_invalidfeed_shows_warning(self):
         tool = Tool(1, 'Invalid', 2, 0, 2000, 24000, 0, 0)
-        config_tool = GuiConfigureTool(None, None, self.mock_msg, {'padx': 5, 'pady': 5}, tool)
-        config_tool._ok_button_clicked()
+        self.config_tool.set_tool(tool)
+        self.config_tool._ok_button_clicked()
         self.mock_msg.showinfo.assert_called()
 
     def test_add_edit_tool_invalidzfeed_shows_warning(self):
         tool = Tool(1, 'Invalid', 2, 2000, -5, 24000, 0, 0)
-        config_tool = GuiConfigureTool(None, None, self.mock_msg, {'padx': 5, 'pady': 5}, tool)
-        config_tool._ok_button_clicked()
+        self.config_tool.set_tool(tool)
+        self.config_tool._ok_button_clicked()
         self.mock_msg.showinfo.assert_called()
 
     def test_add_edit_tool_invalidspeedd_shows_warning(self):
         tool = Tool(1, 'Invalid', 2, 2000, 1000, -1, 0, 0)
-        config_tool = GuiConfigureTool(None, None, self.mock_msg, {'padx': 5, 'pady': 5}, tool)
-        config_tool._ok_button_clicked()
+        self.config_tool.set_tool(tool)
+        self.config_tool._ok_button_clicked()
         self.mock_msg.showinfo.assert_called()
 
     def test_add_edit_tool_invalidangle_shows_warning(self):
         tool = Tool(1, 'Invalid', 2, 2000, 1000, 24000, 182, 0)
-        config_tool = GuiConfigureTool(None, None, self.mock_msg, {'padx': 5, 'pady': 5}, tool)
-        config_tool._ok_button_clicked()
+        self.config_tool.set_tool(tool)
+        self.config_tool._ok_button_clicked()
         self.mock_msg.showinfo.assert_called()
 
     def test_add_edit_tool_invalidtip_shows_warning(self):
         tool = Tool(1, 'Invalid', 2, 2000, 1000, 24000, 90, -1)
-        config_tool = GuiConfigureTool(None, None, self.mock_msg, {'padx': 5, 'pady': 5}, tool)
-        config_tool._ok_button_clicked()
+        self.config_tool.set_tool(tool)
+        self.config_tool._ok_button_clicked()
         self.mock_msg.showinfo.assert_called()
 
 
