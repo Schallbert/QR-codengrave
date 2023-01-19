@@ -18,42 +18,59 @@ class Offset:
 
 class GuiConfigureXy0:
     """GUI class that makes a workpiece XY0 offset configuration window."""
-    def __init__(self, main, caller, msgbox, options, qr_dimension, xy0=None):
+
+    def __init__(self, caller, msgbox, options):
         self._caller = caller
         self._options = options
         self._msgbox = msgbox
+        self._dialog = None
+
+        self._xy0 = Point()
+        self._tool_diameter = 0
+        self._qr_dimension = 0
+
+        self._xy_option = tk.IntVar()
+        self._setx0 = tk.DoubleVar()
+        self._sety0 = tk.DoubleVar()
+
+    def set_params(self, qr_dimension, tool_diameter, xy0):
         self._qr_dimension = qr_dimension
-        self._xy0_dialog = tk.Toplevel(main)
-        self._xy0_dialog.attributes('-topmost', 'true')
-        self._xy0_dialog.resizable(width=False, height=False)
-        self._xy0_dialog.geometry('198x382')
-        self._xy0_dialog.title('XY0')
-        self._xy0_dialog.iconbitmap(app_icon_path)
-        self._xy0_dialog.grab_set()
+        self._tool_diameter = tool_diameter
+        self._xy0 = xy0
 
-        if xy0 is None:
-            self._xy0 = Point()
-        else:
-            self._xy0 = xy0
+        self._setx0.set(xy0.x)
+        self._sety0.set(xy0.y)
 
-        self.frame = self._create_config_xy0_frame()
+    def show(self):
+        self._dialog = tk.Toplevel()
+        self._dialog.attributes('-topmost', 'true')
+        self._dialog.resizable(width=False, height=False)
+        self._dialog.geometry('198x382')
+        self._dialog.title('XY0')
+        self._dialog.iconbitmap(app_icon_path)
+        self._dialog.grab_set()
+
+        self._create_config_xy0_frame()
+
+    def _destroy(self):
+        if self._dialog is not None:
+            self._dialog.destroy()
 
     def _create_config_xy0_frame(self):
         """init method that creates the frame with all gui elements"""
         # Radiobutton frame
-        rbtn_frame = tk.LabelFrame(self._xy0_dialog, bd=5, text='Choose XY0 offset')
+        rbtn_frame = tk.LabelFrame(self._dialog, bd=5, text='Choose XY0 offset')
         rbtn_frame['relief'] = 'ridge'
         rbtn_frame.grid(column=0, row=0, sticky='NEW', **self._options)
 
         # Custom XY0 frame
-        xy0_frame = tk.LabelFrame(self._xy0_dialog, bd=5, text='XY0 offset values')
+        xy0_frame = tk.LabelFrame(self._dialog, bd=5, text='XY0 offset values')
         xy0_frame['relief'] = 'ridge'
         xy0_frame.grid(column=0, row=1, sticky='NE', **self._options)
 
         reg = xy0_frame.register(validate_number)
 
         # Radiobuttons
-        self._xy_option = tk.IntVar()
         btn_center = tk.Radiobutton(rbtn_frame, text="QR Center", variable=self._xy_option, value=Offset.CENTER,
                                     command=self._radiobutton_selection_changed)
         btn_center.grid(column=0, row=0, sticky='W', **self._options)
@@ -80,9 +97,6 @@ class GuiConfigureXy0:
         setx0_label = tk.Label(xy0_frame, text='X0 [mm]')
         setx0_label.grid(column=0, row=1, sticky='E', **self._options)
 
-        self._setx0 = tk.DoubleVar()
-        self._setx0.set(self._xy0.x)
-
         self.setx0_entry = ttk.Entry(xy0_frame, textvariable=self._setx0, width=5, state='disabled')
         self.setx0_entry.config(validate="key", validatecommand=(reg, '%P'))
         self.setx0_entry.grid(column=1, row=1, **self._options)
@@ -90,9 +104,6 @@ class GuiConfigureXy0:
         # Y
         sety0_label = tk.Label(xy0_frame, text='Y0 [mm]')
         sety0_label.grid(column=0, row=2, sticky='E', **self._options)
-
-        self._sety0 = tk.DoubleVar()
-        self._sety0.set(self._xy0.y)
 
         self.sety0_entry = ttk.Entry(xy0_frame, textvariable=self._sety0, width=5, state='disabled')
         self.sety0_entry.config(validate="key", validatecommand=(reg, '%P'))
@@ -108,8 +119,6 @@ class GuiConfigureXy0:
         ok_button.grid(column=1, row=3, sticky='W', **self._options)
         ok_button.configure(command=self._ok_button_clicked)
 
-        return xy0_frame
-
     def _validate_entries(self):
         """Validates input to the various fields of the tool configure window.
         :returns True in case input looks all right, else False."""
@@ -121,6 +130,23 @@ class GuiConfigureXy0:
                                                        'or Y-zero offset detected.')
             return False
         return True
+
+    def _get_xy_offset(self, offset):
+        """calculates an XY coordinate offset from a preset point, taking the selected tool diameter into account.
+        :param offset the selected offset from the above enum class
+        :returns a XY Point where XY0 is assumed for the engraving."""
+        qr = self._qr_dimension
+        d = self._tool_diameter
+        offsets = {Offset.CENTER: Point((d - qr) / 2, (qr - d) / 2),
+                   Offset.TOPLEFT: Point(d / 2, -d / 2),
+                   Offset.TOPRIGHT: Point(d / 2 - qr, -d / 2),
+                   Offset.BOTTOMLEFT: Point(d / 2, qr - d / 2),
+                   Offset.BOTTOMRIGHT: Point(d / 2 - qr, qr - d / 2)
+                   }
+
+        if offset in offsets:
+            return offsets[offset]
+        return Point()
 
     # EVENT HANDLERS ----------------------------
 
@@ -141,28 +167,11 @@ class GuiConfigureXy0:
 
     def _cancel_button_clicked(self):
         """Button callback event handler. Handles cancel button click."""
-        self._xy0_dialog.destroy()
+        self._destroy()
 
     def _ok_button_clicked(self):
         """Button callback event handler. Handles OK button click.
         :returns a tool to the main GUI in case all entries have been made OK."""
         if self._validate_entries():
             self._caller.set_xy0_parameters(self._xy0)
-            self._xy0_dialog.destroy()
-
-    def _get_xy_offset(self, offset):
-        """calculates an XY coordinate offset from a preset point, taking the selected tool diameter into account.
-        :param offset the selected offset from the above enum class
-        :returns a XY Point where XY0 is assumed for the engraving."""
-        qr = self._qr_dimension[0]
-        d = self._qr_dimension[1]
-        offsets = {Offset.CENTER: Point((d - qr) / 2, (qr - d) / 2),
-                   Offset.TOPLEFT: Point(d / 2, -d / 2),
-                   Offset.TOPRIGHT: Point(d / 2 - qr, -d / 2),
-                   Offset.BOTTOMLEFT: Point(d / 2, qr - d / 2),
-                   Offset.BOTTOMRIGHT: Point(d / 2 - qr, qr - d / 2)
-                   }
-
-        if offset in offsets:
-            return offsets[offset]
-        return Point()
+            self._destroy()

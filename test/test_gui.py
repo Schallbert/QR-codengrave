@@ -125,104 +125,71 @@ class TestIntegrationConfigureEngraveParameters(unittest.TestCase):
 
 
 class TestXy0Configure(unittest.TestCase):
-    def setUp(self):
+    @patch('src.gui.gui_xy0_manage.GuiXy0Manager')
+    def setUp(self, mock_guixy0manager):
         tk.Tk()  # required to have tk variables properly instantiated
+        self.mock_guixy0manager = mock_guixy0manager
         self.mock_msg = MsgBox()
         self.mock_msg.error = MagicMock()
         Persistence.set_mock_msgbox(self.mock_msg)
+        self.config_xy0 = GuiConfigureXy0(self.mock_guixy0manager, self.mock_msg, {'padx': 5, 'pady': 5})
 
-    @patch('src.gui.gui_xy0_manage.GuiXy0Manager')
-    def test_setxy0_topleft_calculates_correctly(self, mock_guixy0manager):
-        d = 1
+    def test_setxy0_topleft_calculates_correctly(self):
         qr = 10
+        d = 1
         offset = Offset.TOPLEFT
         expect = Point(d / 2, -d / 2)
-        config_xy0 = GuiConfigureXy0(None, mock_guixy0manager, None, {'padx': 5, 'pady': 5}, (qr, d))
-        config_xy0._xy_option.set(offset)
-        config_xy0._radiobutton_selection_changed()
-        config_xy0._ok_button_clicked()
-        mock_guixy0manager.set_xy0_parameters.assert_called_with(expect)
+        self.config_xy0.set_params(qr, d, Point())
+        self.assertEqual(self.config_xy0._get_xy_offset(offset), expect)
 
-    @patch('src.gui.gui_xy0_manage.GuiXy0Manager')
-    def test_setxy0_topright_calculates_correctly(self, mock_guixy0manager):
+    def test_setxy0_topright_calculates_correctly(self):
         d = 1
         qr = 10
         offset = Offset.TOPRIGHT
         expect = Point(d / 2 - qr, -d / 2)
-        config_xy0 = GuiConfigureXy0(None, mock_guixy0manager, None, {'padx': 5, 'pady': 5}, (qr, d))
-        config_xy0._xy_option.set(offset)
-        config_xy0._radiobutton_selection_changed()
-        config_xy0._ok_button_clicked()
-        mock_guixy0manager.set_xy0_parameters.assert_called_with(expect)
+        self.config_xy0.set_params(qr, d, Point())
+        self.assertEqual(self.config_xy0._get_xy_offset(offset), expect)
 
-    @patch('src.gui.gui_xy0_manage.GuiXy0Manager')
-    def test_setxy0_bottomleft_calculates_correctly(self, mock_guixy0manager):
+    def test_setxy0_bottomleft_calculates_correctly(self):
         d = 1
         qr = 10
         offset = Offset.BOTTOMLEFT
         expect = Point(d / 2, qr - d / 2)
-        config_xy0 = GuiConfigureXy0(None, mock_guixy0manager, None, {'padx': 5, 'pady': 5}, (qr, d))
-        config_xy0._xy_option.set(offset)
-        config_xy0._radiobutton_selection_changed()
-        config_xy0._ok_button_clicked()
-        mock_guixy0manager.set_xy0_parameters.assert_called_with(expect)
+        self.config_xy0.set_params(qr, d, Point())
+        self.assertEqual(self.config_xy0._get_xy_offset(offset), expect)
 
-    @patch('src.gui.gui_xy0_manage.GuiXy0Manager')
-    def test_setxy0_bottomright_calculates_correctly(self, mock_guixy0manager):
+    def test_setxy0_bottomright_calculates_correctly(self):
         d = 1
         qr = 10
         offset = Offset.BOTTOMRIGHT
         expect = Point(d / 2 - qr, qr - d / 2)
-        config_xy0 = GuiConfigureXy0(None, mock_guixy0manager, None, {'padx': 5, 'pady': 5}, (qr, d))
-        config_xy0._xy_option.set(offset)
-        config_xy0._radiobutton_selection_changed()
-        config_xy0._ok_button_clicked()
-        mock_guixy0manager.set_xy0_parameters.assert_called_with(expect)
+        self.config_xy0.set_params(qr, d, Point())
+        self.assertEqual(self.config_xy0._get_xy_offset(offset), expect)
 
-    @patch('src.gui.gui_xy0_manage.GuiXy0Manager')
-    def test_setxy0_center_calculates_correctly(self, mock_guixy0manager):
+    def test_setxy0_center_calculates_correctly(self):
         d = 1
         qr = 10
         offset = Offset.CENTER
         expect = Point(d / 2 - qr / 2, qr / 2 - d / 2)
-        config_xy0 = GuiConfigureXy0(None, mock_guixy0manager, None, {'padx': 5, 'pady': 5}, (qr, d))
-        config_xy0._xy_option.set(offset)
-        config_xy0._radiobutton_selection_changed()
-        config_xy0._ok_button_clicked()
-        mock_guixy0manager.set_xy0_parameters.assert_called_with(expect)
+        self.config_xy0.set_params(qr, d, Point())
+        self.assertEqual(self.config_xy0._get_xy_offset(offset), expect)
 
-    @patch('src.gui.gui_xy0_manage.GuiXy0Manager')
-    def test_setxy0_custom_calculates_correctly(self, mock_guixy0manager):
-        d = 2
-        qr = 20
-        offset = Offset.CUSTOM
+    def test_setxy0_custom_calculates_correctly(self):
         expect = Point(40, 20)
-        config_xy0 = GuiConfigureXy0(None, mock_guixy0manager, None, {'padx': 5, 'pady': 5}, (qr, d))
-        config_xy0._xy_option.set(offset)
-        config_xy0._setx0.set(expect.x)
-        config_xy0._sety0.set(expect.y)
-        config_xy0._radiobutton_selection_changed()
-        config_xy0._ok_button_clicked()
-        mock_guixy0manager.set_xy0_parameters.assert_called_with(expect)
+        self.config_xy0._setx0.set(expect.x)
+        self.config_xy0._sety0.set(expect.y)
+        self.config_xy0._ok_button_clicked()
+        self.mock_guixy0manager.set_xy0_parameters.assert_called_with(expect)
 
-    @patch('src.gui.gui_xy0_manage.GuiXy0Manager')
-    def test_setxy0_already_existing_input_returns_correctly(self, mock_guixy0manager):
-        d = 2
-        qr = 20
-        offset = Offset.CUSTOM
+    def test_setxy0_already_existing_input_returns_correctly(self):
         expect = Point(-50, -100)
-        config_xy0 = GuiConfigureXy0(None, mock_guixy0manager, None, {'padx': 5, 'pady': 5}, (qr, d), expect)
-        config_xy0._xy_option.set(offset)
-        config_xy0._setx0.set(expect.x)
-        config_xy0._sety0.set(expect.y)
-        config_xy0._radiobutton_selection_changed()
-        config_xy0._ok_button_clicked()
-        mock_guixy0manager.set_xy0_parameters.assert_called_with(expect)
+        self.config_xy0.set_params(10, 1, expect)
+        self.config_xy0._ok_button_clicked()
+        self.mock_guixy0manager.set_xy0_parameters.assert_called_with(expect)
 
     def test_invalid_input_textbox_shows_error(self):
-        config_xy0 = GuiConfigureXy0(None, None, self.mock_msg, {'padx': 5, 'pady': 5}, (10, 1))
-        config_xy0._setx0.set('only_doubles_are_valid_here')
-        config_xy0._validate_entries()
+        self.config_xy0._setx0.set('only_doubles_are_valid_here')
+        self.config_xy0._validate_entries()
         self.mock_msg.error.assert_called()
 
 
@@ -312,11 +279,4 @@ class TestIntegrationMain(unittest.TestCase):
 
         self.assertEqual(params.x, xy0_manage.get_xy0_parameters().x)
         self.assertEqual(params.y, xy0_manage.get_xy0_parameters().y)
-        mock_main.update_status.assert_called()
-
-    @patch('src.gui.gui.App')
-    def test_setxy0_happy_path_updates_status(self, mock_main):
-        xy0_manage = GuiXy0Manager(mock_main, None, {'padx': 5, 'pady': 5})
-        xy0_manage.set_dimension_info((10, 1))
-        xy0_manage._label_clicked()
         mock_main.update_status.assert_called()

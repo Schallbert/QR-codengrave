@@ -13,10 +13,12 @@ class GuiXy0Manager:
         self._msgbox = msgbox
         self._options = options
 
-        self._qr_dimension = None
+        self._is_dimension_info_available = False
         self._xy0 = Persistence.load(Point())
 
-        self._params_frame = self._init_frame_params_section()
+        self._guiconfig = GuiConfigureXy0(self, self._msgbox, self._options)
+
+        self._init_frame_params_section()
 
     def get_xy0_parameters(self):
         """Getter function.
@@ -31,10 +33,13 @@ class GuiXy0Manager:
         Persistence.save(self._xy0)
         self._main.update_status()
 
-    def set_dimension_info(self, dimension):
+    def set_dimension_info(self, dimension_info):
         """Setter function.
         to be called by parent to enable XY0 changes"""
-        self._qr_dimension = dimension
+        if dimension_info is None:
+            return
+        self._is_dimension_info_available = True
+        self._guiconfig.set_params(dimension_info[0], dimension_info[1], self._xy0)
 
     def _init_frame_params_section(self):
         """create all items within the parameters frame section"""
@@ -69,9 +74,10 @@ class GuiXy0Manager:
 
     def _label_clicked(self):
         """Handle XY0 label click event"""
-        if self._qr_dimension is None:
+        if not self._is_dimension_info_available:
             self._msgbox.showinfo(title="QR or Tool not set", message='Warning: QR not provided and/or Tool not set. \n'
                                                                       'Thus XY0 can not be defined.')
             return
+        self._guiconfig.show()
         self._main.update_status('Set XY0')
-        GuiConfigureXy0(self._params_frame, self, self._msgbox, self._options, self._qr_dimension, self._xy0)
+
