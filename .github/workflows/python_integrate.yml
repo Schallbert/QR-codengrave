@@ -37,7 +37,5 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
       uses: GabrielBB/xvfb-action@v1  # Diverts tkinter GUI to a virtual frame buffer (VFB)
-      with:
-        working-directory: ${{ github.workspace }}
-        run: |
-          pytest
+      run: |
+         pytest
