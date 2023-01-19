@@ -5,7 +5,7 @@ from tkinter.messagebox import showerror
 
 from qrcodegen import QrCode
 
-from src.helpers.gui_helpers import app_image_path
+from src.resources import app_image_path
 from src.platform.vectorize_qr import VectorizeQr
 
 
@@ -141,7 +141,7 @@ class GuiGenerateQr:
         try:
             text = self.qr_text.get()
         except ValueError as error:
-            showerror(title='Text Parse Error', message='Error: Could not convert the text to as string:\n' + error)
+            showerror(title='Text Parse Error', message='Error: Could not convert the text to string:\n' + error)
             return
         self._create_qr_from_input(text)
         self._main.set_project_name(text)

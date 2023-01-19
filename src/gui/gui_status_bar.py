@@ -1,10 +1,11 @@
 import tkinter as tk
-import webbrowser
 from tkinter import ttk
+
+from webbrowser import open_new
 
 
 def _callback(url):
-    webbrowser.open_new(url)
+    open_new(url)
 
 
 class GuiStatusBar:

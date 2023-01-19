@@ -35,7 +35,7 @@ def set_path_default_tool(pathvar):
     return machinify
 
 
-class TesPublics(unittest.TestCase):
+class TestMachinify(unittest.TestCase):
 
     def test_report_data_missing_qr_none_returns_correct_error(self):
         machinify = MachinifyVector(1.0)
@@ -248,3 +248,41 @@ class TesPublics(unittest.TestCase):
                          'G00 X1.4\n'
                          'G01 Z-0.4 F500\n'
                          'G01 X2.1 F1000\n', machinify._gcode_engrave())
+
+    def test_gcode_prepare_sets_correct_tool_number(self):
+        tool = Tool(4, 'TestTool', 8, 5200, 2600, 20000)
+        engrave_params = EngraveParams(0.5, 1, 10)
+        xy0 = Point(5, -5)
+        machinify = MachinifyVector(1.0)
+        machinify.set_tool(tool)
+        machinify.set_xy_zero(xy0)
+        machinify.set_engrave_params(engrave_params)
+        self.assertEqual('G90 \n'
+                         'MSG "Tool: ' + tool.get_description() + '"\n'
+                         'T' + str(tool.number) + '\n'
+                         'M06 \n'
+                         'M03 \n'
+                         'S' + str(tool.speed) + '\n', machinify._gcode_prepare().split('G00')[0])
+
+    def test_gcode_prepare_sets_correct_engrave_parameters(self):
+        tool = Tool(4, 'TestTool', 8, 5200, 2600, 20000)
+        engrave_params = EngraveParams(0.5, 1, 10)
+        xy0 = Point(5, -5)
+        machinify = MachinifyVector(1.0)
+        machinify.set_tool(tool)
+        machinify.set_xy_zero(xy0)
+        machinify.set_engrave_params(engrave_params)
+        self.assertEqual('G00 Z' + str(engrave_params.z_flyover) + '\n\n'
+                         'G00 Y0 X0 \n'
+                         'G00 X' + str(xy0.x) + ' Y' + str(xy0.y) + ' \n'
+                         'G00 Z' + str(engrave_params.z_hover) + '\n\n',
+                         machinify._gcode_prepare().split('S' + str(tool.speed) + '\n')[1])
+
+    def test_gcode_finalize_returns_to_xy0_stops_spindle(self):
+        engrave_params = EngraveParams(0.5, 1, 10)
+        machinify = MachinifyVector(1.0)
+        machinify.set_engrave_params(engrave_params)
+        self.assertEqual('\nM05 \n'
+                         'G00 Z' + str(engrave_params.z_flyover) + '\n'
+                         'G00 Y0 X0 \n'
+                         'M30 \n', machinify._gcode_finalize())

@@ -1,22 +1,20 @@
 import tkinter as tk
 from tkinter import ttk
-from tkinter.messagebox import showinfo
 
-from src.helpers.persistence import Persistence
-
-from src.platform.vectorize_qr import Point
 from src.gui.gui_xy0_configure import GuiConfigureXy0
 
 
 class GuiXy0Manager:
-    def __init__(self, main, options):
+    def __init__(self, main, msgbox, params, options):
         self._main = main
+        self._msgbox = msgbox
         self._options = options
+        self._xy0 = params
 
-        self._qr_dimension = None
-        self._xy0 = Persistence.load(Point())
+        self._is_dimension_info_available = False
+        self._guiconfig = GuiConfigureXy0(self, self._msgbox, self._options)
 
-        self._params_frame = self._init_frame_params_section()
+        self._init_frame_params_section()
 
     def get_xy0_parameters(self):
         """Getter function.
@@ -28,13 +26,15 @@ class GuiXy0Manager:
         self._xy0 = xy0
         self._setx0.config(text=str(self._xy0.x))
         self._sety0.config(text=str(self._xy0.y))
-        Persistence.save(self._xy0)
         self._main.update_status()
 
-    def set_dimension_info(self, dimension):
+    def set_dimension_info(self, dimension_info):
         """Setter function.
         to be called by parent to enable XY0 changes"""
-        self._qr_dimension = dimension
+        if dimension_info is None:
+            return
+        self._is_dimension_info_available = True
+        self._guiconfig.set_params(dimension_info[0], dimension_info[1], self._xy0)
 
     def _init_frame_params_section(self):
         """create all items within the parameters frame section"""
@@ -69,9 +69,10 @@ class GuiXy0Manager:
 
     def _label_clicked(self):
         """Handle XY0 label click event"""
-        if self._qr_dimension is None:
-            showinfo(title="QR or Tool not set", message='Warning: QR not provided and/or Tool not set. \n'
-                                                         'Thus XY0 can not be defined.')
+        if not self._is_dimension_info_available:
+            self._msgbox.showinfo(title="QR or Tool not set", message='Warning: QR not provided and/or Tool not set. \n'
+                                                                      'Thus XY0 can not be defined.')
             return
+        self._guiconfig.show()
         self._main.update_status('Set XY0')
-        GuiConfigureXy0(self._params_frame, self, self._options, self._qr_dimension, self._xy0)
+

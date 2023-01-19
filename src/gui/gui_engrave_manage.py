@@ -2,19 +2,19 @@ import tkinter as tk
 from tkinter import ttk
 
 from src.gui.gui_engrave_configure import GuiEngraveConfigure
-from src.platform.machinify_vector import EngraveParams
-
-from src.helpers.persistence import Persistence
 
 
 class GuiEngraveManager:
-    def __init__(self, main, options):
+    def __init__(self, main, msgbox, params, options):
         self._main = main
+        self._msgbox = msgbox
         self._options = options
+        self._z_params = params
 
-        self._z_params = Persistence.load(EngraveParams())
+        self._engrave_configure = GuiEngraveConfigure(self, self._msgbox, self._options)
+        self._engrave_configure.set_params(self._z_params)
 
-        self._params_frame = self._init_frame_params_section()
+        self._init_frame_params_section()
 
     def get_engrave_parameters(self):
         """Getter function.
@@ -28,7 +28,6 @@ class GuiEngraveManager:
         self._engrave.config(text=str(self._z_params.z_engrave))
         self._hover.config(text=str(self._z_params.z_hover))
         self._flyover.config(text=str(self._z_params.z_flyover))
-        Persistence.save(self._z_params)
         self._main.update_status()
 
     def _init_frame_params_section(self):
@@ -71,4 +70,4 @@ class GuiEngraveManager:
     def _label_clicked(self):
         """Handle label click event"""
         self._main.update_status('Parameter')
-        GuiEngraveConfigure(self._params_frame, self, self._options, self._z_params)
+        self._engrave_configure.show()
