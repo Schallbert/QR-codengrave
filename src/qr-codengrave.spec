@@ -13,7 +13,7 @@ a = Analysis(
             ( '../readme.md', '.' ) ],
     hiddenimports=[],
     hookspath=[],
-    runtime_hooks=['./src/helpers/add_lib.py'],
+    runtime_hooks=[],
     excludes=[],
     win_no_prefer_redirects=False,
     win_private_assemblies=False,

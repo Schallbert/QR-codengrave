@@ -28,6 +28,8 @@ class GuiConfigureTool:
         self.set_tool(Tool())
 
     def set_tool(self, tool):
+        """Setter method. Pre-populates popup dialog's tool value entries
+        :param tool A Tool object"""
         self._tool = tool
 
         self.tool_nr.set(self._tool.number)
@@ -41,6 +43,7 @@ class GuiConfigureTool:
         self.is_tool_tapered.set(self._tool.angle != 0)  # checkbox pre-set when tool is tapered
 
     def show(self):
+        """Prepares and shows the popup dialog"""
         self._dialog = tk.Toplevel()
         self._dialog.attributes('-topmost', 'true')
         self._dialog.resizable(width=False, height=False)
@@ -50,8 +53,8 @@ class GuiConfigureTool:
         self._dialog.grab_set()
         self._create_config_tool_frame()
 
-
     def _destroy(self):
+        """Destroys the popup dialog instance"""
         if self._dialog is not None:
             self._dialog.destroy()
             self._dialog = None

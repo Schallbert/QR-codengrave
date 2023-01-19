@@ -20,12 +20,20 @@ class GuiEngraveConfigure:
         self.set_params(EngraveParams())
 
     def set_params(self, params):
+        """Setter function to pre-populate GUI items with values from persistence.
+        :param params, an EngraveParams object"""
         self._z_params = params
         self._engrave.set(self._z_params.z_engrave)
         self._hover.set(self._z_params.z_hover)
         self._flyover.set(self._z_params.z_flyover)
 
+    def get_engrave_parameters(self):
+        """Getter function.
+        :returns an EngraveParams object"""
+        return self._z_params
+
     def show(self):
+        """Prepares and shows the popup dialog"""
         self._dialog = tk.Toplevel()
         self._dialog.attributes('-topmost', 'true')
         self._dialog.resizable(width=False, height=False)
@@ -36,12 +44,8 @@ class GuiEngraveConfigure:
 
         self._init_frame_params_section()
 
-    def get_engrave_parameters(self):
-        """Getter function.
-        :returns an EngraveParams object"""
-        return self._z_params
-
     def _destroy(self):
+        """Destroys the popup dialog instance"""
         if self._dialog is not None:
             self._dialog.destroy()
 
