@@ -1,21 +1,17 @@
 import tkinter as tk
 from tkinter import ttk
 
-from src.helpers.persistence import Persistence
-
-from src.platform.vectorize_qr import Point
 from src.gui.gui_xy0_configure import GuiConfigureXy0
 
 
 class GuiXy0Manager:
-    def __init__(self, main, msgbox, options):
+    def __init__(self, main, msgbox, params, options):
         self._main = main
         self._msgbox = msgbox
         self._options = options
+        self._xy0 = params
 
         self._is_dimension_info_available = False
-        self._xy0 = Persistence.load(Point())
-
         self._guiconfig = GuiConfigureXy0(self, self._msgbox, self._options)
 
         self._init_frame_params_section()
@@ -30,7 +26,6 @@ class GuiXy0Manager:
         self._xy0 = xy0
         self._setx0.config(text=str(self._xy0.x))
         self._sety0.config(text=str(self._xy0.y))
-        Persistence.save(self._xy0)
         self._main.update_status()
 
     def set_dimension_info(self, dimension_info):

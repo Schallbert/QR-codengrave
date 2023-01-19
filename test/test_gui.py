@@ -4,7 +4,7 @@ from unittest.mock import patch, MagicMock
 
 from src.helpers.gui_helpers import MsgBox
 from src.platform.vectorize_qr import Point
-from src.platform.machinify_vector import Tool, EngraveParams
+from src.platform.machinify_vector import Tool, ToolList, EngraveParams
 from src.helpers.persistence import Persistence
 
 from src.gui.gui_tool_configure import GuiConfigureTool
@@ -200,7 +200,7 @@ class TestXy0Manage(unittest.TestCase):
         Persistence.set_mock_msgbox(self.mock_msg)
 
     def test_setxy0_preconditions_not_met_shows_warning(self):
-        xy0_manage = GuiXy0Manager(None, self.mock_msg, {'padx': 5, 'pady': 5})
+        xy0_manage = GuiXy0Manager(None, self.mock_msg, Point(), {'padx': 5, 'pady': 5})
         xy0_manage._label_clicked()
         self.mock_msg.showinfo.assert_called()
 
@@ -211,19 +211,22 @@ class TestIntegrationMain(unittest.TestCase):
     propagated."""
 
     @patch('src.gui.gui.App')
-    def test_add_tool_updates_status(self, mock_main):
+    @patch('builtins.open', create=True)
+    def setUp(self, mock_main, mock_open):
+        self.mock_main = mock_main
+
+    def test_add_tool_updates_status(self):
         tool = Tool(4, 'TestTool', 6, 3500, 1800, 24000)
-        tool_manage = GuiToolManager(mock_main, None, {'padx': 5, 'pady': 5})
+        tool_manage = GuiToolManager(self.mock_main, None, ToolList(), {'padx': 5, 'pady': 5})
         tool_manage.add_or_edit_tool(tool)
 
         tool_manage._tool_list.select_tool(4)
         self.assertEqual(tool.diameter, tool_manage.get_selected_tool().diameter)
 
-        mock_main.update_status.assert_called()
+        self.mock_main.update_status.assert_called()
 
-    @patch('src.gui.gui.App')
-    def test_update_tool_updates_status(self, mock_main):
-        tool_manage = GuiToolManager(mock_main, None, {'padx': 5, 'pady': 5})
+    def test_update_tool_updates_status(self):
+        tool_manage = GuiToolManager(self.mock_main, None, ToolList(), {'padx': 5, 'pady': 5})
 
         tool = Tool(4, 'TestTool', 6, 3500, 1800, 24000)
         tool_manage.add_or_edit_tool(tool)
@@ -233,12 +236,11 @@ class TestIntegrationMain(unittest.TestCase):
         tool_manage._tool_list.select_tool(4)
         self.assertEqual(tool.diameter, tool_manage.get_selected_tool().diameter)
 
-        mock_main.update_status.assert_called()
+        self.mock_main.update_status.assert_called()
 
-    @patch('src.gui.gui.App')
-    def test_remove_tool_updates_status(self, mock_main):
+    def test_remove_tool_updates_status(self):
         tool = Tool(4, 'TestTool', 8, 3500, 1800, 24000)
-        tool_manage = GuiToolManager(mock_main, None, {'padx': 5, 'pady': 5})
+        tool_manage = GuiToolManager(self.mock_main, None, ToolList(), {'padx': 5, 'pady': 5})
         tool_manage.add_or_edit_tool(tool)
 
         self.assertTrue(tool_manage._tool_list.is_tool_in_list(4))
@@ -247,36 +249,33 @@ class TestIntegrationMain(unittest.TestCase):
         tool_manage.tool_selection.set(tool_manage._tool_list.get_selected_tool_description())
         tool_manage._remove_tool_button_clicked()
         self.assertFalse(tool_manage._tool_list.is_tool_in_list(4))
-        mock_main.update_status.assert_called()
+        self.mock_main.update_status.assert_called()
 
-    @patch('src.gui.gui.App')
-    def test_set_default_engrave_params_updates_status(self, mock_main):
+    def test_set_default_engrave_params_updates_status(self):
         params = EngraveParams()
-        engrave_manage = GuiEngraveManager(mock_main, None, {'padx': 5, 'pady': 5})
+        engrave_manage = GuiEngraveManager(self.mock_main, None, EngraveParams(), {'padx': 5, 'pady': 5})
         engrave_manage.set_engrave_parameters(params)
 
         self.assertEqual(params.z_engrave, engrave_manage.get_engrave_parameters().z_engrave)
         self.assertEqual(params.z_hover, engrave_manage.get_engrave_parameters().z_hover)
         self.assertEqual(params.z_flyover, engrave_manage.get_engrave_parameters().z_flyover)
-        mock_main.update_status.assert_called()
+        self.mock_main.update_status.assert_called()
 
-    @patch('src.gui.gui.App')
-    def test_set_custom_engrave_params_updates_status(self, mock_main):
+    def test_set_custom_engrave_params_updates_status(self):
         params = EngraveParams(2, 2, 20)
-        engrave_manage = GuiEngraveManager(mock_main, None, {'padx': 5, 'pady': 5})
+        engrave_manage = GuiEngraveManager(self.mock_main, None, EngraveParams(), {'padx': 5, 'pady': 5})
         engrave_manage.set_engrave_parameters(params)
 
         self.assertEqual(params.z_engrave, engrave_manage.get_engrave_parameters().z_engrave)
         self.assertEqual(params.z_hover, engrave_manage.get_engrave_parameters().z_hover)
         self.assertEqual(params.z_flyover, engrave_manage.get_engrave_parameters().z_flyover)
-        mock_main.update_status.assert_called()
+        self.mock_main.update_status.assert_called()
 
-    @patch('src.gui.gui.App')
-    def test_update_xy0_updates_status(self, mock_main):
+    def test_update_xy0_updates_status(self):
         params = Point(2, 4)
-        xy0_manage = GuiXy0Manager(mock_main, None, {'padx': 5, 'pady': 5})
+        xy0_manage = GuiXy0Manager(self.mock_main, None, Point(), {'padx': 5, 'pady': 5})
         xy0_manage.set_xy0_parameters(params)
 
         self.assertEqual(params.x, xy0_manage.get_xy0_parameters().x)
         self.assertEqual(params.y, xy0_manage.get_xy0_parameters().y)
-        mock_main.update_status.assert_called()
+        self.mock_main.update_status.assert_called()

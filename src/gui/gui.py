@@ -4,15 +4,16 @@ from tkinter.filedialog import asksaveasfile
 from shutil import copyfileobj
 
 from src.gui.gui_generate_qr import GuiGenerateQr
-from src.gui.gui_tool_manage import GuiToolManager
+from src.gui.gui_tool_manage import GuiToolManager, ToolList
 from src.gui.gui_generate_gcode import GuiGenerateGcode
 from src.gui.gui_status_bar import GuiStatusBar
 from src.gui.gui_engrave_manage import GuiEngraveManager
 from src.gui.gui_xy0_manage import GuiXy0Manager
 
 from src.helpers.gui_helpers import MsgBox
+from src.helpers.persistence import Persistence
 
-from src.platform.machinify_vector import MachinifyVector
+from src.platform.machinify_vector import MachinifyVector, EngraveParams, Point
 
 
 class App:
@@ -38,10 +39,14 @@ class App:
 
         self._machinify = MachinifyVector(self.version)
 
+        engrave = Persistence.load(EngraveParams())
+        tool_list = Persistence.load(ToolList())
+        xy0 = Persistence.load(Point())
+
         self.gui_qr_generator = GuiGenerateQr(self, self._options)
-        self.gui_tool_manager = GuiToolManager(self, self._msgbox, self._options)
-        self.gui_engrave_params = GuiEngraveManager(self, self._msgbox, self._options)
-        self.gui_xy0_manager = GuiXy0Manager(self, self._msgbox, self._options)
+        self.gui_tool_manager = GuiToolManager(self, self._msgbox, tool_list, self._options)
+        self.gui_engrave_params = GuiEngraveManager(self, self._msgbox, engrave, self._options)
+        self.gui_xy0_manager = GuiXy0Manager(self, self._msgbox, xy0, self._options)
         self.gui_gcode_generator = GuiGenerateGcode(self, self._options)
         self.gui_status_bar = GuiStatusBar(self, self._options)
 
@@ -86,6 +91,7 @@ class App:
         if tool is None:
             return False
         self._machinify.set_tool(tool)
+        Persistence.save(self.gui_tool_manager.get_tool_list())
         return True
 
     def _collect_optional_data(self):
@@ -98,9 +104,11 @@ class App:
         if engrave is None:
             return False
         self._machinify.set_engrave_params(engrave)
+        Persistence.save(engrave)
         if xy0 is None:
             return False
         self._machinify.set_xy_zero(xy0)
+        Persistence.save(xy0)
         return True
 
     def _validate_data(self):

@@ -2,20 +2,16 @@ import tkinter as tk
 from tkinter import ttk
 
 from src.gui.gui_engrave_configure import GuiEngraveConfigure
-from src.platform.machinify_vector import EngraveParams
-
-from src.helpers.persistence import Persistence
 
 
 class GuiEngraveManager:
-    def __init__(self, main, msgbox, options):
+    def __init__(self, main, msgbox, params, options):
         self._main = main
         self._msgbox = msgbox
         self._options = options
+        self._z_params = params
 
         self._engrave_configure = GuiEngraveConfigure(self, self._msgbox, self._options)
-
-        self._z_params = Persistence.load(EngraveParams())
         self._engrave_configure.set_params(self._z_params)
 
         self._init_frame_params_section()
@@ -32,7 +28,6 @@ class GuiEngraveManager:
         self._engrave.config(text=str(self._z_params.z_engrave))
         self._hover.config(text=str(self._z_params.z_hover))
         self._flyover.config(text=str(self._z_params.z_flyover))
-        Persistence.save(self._z_params)
         self._main.update_status()
 
     def _init_frame_params_section(self):
