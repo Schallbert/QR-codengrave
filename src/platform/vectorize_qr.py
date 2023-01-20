@@ -15,6 +15,9 @@ class Point:
         self.x = x
         self.y = y
 
+    def __eq__(self, other):
+        return self.x == other.x and self.y == other.y
+
 
 class Line:
     """Defines a line in the XY-plane. For the purpose of creating paths, a line defined by this class

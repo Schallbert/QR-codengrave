@@ -4,16 +4,19 @@ from tkinter import ttk
 from src.gui.gui_tool_configure import GuiConfigureTool
 
 from src.platform.machinify_vector import ToolList
-from src.helpers.persistence import Persistence
 
 
 class GuiToolManager:
-    def __init__(self, main, options):
+    def __init__(self, main, msgbox, params, options):
         """displays the tool handling section within the main gui window"""
         self._main = main
+        self._msgbox = msgbox
         self._options = options
+        self._tool_list = params
 
-        self._tool_list = Persistence.load(ToolList())
+        self._config_gui = GuiConfigureTool(self,
+                                            self._msgbox,
+                                            self._options)
 
         self._tool_frame = self._init_frame_tool_section()
 
@@ -21,13 +24,17 @@ class GuiToolManager:
         """callback handler for tool window to return data into main window"""
         self._tool_list.add_or_update(tool)
         self._update_tool_options()
-        Persistence.save(self._tool_list)
         self._main.update_status()
 
     def get_selected_tool(self):
         """Getter function.
         :returns the currently selected tool"""
         return self._tool_list.get_selected_tool()
+
+    def get_tool_list(self):
+        """Getter function.
+        :returns the tool list"""
+        return self._tool_list
 
     def _init_frame_tool_section(self):
         """creates all items within the tool selection frame"""
@@ -71,7 +78,8 @@ class GuiToolManager:
     # EVENT HANDLERS ----------------------------
 
     def _update_tool_options(self):
-        """callback handler for updating the tool dropdown box"""
+        """callback handler for updating the tool dropdown box.
+        Basically this method redraws the contents of the dropdown with latest data"""
         menu = self.tool_dropdown['menu']
         menu.delete(0, 'end')
         options_update = self._tool_list.get_tool_list_string()
@@ -83,9 +91,8 @@ class GuiToolManager:
         """Handle add tool button click event"""
         self._main.update_status('\u27f1 Tool')
         if self._tool_list.is_tool_in_list(self._tool_selection_get_to_int()):
-            GuiConfigureTool(self._tool_frame, self, self._options, self._tool_list.get_selected_tool())
-        else:
-            GuiConfigureTool(self._tool_frame, self, self._options)
+            self._config_gui.set_tool(self._tool_list.get_selected_tool())
+        self._config_gui.show()
 
     def _remove_tool_button_clicked(self):
         """Handle add tool button click event"""
@@ -95,7 +102,6 @@ class GuiToolManager:
         self._tool_list.remove(remove)
         self._tool_list.select_tool(None)
         self.tool_selection.set(None)
-        Persistence.save(self._tool_list)
         self._update_tool_options()
 
     def _tool_selection_changed(self, *args):
@@ -103,5 +109,4 @@ class GuiToolManager:
         tool_number = self._tool_selection_get_to_int()
         self._tool_list.select_tool(tool_number)
         self._update_tool_options()  # Call this to not have disappearing entries in List
-        Persistence.save(self._tool_list)
         self._main.update_status()

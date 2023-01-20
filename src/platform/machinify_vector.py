@@ -16,6 +16,17 @@ class Tool:
         self.angle = angle
         self.tip = tip
 
+    def __eq__(self, other):
+        eq = (self.number == other.number)
+        eq &= (self.name == other.name)
+        eq &= (self.diameter == other.diameter)
+        eq &= (self.fxy == other.fxy)
+        eq &= (self.fz == other.fz)
+        eq &= (self.speed == other.speed)
+        eq &= (self.angle == other.angle)
+        eq &= (self.tip == other.tip)
+        return eq
+
     def get_description(self):
         """Helper method that generates a short tool description from number, name and diameter
         :returns the tool description string"""
@@ -86,6 +97,12 @@ class EngraveParams:
         self.z_flyover = flyover
         self.z_hover = hover
         self.z_engrave = engrave  # this value will actually be negative because it's below workpiece surface
+
+    def __eq__(self, other):
+        eq = (self.z_flyover == other.z_flyover)
+        eq &= (self.z_hover == other.z_hover)
+        eq &= (self.z_engrave == other.z_engrave)
+        return eq
 
 
 class MachinifyVector:
