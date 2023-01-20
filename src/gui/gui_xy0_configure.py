@@ -34,6 +34,10 @@ class GuiConfigureXy0:
         self._sety0 = tk.DoubleVar()
 
     def set_params(self, qr_dimension, tool_diameter, xy0):
+        """Setter function to pre-populate GUI items with values from persistence.
+        :param qr_dimension, unsigned int
+        :param tool_diameter, unsigned int
+        :param xy0, a Point object"""
         self._qr_dimension = qr_dimension
         self._tool_diameter = tool_diameter
         self._xy0 = xy0
@@ -42,6 +46,7 @@ class GuiConfigureXy0:
         self._sety0.set(xy0.y)
 
     def show(self):
+        """Prepares and shows the popup dialog"""
         self._dialog = tk.Toplevel()
         self._dialog.attributes('-topmost', 'true')
         self._dialog.resizable(width=False, height=False)
@@ -53,6 +58,7 @@ class GuiConfigureXy0:
         self._create_config_xy0_frame()
 
     def _destroy(self):
+        """Destroys the popup dialog instance"""
         if self._dialog is not None:
             self._dialog.destroy()
 
