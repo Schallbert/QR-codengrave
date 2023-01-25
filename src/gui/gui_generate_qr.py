@@ -17,6 +17,7 @@ class GuiGenerateQr:
         self._qr = None
         self._spiral_path = None
         self._stop_draw = False
+        self._turtle = None
 
         self.tc_frame = self._init_frame_text_convert()
         self.dwg_frame = self._init_frame_turtle()
@@ -68,7 +69,6 @@ class GuiGenerateQr:
         self._turtle_canvas.pack()
         self._img = tk.PhotoImage(file=app_image_path)
         self._turtle_canvas.create_image(152, 152, image=self._img)
-        self._prepare_turtle()
         return drawing_frame
 
     def _create_qr_from_input(self, text_to_qr):
@@ -94,45 +94,45 @@ class GuiGenerateQr:
                     break
                 length = vect.get_length()
                 if vect.get_state():
-                    self.turtle.down()
-                    self.turtle.forward(self.pen_size * length)
-                    self.turtle.up()
+                    self._turtle.down()
+                    self._turtle.forward(self.pen_size * length)
+                    self._turtle.up()
                 else:
-                    self.turtle.forward(self.pen_size * length)
-            self.turtle.right(90)
+                    self._turtle.forward(self.pen_size * length)
+            self._turtle.right(90)
 
-        self.turtle.hideturtle()
+        self._turtle.hideturtle()
         self._stop_draw = False
         self._main.update_status()
 
     def _prepare_turtle(self):
         """Prepares the turtle tool for another drawing, i.e. clearing the screen"""
-        self.turtle = RawTurtle(self._turtle_canvas)
-        self.turtle.hideturtle()
-        self.turtle.speed(0)
+        self._turtle = RawTurtle(self._turtle_canvas)
+        self._turtle.hideturtle()
+        self._turtle.speed(0)
 
     def _stop_drawing(self):
         self._stop_draw = True
-        self.turtle.up()
+        self._turtle.up()
         self.progress.stop()
-        self.turtle.setheading(0)
+        self._turtle.setheading(0)
 
     def _prepare_screen_for_drawing(self, qr_size):
         """Scales pensize to fit QR-code to screen by scaling. Centers for drawing"""
         self._stop_drawing()
-        self.turtle.clear()
+        self._turtle.clear()
 
         if qr_size > 100:
             self.pen_size = 1
         else:
             self.pen_size = 13 - (qr_size // 10)
-        self.turtle.pensize(self.pen_size)
+        self._turtle.pensize(self.pen_size)
 
         # center turtle on screen
         offset = (qr_size * self.pen_size) / 2
-        self.turtle.goto(0 - offset, 0 + offset)
+        self._turtle.goto(0 - offset, 0 + offset)
 
-        self.turtle.showturtle()
+        self._turtle.showturtle()
 
         # EVENT HANDLERS ----------------------------
 
@@ -143,6 +143,10 @@ class GuiGenerateQr:
         except ValueError as error:
             showerror(title='Text Parse Error', message='Error: Could not convert the text to string:\n' + error)
             return
+
+        if self._turtle is None:
+            self._prepare_turtle()
+
         self._create_qr_from_input(text)
         self._main.set_project_name(text)
         self._prepare_screen_for_drawing(self._qr.get_size())
