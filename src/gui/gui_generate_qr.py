@@ -112,10 +112,11 @@ class GuiGenerateQr:
         self._turtle.speed(0)
 
     def _stop_drawing(self):
-        self._stop_draw = True
-        self._turtle.up()
-        self.progress.stop()
-        self._turtle.setheading(0)
+        if self._turtle is not None:
+            self._stop_draw = True
+            self._turtle.up()
+            self.progress.stop()
+            self._turtle.setheading(0)
 
     def _prepare_screen_for_drawing(self, qr_size):
         """Scales pensize to fit QR-code to screen by scaling. Centers for drawing"""
