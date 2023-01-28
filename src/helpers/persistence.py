@@ -15,10 +15,6 @@ class Persistence:
     _msgbox = messagebox
 
     @classmethod
-    def set_mock_msgbox(cls, msgbox):
-        cls._msgbox = msgbox
-
-    @classmethod
     def save(cls, data):
         """Saves an application object to file via automated serialization. Holds copies of the objects as static
         member variables.

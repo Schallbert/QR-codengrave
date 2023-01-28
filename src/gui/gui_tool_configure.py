@@ -25,6 +25,7 @@ class GuiConfigureTool:
         self.tool_angle = tk.IntVar()
         self.tool_tip = tk.DoubleVar()
         self.is_tool_tapered = tk.BooleanVar()
+        self.set_tool(self._tool)
 
     def set_tool(self, tool):
         """Setter method. Pre-populates popup dialog's tool value entries
