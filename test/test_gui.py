@@ -5,7 +5,6 @@ from unittest.mock import patch, MagicMock
 from src.helpers.gui_helpers import MsgBox
 from src.platform.vectorize_qr import Point
 from src.platform.machinify_vector import Tool, ToolList, EngraveParams
-from src.helpers.persistence import Persistence
 
 from src.gui.gui_tool_configure import GuiConfigureTool
 from src.gui.gui_engrave_configure import GuiEngraveConfigure
@@ -23,7 +22,6 @@ class TestIntegrationConfigureTool(unittest.TestCase):
         self.mock_guitoolmanager = mock_guitoolmanager
         self.mock_msg = MsgBox()
         self.mock_msg.showinfo = MagicMock()
-        Persistence.set_mock_msgbox(self.mock_msg)
         self.config_tool = GuiConfigureTool(self.mock_guitoolmanager, self.mock_msg, {'padx': 5, 'pady': 5})
 
     def test_add_edit_tool_existing_tool_returns_tool(self):
@@ -88,7 +86,6 @@ class TestIntegrationConfigureEngraveParameters(unittest.TestCase):
         self.mock_msg = MsgBox()
         self.mock_msg.showinfo = MagicMock()
         self.mock_msg.error = MagicMock()
-        Persistence.set_mock_msgbox(self.mock_msg)
         self.config_engrave = GuiEngraveConfigure(self.mock_guiengravemanager,
                                                   self.mock_msg, {'padx': 5, 'pady': 5})
 
@@ -131,7 +128,6 @@ class TestXy0Configure(unittest.TestCase):
         self.mock_guixy0manager = mock_guixy0manager
         self.mock_msg = MsgBox()
         self.mock_msg.error = MagicMock()
-        Persistence.set_mock_msgbox(self.mock_msg)
         self.config_xy0 = GuiConfigureXy0(self.mock_guixy0manager, self.mock_msg, {'padx': 5, 'pady': 5})
 
     def test_setxy0_topleft_calculates_correctly(self):
@@ -197,7 +193,6 @@ class TestXy0Manage(unittest.TestCase):
     def setUp(self):
         self.mock_msg = MsgBox()
         self.mock_msg.showinfo = MagicMock()
-        Persistence.set_mock_msgbox(self.mock_msg)
 
     def test_setxy0_preconditions_not_met_shows_warning(self):
         xy0_manage = GuiXy0Manager(None, self.mock_msg, Point(), {'padx': 5, 'pady': 5})

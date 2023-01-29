@@ -6,7 +6,7 @@ from src.platform.vectorize_qr import Point, Direction
 
 class Tool:
     """POD container class representing a tool."""
-    def __init__(self, number=1, name='Name', dia=3.18, fxy=1000, fz=500, s=24000, angle=90, tip=0.1):
+    def __init__(self, number=1, name='Default', dia=3.18, fxy=1000, fz=500, s=24000, angle=90, tip=0.1):
         self.number = number
         self.name = name
         self.diameter = dia

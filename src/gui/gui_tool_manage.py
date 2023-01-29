@@ -90,7 +90,9 @@ class GuiToolManager:
     def _add_tool_button_clicked(self):
         """Handle add tool button click event"""
         self._main.update_status('\u27f1 Tool')
-        if self._tool_list.is_tool_in_list(self._tool_selection_get_to_int()):
+        tool_entry = self._tool_selection_get_to_int()
+        if self._tool_list.is_tool_in_list(tool_entry):
+            self._tool_list.select_tool(tool_entry)
             self._config_gui.set_tool(self._tool_list.get_selected_tool())
         self._config_gui.show()
 
