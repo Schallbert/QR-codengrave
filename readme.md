@@ -10,6 +10,8 @@ The project is written in Python. The program is not very fast or creates super 
 but special care has to be taken to get the machining time low while maintaining a high readability of the 
 QR-code.
 
+The full documentation is available on my [website](https://schallbert.de/projects-software/qr-codengrave/).
+
 ## Disclaimer
 Releases of this software are provided to users as-is. Although I created this application with all due care, created unit tests,
 and tested its output code on my own machine, I cannot take any responsibility for how and for what this software is used.
