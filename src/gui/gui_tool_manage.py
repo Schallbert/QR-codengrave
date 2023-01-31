@@ -3,8 +3,6 @@ from tkinter import ttk
 
 from src.gui.gui_tool_configure import GuiConfigureTool
 
-from src.platform.machinify_vector import ToolList
-
 
 class GuiToolManager:
     def __init__(self, main, msgbox, params, options):

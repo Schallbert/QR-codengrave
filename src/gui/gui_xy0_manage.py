@@ -75,4 +75,3 @@ class GuiXy0Manager:
             return
         self._guiconfig.show()
         self._main.update_status('Set XY0')
-
