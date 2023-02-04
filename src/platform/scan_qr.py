@@ -49,23 +49,28 @@ class ScanQr:
 
         while position.x < self._qr_todo.size:
             if self._qr_todo.table[row, position.x]:
-                while self._qr_todo.table[row + y_length, position.x]:
-                    y_length = y_length + 1
-                    if row + y_length >= self._qr_todo.size:
-                        break
-                if y_length > 1:
-                    segment = LineSegment(0, y_length, Position(position.x, position.y))
-                    vectors.append(segment)
-                    self._clear_todo(segment)
-                    y_length = 1
-                else:
-                    x_length = x_length + 1
+                x_length = x_length + 1
+                if row + y_length < self._qr_todo.size:
+                    while self._qr_todo.table[row + y_length, position.x]:
+                        y_length = y_length + 1
+                    if y_length > 1:
+                        segment = LineSegment(0, y_length, Position(position.x, position.y))
+                        vectors.append(segment)
+                        self._clear_todo(segment)
+                        y_length = 1
+                        x_length = 0
             elif x_length > 0:
                 segment = LineSegment(x_length, 0, Position(position.x - x_length, position.y))
                 vectors.append(segment)
                 self._clear_todo(segment)
                 x_length = 0
             position.x = position.x + 1
+
+        if x_length > 0:
+            segment = LineSegment(x_length, 0, Position(position.x - x_length, position.y))
+            vectors.append(segment)
+            self._clear_todo(segment)
+
         return vectors
 
     def _get_line_right_to_left(self, row):

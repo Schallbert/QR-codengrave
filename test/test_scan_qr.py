@@ -67,33 +67,82 @@ class TestScanQr(unittest.TestCase):
         self.sim_qr.table[4, 3] = True
         self.sim_qr.table[4, 4] = True
         self.sim_qr.size = 5
+        self.scan_qr = ScanQr(self.sim_qr)
 
     def test_getlinel2r_line0_returns_3vectors(self):
-        scan_qr = ScanQr(self.sim_qr)
-        vectors = scan_qr._get_line_left_to_right(0)
+        vectors = self.scan_qr._get_line_left_to_right(0)
         self.assertEqual(3, len(vectors))
 
     def test_getlinel2r_line0_vector0_contents_ok(self):
-        scan_qr = ScanQr(self.sim_qr)
-        vectors = scan_qr._get_line_left_to_right(0)
+        vectors = self.scan_qr._get_line_left_to_right(0)
         self.assertEqual(1, vectors[0].x_length)
         self.assertEqual(0, vectors[0].y_length)
         self.assertEqual(0, vectors[0].position.x)
         self.assertEqual(0, vectors[0].position.y)
 
     def test_getlinel2r_line0_vector1_contents_ok(self):
-        scan_qr = ScanQr(self.sim_qr)
-        vectors = scan_qr._get_line_left_to_right(0)
+        vectors = self.scan_qr._get_line_left_to_right(0)
         self.assertEqual(0, vectors[1].x_length)
         self.assertEqual(3, vectors[1].y_length)
         self.assertEqual(2, vectors[1].position.x)
         self.assertEqual(0, vectors[1].position.y)
 
     def test_getlinel2r_line0_vector2_contents_ok(self):
-        scan_qr = ScanQr(self.sim_qr)
-        vectors = scan_qr._get_line_left_to_right(0)
+        vectors = self.scan_qr._get_line_left_to_right(0)
         self.assertEqual(1, vectors[2].x_length)
         self.assertEqual(0, vectors[2].y_length)
         self.assertEqual(3, vectors[2].position.x)
         self.assertEqual(0, vectors[2].position.y)
+
+    def test_getlinel2r_line1_returns_3vectors(self):
+        vectors = self.scan_qr._get_line_left_to_right(1)
+        self.assertEqual(2, len(vectors))
+
+    def test_getlinel2r_line1_vector0_contents_ok(self):
+        vectors = self.scan_qr._get_line_left_to_right(1)
+        self.assertEqual(0, vectors[0].x_length)
+        self.assertEqual(2, vectors[0].y_length)
+        self.assertEqual(1, vectors[0].position.x)
+        self.assertEqual(1, vectors[0].position.y)
+
+    def test_getlinel2r_line1_vector1_contents_ok(self):
+        vectors = self.scan_qr._get_line_left_to_right(1)
+        self.assertEqual(0, vectors[1].x_length)
+        self.assertEqual(2, vectors[1].y_length)
+        self.assertEqual(2, vectors[1].position.x)
+        self.assertEqual(1, vectors[1].position.y)
+
+    def test_getlinel2r_line2_returns_1vector(self):
+        vectors = self.scan_qr._get_line_left_to_right(2)
+        self.assertEqual(1, len(vectors))
+
+    def test_getlinel2r_line2_vector0_contents_ok(self):
+        vectors = self.scan_qr._get_line_left_to_right(2)
+        self.assertEqual(5, vectors[0].x_length)
+        self.assertEqual(0, vectors[0].y_length)
+        self.assertEqual(0, vectors[0].position.x)
+        self.assertEqual(2, vectors[0].position.y)
+
+    def test_getlinel2r_line3_returns_0vector(self):
+        vectors = self.scan_qr._get_line_left_to_right(3)
+        self.assertEqual(0, len(vectors))
+
+    def test_getlinel2r_line4_returns_2vectors(self):
+        vectors = self.scan_qr._get_line_left_to_right(4)
+        self.assertEqual(2, len(vectors))
+
+    def test_getlinel2r_line4_vector0_contents_ok(self):
+        vectors = self.scan_qr._get_line_left_to_right(4)
+        self.assertEqual(1, vectors[0].x_length)
+        self.assertEqual(0, vectors[0].y_length)
+        self.assertEqual(1, vectors[0].position.x)
+        self.assertEqual(4, vectors[0].position.y)
+
+    def test_getlinel2r_line4_vector1_contents_ok(self):
+        vectors = self.scan_qr._get_line_left_to_right(4)
+        self.assertEqual(2, vectors[1].x_length)
+        self.assertEqual(0, vectors[1].y_length)
+        self.assertEqual(3, vectors[1].position.x)
+        self.assertEqual(4, vectors[1].position.y)
+
 
