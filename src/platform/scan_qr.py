@@ -44,33 +44,35 @@ class ScanQr:
         x_length = 0
         y_length = 1
 
-        if row > self._qr_todo.size:
-            return
+        if row >= self._qr_todo.size:
+            return vectors
 
         while position.x < self._qr_todo.size:
             if self._qr_todo.table[row, position.x]:
-                x_length = x_length + 1
-                if row + y_length < self._qr_todo.size:
-                    while self._qr_todo.table[row + y_length, position.x]:
-                        y_length = y_length + 1
-                    if y_length > 1:
-                        segment = LineSegment(0, y_length, Position(position.x, position.y))
-                        vectors.append(segment)
-                        self._clear_todo(segment)
-                        y_length = 1
-                        x_length = 0
+                x_length += 1
+                while row + y_length < self._qr_todo.size and self._qr_todo.table[row + y_length, position.x]:
+                    y_length += 1
             elif x_length > 0:
                 segment = LineSegment(x_length, 0, Position(position.x - x_length, position.y))
                 vectors.append(segment)
                 self._clear_todo(segment)
                 x_length = 0
-            position.x = position.x + 1
+            if y_length > 1:
+                if x_length > 1:
+                    segment = LineSegment((x_length - 1), 0, Position(position.x - x_length - 1, position.y))
+                    vectors.append(segment)
+                    self._clear_todo(segment)
+                segment = LineSegment(0, y_length, Position(position.x, position.y))
+                vectors.append(segment)
+                self._clear_todo(segment)
+                y_length = 1
+                x_length = 0
+            position.x += 1
 
         if x_length > 0:
             segment = LineSegment(x_length, 0, Position(position.x - x_length, position.y))
             vectors.append(segment)
             self._clear_todo(segment)
-
         return vectors
 
     def _get_line_right_to_left(self, row):
@@ -78,33 +80,40 @@ class ScanQr:
         of coherent bits that are True. If the bit below the currently targeted bit is also True, then a vertical
         line is created. Else, a horizontal line is created."""
         vectors = []
-        position = Position(self._qr_todo.size, row)
-        start_position = Position(self._qr_todo.size, row)
+        position = Position(self._qr_todo.size - 1, row)
         x_length = 0
         y_length = 1
 
-        if row > self._qr_todo.size:
-            return
+        if row >= self._qr_todo.size:
+            return vectors
 
         while position.x >= 0:
-            if self._qr_todo.table[position.x][row]:
-                while self._qr_todo.table[x_length][row + y_length]:
-                    y_length = y_length + 1
-                if y_length > 1:
-                    segment = LineSegment(0, y_length, start_position)
-                    vectors.append(segment)
-                    self._clear_todo(segment)
-                    y_length = 1
-                else:
-                    x_length = x_length + 1
+            if self._qr_todo.table[row, position.x]:
+                x_length += 1
+                while row + y_length < self._qr_todo.size and self._qr_todo.table[row + y_length, position.x]:
+                    y_length += 1
             elif x_length > 0:
-                segment = LineSegment(-x_length, 0, start_position)
+                segment = LineSegment(-x_length, 0, Position(position.x, position.y))
                 vectors.append(segment)
                 self._clear_todo(segment)
                 x_length = 0
-            else:
-                start_position.x = position.x - 1
-            position.x = position.x - 1
+            if y_length > 1:
+                if x_length > 1:
+                    segment = LineSegment(-(x_length - 1), 0, Position(position.x + x_length - 1, position.y))
+                    vectors.append(segment)
+                    self._clear_todo(segment)
+                segment = LineSegment(0, y_length, Position(position.x, position.y))
+                vectors.append(segment)
+                self._clear_todo(segment)
+                y_length = 1
+                x_length = 0
+            position.x -= 1
+
+        position.x = 0
+        if x_length > 0:
+            segment = LineSegment(-x_length, 0, Position(position.x, position.y))
+            vectors.append(segment)
+            self._clear_todo(segment)
         return vectors
 
     def _clear_todo(self, segment):
