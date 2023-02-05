@@ -30,9 +30,10 @@ class ScanQr:
     def get_vectors(self):
         line_list = []
         for line in range(self._qr_todo.size):
-            line_list += self._get_line_left_to_right(line)
-            # if line + 1 < self._qr_todo.size:
-            #    line_list += self._get_line_right_to_left(line + 1)
+            if line % 2:
+                line_list += self._get_line_left_to_right(line)
+            else:
+                line_list += self._get_line_right_to_left(line)
         return line_list
 
     def _get_line_left_to_right(self, row):
@@ -62,6 +63,7 @@ class ScanQr:
                 vectors.append(segment)
                 self._clear_todo(segment)
                 y_length = 1
+                x_length = 0
             position.x += 1
 
         if x_length > 0:
@@ -97,6 +99,7 @@ class ScanQr:
                 vectors.append(segment)
                 self._clear_todo(segment)
                 y_length = 1
+                x_length = 0
             position.x -= 1
 
         position.x = -1

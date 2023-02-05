@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import MagicMock
 
 from qrcodegen import QrCode
-from src.platform.scan_qr import QrValueTable, ScanQr
+from src.platform.scan_qr import QrValueTable, ScanQr, LineSegment, Position
 
 
 class TestQrValueTable(unittest.TestCase):
@@ -93,14 +93,14 @@ class TestScanQr(unittest.TestCase):
 
     def test_getlinel2r_line0_vector2_contents_ok(self):
         vectors = self.scan_qr._get_line_left_to_right(0)
-        self.assertEqual(2, vectors[2].x_length)
+        self.assertEqual(1, vectors[2].x_length)
         self.assertEqual(0, vectors[2].y_length)
-        self.assertEqual(2, vectors[2].position.x)
+        self.assertEqual(3, vectors[2].position.x)
         self.assertEqual(0, vectors[2].position.y)
 
-    def test_getlinel2r_line1_returns_3vectors(self):
+    def test_getlinel2r_line1_returns_2vectors(self):
         vectors = self.scan_qr._get_line_left_to_right(1)
-        self.assertEqual(3, len(vectors))
+        self.assertEqual(2, len(vectors))
 
     def test_getlinel2r_line1_vector0_contents_ok(self):
         vectors = self.scan_qr._get_line_left_to_right(1)
@@ -149,9 +149,9 @@ class TestScanQr(unittest.TestCase):
         self.assertEqual(3, vectors[1].position.x)
         self.assertEqual(4, vectors[1].position.y)
 
-    def test_getliner2l_line0_returns_3vectors(self):
+    def test_getliner2l_line0_returns_2vectors(self):
         vectors = self.scan_qr._get_line_right_to_left(0)
-        self.assertEqual(3, len(vectors))
+        self.assertEqual(2, len(vectors))
 
     def test_getliner2l_line0_vector0_contents_ok(self):
         vectors = self.scan_qr._get_line_right_to_left(0)
@@ -162,21 +162,14 @@ class TestScanQr(unittest.TestCase):
 
     def test_getliner2l_line0_vector1_contents_ok(self):
         vectors = self.scan_qr._get_line_right_to_left(0)
-        self.assertEqual(-2, vectors[1].x_length)
+        self.assertEqual(-1, vectors[1].x_length)
         self.assertEqual(0, vectors[1].y_length)
-        self.assertEqual(3, vectors[1].position.x)
+        self.assertEqual(0, vectors[1].position.x)
         self.assertEqual(0, vectors[1].position.y)
 
-    def test_getliner2l_line0_vector2_contents_ok(self):
-        vectors = self.scan_qr._get_line_right_to_left(0)
-        self.assertEqual(-1, vectors[2].x_length)
-        self.assertEqual(0, vectors[2].y_length)
-        self.assertEqual(0, vectors[2].position.x)
-        self.assertEqual(0, vectors[2].position.y)
-
-    def test_getliner2l_line1_returns_3vectors(self):
+    def test_getliner2l_line1_returns_2vectors(self):
         vectors = self.scan_qr._get_line_right_to_left(1)
-        self.assertEqual(3, len(vectors))
+        self.assertEqual(2, len(vectors))
 
     def test_getliner2l_line1_vector0_contents_ok(self):
         vectors = self.scan_qr._get_line_right_to_left(1)
@@ -191,13 +184,6 @@ class TestScanQr(unittest.TestCase):
         self.assertEqual(2, vectors[1].y_length)
         self.assertEqual(1, vectors[1].position.x)
         self.assertEqual(1, vectors[1].position.y)
-
-    def test_getliner2l_line1_vector2_contents_ok(self):
-        vectors = self.scan_qr._get_line_right_to_left(1)
-        self.assertEqual(-2, vectors[2].x_length)
-        self.assertEqual(0, vectors[2].y_length)
-        self.assertEqual(2, vectors[2].position.x)
-        self.assertEqual(1, vectors[2].position.y)
 
     def test_getliner2l_line2_returns_1vector(self):
         vectors = self.scan_qr._get_line_right_to_left(2)
@@ -231,3 +217,37 @@ class TestScanQr(unittest.TestCase):
         self.assertEqual(0, vectors[1].y_length)
         self.assertEqual(1, vectors[1].position.x)
         self.assertEqual(4, vectors[1].position.y)
+
+    def test_cleartodo_singlepixel_ok(self):
+        to_be_cleared = LineSegment(1, 0, Position(0, 0))
+        self.scan_qr._clear_todo(to_be_cleared)
+        vectors = self.scan_qr._get_line_left_to_right(0)
+        self.assertEqual(2, len(vectors))
+        self.assertEqual(2, vectors[0].position.x)
+        self.assertEqual(3, vectors[1].position.x)
+
+    def test_cleartodo_line_horizontal_ok(self):
+        to_be_cleared = LineSegment(2, 0, Position(2, 0))
+        self.scan_qr._clear_todo(to_be_cleared)
+        vectors = self.scan_qr._get_line_left_to_right(0)
+        self.assertEqual(1, len(vectors))
+        self.assertEqual(0, vectors[0].position.x)
+
+    def test_cleartodo_fullline_horizontal_ok(self):
+        to_be_cleared = LineSegment(5, 0, Position(0, 2))
+        self.scan_qr._clear_todo(to_be_cleared)
+        vectors = self.scan_qr._get_line_left_to_right(2)
+        self.assertEqual(0, len(vectors))
+
+    def test_cleartodo_line_vertical_ok(self):
+        to_be_cleared = LineSegment(0, 3, Position(2, 0))
+        self.scan_qr._clear_todo(to_be_cleared)
+        vectors = self.scan_qr._get_line_left_to_right(0)
+        self.assertEqual(2, len(vectors))
+        self.assertEqual(0, vectors[0].position.x)
+        self.assertEqual(3, vectors[1].position.x)
+
+    def test_getvectors_returns_7vectors(self):
+        vectors = self.scan_qr.get_vectors()
+        self.assertEqual(7, len(vectors))
+
