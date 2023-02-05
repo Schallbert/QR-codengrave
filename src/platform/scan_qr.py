@@ -4,7 +4,11 @@ class Position:
         self.y = y
 
     def __eq__(self, other):
-        return (self.x == other.x) and (self.y == other.y)
+        result = (self.x == other.x) and (self.y == other.y)
+        if not result:
+            print(str(self.x) + ' ' + str(other.x))
+            print(str(self.y) + ' ' + str(other.y))
+        return result
 
 
 class LineSegment:
@@ -18,6 +22,11 @@ class LineSegment:
         result &= (self.x_length == other.x_length)
         result &= (self.y_length == other.y_length)
         result &= (self.position == other.position)
+
+        if not result:
+            print(str(self.x_length) + ' ' + str(other.x_length))
+            print(str(self.y_length )+ ' ' + str(other.y_length))
+
         return result
 
 

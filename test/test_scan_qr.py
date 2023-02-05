@@ -222,7 +222,30 @@ class TestScanQr(unittest.TestCase):
         self.assertEqual(8, len(vectors))
 
     def test_getvectors_line0_ok(self):
-        expect = LineSegment(1, 0, Position(0, 0))
+        expect0 = LineSegment(1, 0, Position(0, 0))
+        expect1 = LineSegment(0, 3, Position(2, 0))
+        expect2 = LineSegment(1, 0, Position(3, 0))
         vectors = self.scan_qr.get_vectors()
-        self.assertEqual(expect, vectors[0])
+        self.assertEqual(expect0, vectors[0])
+        self.assertEqual(expect1, vectors[1])
+        self.assertEqual(expect2, vectors[2])
+
+    def test_getvectors_line1_ok(self):
+        expect0 = LineSegment(0, 2, Position(1, 1))
+        vectors = self.scan_qr.get_vectors()
+        self.assertEqual(expect0, vectors[3])
+
+    def test_getvectors_line2_ok(self):
+        expect0 = LineSegment(1, 0, Position(0, 2))
+        expect1 = LineSegment(2, 0, Position(3, 2))
+        vectors = self.scan_qr.get_vectors()
+        self.assertEqual(expect0, vectors[4])
+        self.assertEqual(expect1, vectors[5])
+
+    def test_getvectors_line4_ok(self):
+        expect0 = LineSegment(1, 0, Position(1, 4))
+        expect1 = LineSegment(2, 0, Position(3, 4))
+        vectors = self.scan_qr.get_vectors()
+        self.assertEqual(expect0, vectors[6])
+        self.assertEqual(expect1, vectors[7])
 
