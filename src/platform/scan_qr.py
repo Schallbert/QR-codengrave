@@ -3,12 +3,22 @@ class Position:
         self.x = x
         self.y = y
 
+    def __eq__(self, other):
+        return (self.x == other.x) and (self.y == other.y)
+
 
 class LineSegment:
     def __init__(self, x_length, y_length, position):
         self.x_length = x_length
         self.y_length = y_length
         self.position = position
+
+    def __eq__(self, other):
+        result = True
+        result &= (self.x_length == other.x_length)
+        result &= (self.y_length == other.y_length)
+        result &= (self.position == other.position)
+        return result
 
 
 class QrValueTable:
@@ -31,9 +41,9 @@ class ScanQr:
         line_list = []
         for line in range(self._qr_todo.size):
             if line % 2:
-                line_list += self._get_line_left_to_right(line)
-            else:
                 line_list += self._get_line_right_to_left(line)
+            else:
+                line_list += self._get_line_left_to_right(line)
         return line_list
 
     def _get_line_left_to_right(self, row):
