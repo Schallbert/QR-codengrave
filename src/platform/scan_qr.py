@@ -4,11 +4,7 @@ class Position:
         self.y = y
 
     def __eq__(self, other):
-        result = (self.x == other.x) and (self.y == other.y)
-        if not result:
-            print(str(self.x) + ' ' + str(other.x))
-            print(str(self.y) + ' ' + str(other.y))
-        return result
+        return (self.x == other.x) and (self.y == other.y)
 
 
 class LineSegment:
@@ -22,11 +18,6 @@ class LineSegment:
         result &= (self.x_length == other.x_length)
         result &= (self.y_length == other.y_length)
         result &= (self.position == other.position)
-
-        if not result:
-            print(str(self.x_length) + ' ' + str(other.x_length))
-            print(str(self.y_length )+ ' ' + str(other.y_length))
-
         return result
 
 
@@ -36,6 +27,8 @@ class QrValueTable:
         self.size = 0
 
     def set_qr(self, qr):
+        """Takes a QR-code object and copies its values into a dictionary.
+        :param qr: a QrCode object"""
         self.size = qr.get_size()
         for y in range(self.size):
             for x in range(self.size):
@@ -47,6 +40,10 @@ class ScanQr:
         self._qr_todo = qr_value_table
 
     def get_vectors(self):
+        """Compiles a list of vectors from the qr-code input that scans the fields
+        row-by-row, left-to-right for even line numbers, and right-to-left for uneven line numbers
+        to reduce machining time.
+        :return line_list: a list of LineSegments"""
         line_list = []
         for line in range(self._qr_todo.size):
             if line % 2:
@@ -58,7 +55,9 @@ class ScanQr:
     def _get_line_left_to_right(self, row):
         """This algorithm walks through a line of the QR-code left to right and line by line to construct vectors
         of coherent bits that are True. If the bit below the currently targeted bit is also True, then a vertical
-        line is created. Else, a horizontal line is created."""
+        line is created. Else, a horizontal vector is created.
+        :param row: int the row in the QR-code to analyze
+        :return a list of vectors"""
         vectors = []
         position = Position(0, row)
         x_length = 0
@@ -94,7 +93,9 @@ class ScanQr:
     def _get_line_right_to_left(self, row):
         """This algorithm walks through a line of the QR-code right to left and line by line to construct vectors
         of coherent bits that are True. If the bit below the currently targeted bit is also True, then a vertical
-        line is created. Else, a horizontal line is created."""
+        line is created. Else, a horizontal vector is created.
+        :param row: the row in the QR-code to analyze
+        :return a list of vectors"""
         vectors = []
         position = Position(self._qr_todo.size - 1, row)
         x_length = 0
@@ -129,6 +130,9 @@ class ScanQr:
         return vectors
 
     def _clear_todo(self, segment):
+        """Method to clear a segment of the QR-code working copy. Clearing is done to not double-engrave
+        already completed fields.
+        :param segment: A LineSegment object"""
         if segment.x_length == 0:
             for y in range(segment.y_length):
                 self._qr_todo.table[segment.position.y + y, segment.position.x] = False
