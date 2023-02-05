@@ -58,15 +58,10 @@ class ScanQr:
                 self._clear_todo(segment)
                 x_length = 0
             if y_length > 1:
-                if x_length > 1:
-                    segment = LineSegment((x_length - 1), 0, Position(position.x - x_length - 1, position.y))
-                    vectors.append(segment)
-                    self._clear_todo(segment)
                 segment = LineSegment(0, y_length, Position(position.x, position.y))
                 vectors.append(segment)
                 self._clear_todo(segment)
                 y_length = 1
-                x_length = 0
             position.x += 1
 
         if x_length > 0:
@@ -93,25 +88,20 @@ class ScanQr:
                 while row + y_length < self._qr_todo.size and self._qr_todo.table[row + y_length, position.x]:
                     y_length += 1
             elif x_length > 0:
-                segment = LineSegment(-x_length, 0, Position(position.x, position.y))
+                segment = LineSegment(-x_length, 0, Position(position.x + x_length, position.y))
                 vectors.append(segment)
                 self._clear_todo(segment)
                 x_length = 0
             if y_length > 1:
-                if x_length > 1:
-                    segment = LineSegment(-(x_length - 1), 0, Position(position.x + x_length - 1, position.y))
-                    vectors.append(segment)
-                    self._clear_todo(segment)
                 segment = LineSegment(0, y_length, Position(position.x, position.y))
                 vectors.append(segment)
                 self._clear_todo(segment)
                 y_length = 1
-                x_length = 0
             position.x -= 1
 
-        position.x = 0
+        position.x = -1
         if x_length > 0:
-            segment = LineSegment(-x_length, 0, Position(position.x, position.y))
+            segment = LineSegment(-x_length, 0, Position(position.x + x_length, position.y))
             vectors.append(segment)
             self._clear_todo(segment)
         return vectors
