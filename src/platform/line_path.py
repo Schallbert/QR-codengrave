@@ -51,7 +51,6 @@ class LinePath:
                 vectors.append(segment)
                 self._clear_todo(segment)
                 y_length = 1
-                x_length = 0
             position.x += 1
 
         if x_length > 0:

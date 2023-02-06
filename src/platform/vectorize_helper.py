@@ -34,4 +34,4 @@ class QrValueTable:
         self.size = qr.get_size()
         for y in range(self.size):
             for x in range(self.size):
-                self.table[x, y] = qr.get_module(x, y)
+                self.table[y, x] = qr.get_module(x, y)

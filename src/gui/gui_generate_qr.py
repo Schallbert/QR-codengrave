@@ -83,25 +83,32 @@ class GuiGenerateQr:
         """Method that draws a QR code path based on the QrPathSegment data class with Turtle."""
         self._main.update_status('\u270d Drawing')
 
-        path_count = len(self._path.get_vectors())
+        vect = self._path.get_vectors()
+        size = self._path.get_size()
+        path_count = len(vect)
+        print(path_count)
         self.progress.config(maximum=path_count)
         self._stop_draw = False
-        for i in range(path_count):
-            self.progress.step()
+        for vect in vect:
             if self._stop_draw:
                 break
-            for vect in self._path.get_vectors():
-                if self._stop_draw:
-                    break
-                if vect.x_length == 0:
-                    length = vect.y_length
+
+            self.progress.step()
+            self._turtle.setpos(self.pen_size * (vect.position.x - size / 2),
+                                self.pen_size * (size / 2 - vect.position.y))
+            if vect.x_length == 0:
+                length = vect.y_length
+                self._turtle.setheading(270)
+            else:
+                length = vect.x_length
+                if length > 0:
+                    self._turtle.setheading(0)
                 else:
-                    length = vect.x_length
-                self._turtle.setpos(self.pen_size * vect.position.x, self.pen_size * vect.position.y)
-                self._turtle.setheading(vect.x_length * 90)
-                self._turtle.down()
-                self._turtle.forward(self.pen_size * length)
-                self._turtle.up()
+                    self._turtle.setheading(180)
+            #print('posx: ' + str(vect.position.x) + ' posy: ' + str(vect.position.y) + ' xlen: ' + str(vect.x_length) + ' ylen: ' + str(vect.y_length))
+            self._turtle.down()
+            self._turtle.forward(self.pen_size * (abs(length) - 1))
+            self._turtle.up()
 
         self._turtle.hideturtle()
         self._stop_draw = False
@@ -128,12 +135,8 @@ class GuiGenerateQr:
         if qr_size > 100:
             self.pen_size = 1
         else:
-            self.pen_size = 13 - (qr_size // 10)
+            self.pen_size = 12 - (qr_size // 10)
         self._turtle.pensize(self.pen_size)
-
-        # center turtle on screen
-        offset = (qr_size * self.pen_size) / 2
-        self._turtle.goto(0 - offset, 0 + offset)
 
         self._turtle.showturtle()
 
