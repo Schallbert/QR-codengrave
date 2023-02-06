@@ -2,7 +2,7 @@ import unittest
 from datetime import timedelta
 
 from src.platform.machinify_vector import MachinifyVector, Tool, EngraveParams
-from src.platform.vectorize_qr import QrPathSegment, Point, Line, QrLineData, Direction
+from src.platform.vectorize_helper import QrPathSegment, Point, Line, QrLineData, Direction
 
 
 def set_path_tool(pathvar, tool):

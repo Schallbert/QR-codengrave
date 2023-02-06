@@ -1,43 +1,13 @@
-class Position:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-
-    def __eq__(self, other):
-        return (self.x == other.x) and (self.y == other.y)
+from src.platform.vectorize_helper import Point, LineSegment
 
 
-class LineSegment:
-    def __init__(self, x_length, y_length, position):
-        self.x_length = x_length
-        self.y_length = y_length
-        self.position = position
-
-    def __eq__(self, other):
-        result = True
-        result &= (self.x_length == other.x_length)
-        result &= (self.y_length == other.y_length)
-        result &= (self.position == other.position)
-        return result
-
-
-class QrValueTable:
-    def __init__(self):
-        self.table = {}
-        self.size = 0
-
-    def set_qr(self, qr):
-        """Takes a QR-code object and copies its values into a dictionary.
-        :param qr: a QrCode object"""
-        self.size = qr.get_size()
-        for y in range(self.size):
-            for x in range(self.size):
-                self.table[x, y] = qr.get_module(x, y)
-
-
-class ScanQr:
+class LinePath:
     def __init__(self, qr_value_table):
         self._qr_todo = qr_value_table
+        self._size = qr_value_table.size
+
+    def get_size(self):
+        return self._size
 
     def get_vectors(self):
         """Compiles a list of vectors from the qr-code input that scans the fields
@@ -45,7 +15,7 @@ class ScanQr:
         to reduce machining time.
         :return line_list: a list of LineSegments"""
         line_list = []
-        for line in range(self._qr_todo.size):
+        for line in range(self._size):
             if line % 2:
                 line_list += self._get_line_right_to_left(line)
             else:
@@ -59,25 +29,25 @@ class ScanQr:
         :param row: int the row in the QR-code to analyze
         :return a list of vectors"""
         vectors = []
-        position = Position(0, row)
+        position = Point(0, row)
         x_length = 0
         y_length = 1
 
-        if row >= self._qr_todo.size:
+        if row >= self._size:
             return vectors
 
-        while position.x < self._qr_todo.size:
+        while position.x < self._size:
             if self._qr_todo.table[row, position.x]:
                 x_length += 1
-                while row + y_length < self._qr_todo.size and self._qr_todo.table[row + y_length, position.x]:
+                while row + y_length < self._size and self._qr_todo.table[row + y_length, position.x]:
                     y_length += 1
             elif x_length > 0:
-                segment = LineSegment(x_length, 0, Position(position.x - x_length, position.y))
+                segment = LineSegment(x_length, 0, Point(position.x - x_length, position.y))
                 vectors.append(segment)
                 self._clear_todo(segment)
                 x_length = 0
             if y_length > 1:
-                segment = LineSegment(0, y_length, Position(position.x, position.y))
+                segment = LineSegment(0, y_length, Point(position.x, position.y))
                 vectors.append(segment)
                 self._clear_todo(segment)
                 y_length = 1
@@ -85,7 +55,7 @@ class ScanQr:
             position.x += 1
 
         if x_length > 0:
-            segment = LineSegment(x_length, 0, Position(position.x - x_length, position.y))
+            segment = LineSegment(x_length, 0, Point(position.x - x_length, position.y))
             vectors.append(segment)
             self._clear_todo(segment)
         return vectors
@@ -97,25 +67,25 @@ class ScanQr:
         :param row: the row in the QR-code to analyze
         :return a list of vectors"""
         vectors = []
-        position = Position(self._qr_todo.size - 1, row)
+        position = Point(self._size - 1, row)
         x_length = 0
         y_length = 1
 
-        if row >= self._qr_todo.size:
+        if row >= self._size:
             return vectors
 
         while position.x >= 0:
             if self._qr_todo.table[row, position.x]:
                 x_length += 1
-                while row + y_length < self._qr_todo.size and self._qr_todo.table[row + y_length, position.x]:
+                while row + y_length < self._size and self._qr_todo.table[row + y_length, position.x]:
                     y_length += 1
             elif x_length > 0:
-                segment = LineSegment(-x_length, 0, Position(position.x + x_length, position.y))
+                segment = LineSegment(-x_length, 0, Point(position.x + x_length, position.y))
                 vectors.append(segment)
                 self._clear_todo(segment)
                 x_length = 0
             if y_length > 1:
-                segment = LineSegment(0, y_length, Position(position.x, position.y))
+                segment = LineSegment(0, y_length, Point(position.x, position.y))
                 vectors.append(segment)
                 self._clear_todo(segment)
                 y_length = 1
@@ -124,7 +94,7 @@ class ScanQr:
 
         position.x = -1
         if x_length > 0:
-            segment = LineSegment(-x_length, 0, Position(position.x + x_length, position.y))
+            segment = LineSegment(-x_length, 0, Point(position.x + x_length, position.y))
             vectors.append(segment)
             self._clear_todo(segment)
         return vectors

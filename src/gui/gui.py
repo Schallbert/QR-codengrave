@@ -4,7 +4,7 @@ from tkinter.filedialog import asksaveasfile
 from shutil import copyfileobj
 
 from src.gui.gui_generate_qr import GuiGenerateQr
-from src.gui.gui_tool_manage import GuiToolManager, ToolList
+from src.gui.gui_tool_manage import GuiToolManager
 from src.gui.gui_generate_gcode import GuiGenerateGcode
 from src.gui.gui_status_bar import GuiStatusBar
 from src.gui.gui_engrave_manage import GuiEngraveManager
@@ -13,7 +13,8 @@ from src.gui.gui_xy0_manage import GuiXy0Manager
 from src.helpers.gui_helpers import MsgBox
 from src.helpers.persistence import Persistence
 
-from src.platform.machinify_vector import MachinifyVector, EngraveParams, Point
+from src.platform.machinify_vector import MachinifyVector, EngraveParams, ToolList
+from src.platform.vectorize_helper import Point
 
 
 class App:
@@ -82,7 +83,7 @@ class App:
         """Tries to obtain QR-code paths and tool information from other parts of the GUI.
         Forwards the data to the Machinify module.
         :returns False: if data is not available, else returns True."""
-        paths = self.gui_qr_generator.get_qr_spiral_paths()
+        paths = self.gui_qr_generator.get_qr_path()
         tool = self.gui_tool_manager.get_selected_tool()
 
         if paths is None:

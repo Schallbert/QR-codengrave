@@ -1,7 +1,7 @@
 from io import StringIO
 from datetime import timedelta
 
-from src.platform.vectorize_qr import Point, Direction
+from src.platform.vectorize_helper import Point, LineSegment
 
 
 class Tool:

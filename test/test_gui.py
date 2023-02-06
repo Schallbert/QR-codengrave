@@ -3,7 +3,7 @@ import tkinter as tk
 from unittest.mock import patch, MagicMock
 
 from src.helpers.gui_helpers import MsgBox
-from src.platform.vectorize_qr import Point
+from src.platform.vectorize_helper import Point
 from src.platform.machinify_vector import Tool, ToolList, EngraveParams
 
 from src.gui.gui_tool_configure import GuiConfigureTool
