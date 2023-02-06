@@ -1,4 +1,5 @@
 from io import StringIO
+from math import sqrt
 from datetime import timedelta
 
 from src.platform.vectorize_helper import Point, LineSegment
@@ -177,12 +178,18 @@ class MachinifyVector:
         :returns _job_duration: a timedelta object representing seconds."""
         if self._qr_path is None or self._tool is None:
             return timedelta(0)
-        count_z_moves = 0
+        vect = self._qr_path.get_vectors()
+        count_z_moves = 2 * len(vect)
 
-        for path in self._qr_path:
-            count_z_moves += len(path.get_z_vector())
+        xy_moves_mm = 0
+        pos = Point()
+        for v in vect:
+            xy_moves_mm += abs(v.x_length + v.y_length) + \
+                           sqrt(abs(v.position.x - pos.x) ** 2 +
+                                abs(v.position.y - pos.y) ** 2)
+            pos = v.position
 
-        xy_moves_mm = self._get_xy_move_per_step() * self._qr_path[0].get_xy_line().get_abs_length() ** 2
+        xy_moves_mm *= self._get_xy_move_per_step()
         z_moves_mm = count_z_moves * (self._engrave_params.z_hover + self._engrave_params.z_engrave)
 
         xy_moves_sec = xy_moves_mm / self._tool.fxy * 60 * self._time_buffer
@@ -197,7 +204,7 @@ class MachinifyVector:
         :returns tuple: returns a tuple of QR engrave dimension and engrave bit size"""
         if self._qr_path is None or self._tool is None:
             return tuple((0, 0))
-        return tuple((self._get_xy_move_per_step() * (self._qr_path[0].get_xy_line().get_abs_length() - 1),
+        return tuple((self._get_xy_move_per_step() * self._qr_path.get_size(),
                       self._get_xy_move_per_step()))
 
     def generate_gcode(self):
