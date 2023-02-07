@@ -86,7 +86,6 @@ class GuiGenerateQr:
         vect = self._path.get_vectors()
         size = self._path.get_size()
         path_count = len(vect)
-        print(path_count)
         self.progress.config(maximum=path_count)
         self._stop_draw = False
         for vect in vect:
@@ -105,7 +104,6 @@ class GuiGenerateQr:
                     self._turtle.setheading(0)
                 else:
                     self._turtle.setheading(180)
-            #print('posx: ' + str(vect.position.x) + ' posy: ' + str(vect.position.y) + ' xlen: ' + str(vect.x_length) + ' ylen: ' + str(vect.y_length))
             self._turtle.down()
             self._turtle.forward(self.pen_size * (abs(length) - 1))
             self._turtle.up()

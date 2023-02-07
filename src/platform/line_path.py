@@ -5,6 +5,7 @@ class LinePath:
     def __init__(self, qr_value_table):
         self._qr_todo = qr_value_table
         self._size = qr_value_table.size
+        self._line_list = []
 
     def get_size(self):
         return self._size
@@ -14,13 +15,13 @@ class LinePath:
         row-by-row, left-to-right for even line numbers, and right-to-left for uneven line numbers
         to reduce machining time.
         :return line_list: a list of LineSegments"""
-        line_list = []
-        for line in range(self._size):
-            if line % 2:
-                line_list += self._get_line_right_to_left(line)
-            else:
-                line_list += self._get_line_left_to_right(line)
-        return line_list
+        if not self._line_list:
+            for line in range(self._size):
+                if line % 2:
+                    self._line_list += self._get_line_right_to_left(line)
+                else:
+                    self._line_list += self._get_line_left_to_right(line)
+        return self._line_list
 
     def _get_line_left_to_right(self, row):
         """This algorithm walks through a line of the QR-code left to right and line by line to construct vectors
@@ -39,8 +40,9 @@ class LinePath:
         while position.x < self._size:
             if self._qr_todo.table[row, position.x]:
                 x_length += 1
-                while row + y_length < self._size and self._qr_todo.table[row + y_length, position.x]:
-                    y_length += 1
+                if x_length == 1:
+                    while row + y_length < self._size and self._qr_todo.table[row + y_length, position.x]:
+                        y_length += 1
             elif x_length > 0:
                 segment = LineSegment(x_length, 0, Point(position.x - x_length, position.y))
                 vectors.append(segment)

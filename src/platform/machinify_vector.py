@@ -183,11 +183,15 @@ class MachinifyVector:
 
         xy_moves_mm = 0
         pos = Point()
+        x_length_last = 0
+        y_length_last = 0
         for v in vect:
             xy_moves_mm += abs(v.x_length + v.y_length) + \
-                           sqrt(abs(v.position.x - pos.x) ** 2 +
-                                abs(v.position.y - pos.y) ** 2)
+                           sqrt(abs(v.position.x - (pos.x + x_length_last)) ** 2 +
+                                abs(v.position.y - (pos.y + y_length_last)) ** 2)
             pos = v.position
+            x_length_last = v.x_length
+            y_length_last = v.y_length
 
         xy_moves_mm *= self._get_xy_move_per_step()
         z_moves_mm = count_z_moves * (self._engrave_params.z_hover + self._engrave_params.z_engrave)
