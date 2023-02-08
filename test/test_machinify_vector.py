@@ -139,7 +139,7 @@ class TestMachinify(unittest.TestCase):
     def test_linear_move_offset10mmy_up_length12_tool100um_returns_2200um(self):
         t = Tool(number=1, name='taper', dia=3.18, fxy=1000, fz=500, angle=90, tip=0.1)
         machinify = set_path_tool(1, t)
-        machinify._pos = Point(0, 1)
+        machinify._zero_offset = Point(0, 1)
         vect = QrLineData(True, True)
         vect._length = 12
         self.assertEqual('Y2.2', machinify._linear_move(vect, Direction.UP))
@@ -148,7 +148,7 @@ class TestMachinify(unittest.TestCase):
         t = Tool(number=2, name='huge_tool', dia=8, fxy=4000, fz=2000, angle=0, tip=0)
         machinify = set_path_tool(1, t)
         machinify.set_tool(t)
-        machinify._pos = Point(0, 100)
+        machinify._zero_offset = Point(0, 100)
         vect = QrLineData(True, True)
         vect._length = 12
         self.assertEqual('X-96', machinify._linear_move(vect, Direction.LEFT))

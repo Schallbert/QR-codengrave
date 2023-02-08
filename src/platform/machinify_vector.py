@@ -112,7 +112,7 @@ class MachinifyVector:
     def __init__(self, version):
         self._version = version
 
-        self._qr_path = None         # List of QRpathSegment objects
+        self._qr_path = None         # List of LinePath objects
         self._tool = None            # Selected Tool
         self._engrave_params = None  # Z-information for engraving
         self._xy_zero = None         # XY0-offset
@@ -120,7 +120,6 @@ class MachinifyVector:
         self._project_name = ''
         self._job_duration = timedelta(0)
         self._state = False  # current Z state (True = engraving)
-        self._pos = Point(0, 0)  # current position of tool tip
         self._time_buffer = 1
 
     def report_data_missing(self):
@@ -233,71 +232,29 @@ class MachinifyVector:
         """Converts a list of paths into G-code instructions for the CNC.
         :returns engrave: A String object"""
         engrave = ''
-        previous_state = False
-        self._pos = self._xy_zero
-        for path in self._qr_path:
-            direction = path.get_xy_line().get_direction()
-            for vector in path.get_z_vector():
-                engrave += self._engrave(vector.get_state(), previous_state)
-                engrave += self._move(vector, direction)
-                previous_state = vector.get_state()
+        for path in self._qr_path.get_vectors():
+            engrave += self._engrave(path)
         return engrave
 
-    def _engrave(self, state, previous_state):
-        """Converts a QR-code bit state into G-code Z moves for the CNC.
-        :param state: bit representation. True: Engraved, False: HoverOver. is_new_line: boolean to ommit Z instructions
-        that have been given already.
+    def _engrave(self, line_segment):
+        """Converts a QR-code line segment bit state into G-code XYZ moves for the CNC.
+        :param line_segment: LineSegment object.
         :returns cmd: a string object"""
         cmd = ''
-        if state == previous_state:
-            #   For a state, Z information does not need to be sent again.
-            return ''
 
-        if state:
-            #  Engrave: Z down
-            cmd += 'G01 Z-' + str(self._engrave_params.z_engrave) + ' F' + str(self._tool.fz) + '\n'
+        # Rapid move: start position of vector
+        cmd += 'G00 X' + str(line_segment.position.x * self._tool.diameter + self._xy_zero.x) + \
+               ' Y' + str(line_segment.position.y * self._tool.diameter + self._xy_zero.y) + '\n'
+        # Engrave: Z down
+        cmd += 'G01 Z-' + str(self._engrave_params.z_engrave) + ' F' + str(self._tool.fz) + '\n'
+        # Engrave: move
+        if line_segment.x_length != 0:
+            cmd += 'G01 X' + str(line_segment.x_length * self._tool.diameter) + '\n'
         else:
-            #  Hover: Z up
-            cmd += 'G00 Z' + str(self._engrave_params.z_hover) + '\n'
+            cmd += 'G01 Y' + str(line_segment.y_length * self._tool.diameter) + '\n'
+        #  Hover: Z up
+        cmd += 'G00 Z' + str(self._engrave_params.z_hover) + '\n'
         return cmd
-
-    def _move(self, vector, direction):
-        """Converts a vector (a path segment with the identical engrave depth) into G-code XY moves for the CNC.
-        :param vector: a QrLineData object. direction: enum taken from a Line object
-        :returns cmd: a string object"""
-        cmd = ''
-        move = self._linear_move(vector, direction)
-        if move == '':
-            return cmd
-
-        if vector.get_state():
-            # Engrave: With Z down, move steps to reflect vector length with this state
-            cmd += 'G01 ' + str(move) + ' F' + str(self._tool.fxy) + '\n'
-        else:
-            # Hover: Fast move to next engrave position
-            cmd += 'G00 ' + str(move) + '\n'
-        return cmd
-
-    def _linear_move(self, vector, heading):
-        """Converts a vector into G-code commands for CNC with help of tool diameter, length, and heading.
-        :param vector: a QrLineData object. heading: enum taken from a Line object.
-        :returns a String object"""
-        length = vector.get_length() * self._get_xy_move_per_step()
-        if length == 0:
-            return ''
-
-        if heading == Direction.RIGHT:
-            self._pos.x += length
-            return 'X' + str(round(self._pos.x, 3))  # X+ changes
-        elif heading == Direction.DOWN:
-            self._pos.y -= length
-            return 'Y' + str(round(self._pos.y, 3))  # Y- changes
-        elif heading == Direction.LEFT:
-            self._pos.x -= length
-            return 'X' + str(round(self._pos.x, 3))  # X- changes
-        elif heading == Direction.UP:
-            self._pos.y += length
-            return 'Y' + str(round(self._pos.y, 3))  # Y+ changes
 
     def _gcode_header(self):
         """Creates boilerplate code that is sent into the G-code file. It creates human-readable comments to
