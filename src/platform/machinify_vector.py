@@ -241,6 +241,8 @@ class MachinifyVector:
         :param line_segment: LineSegment object.
         :returns cmd: a string object"""
         cmd = ''
+        if not (bool(line_segment.x_length) ^ bool(line_segment.y_length)):
+            return cmd
 
         # Rapid move: start position of vector
         cmd += 'G00 X' + str(line_segment.position.x * self._tool.diameter + self._xy_zero.x) + \
@@ -249,11 +251,13 @@ class MachinifyVector:
         cmd += 'G01 Z-' + str(self._engrave_params.z_engrave) + ' F' + str(self._tool.fz) + '\n'
         # Engrave: move
         if line_segment.x_length != 0:
-            cmd += 'G01 X' + str(line_segment.x_length * self._tool.diameter) + '\n'
+            cmd += 'G01 X' + str(line_segment.x_length * self._tool.diameter)
         else:
-            cmd += 'G01 Y' + str(line_segment.y_length * self._tool.diameter) + '\n'
+            cmd += 'G01 Y' + str(line_segment.y_length * self._tool.diameter)
+        cmd += ' F' + str(self._tool.fxy) + '\n'
         #  Hover: Z up
         cmd += 'G00 Z' + str(self._engrave_params.z_hover) + '\n'
+        print(cmd)
         return cmd
 
     def _gcode_header(self):
