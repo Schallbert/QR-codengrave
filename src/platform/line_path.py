@@ -88,8 +88,8 @@ class LinePath:
         :param segment: A LineSegment object"""
         for y in range(segment.y_length + 1):
             self._qr_todo.table[segment.position.y + y, segment.position.x] = False
-        xl = abs(segment.x_length + 1)
+        x_range = range(abs(segment.x_length + 1))
         if segment.x_length < 0:
-            xl = -xl
-        for x in range(xl):
+            x_range = range(0, segment.x_length - 1, -1)
+        for x in x_range:
             self._qr_todo.table[segment.position.y, segment.position.x + x] = False
