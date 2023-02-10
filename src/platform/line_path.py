@@ -33,7 +33,7 @@ class LinePath:
         position = Point(0, row)
 
         if row >= self._size:
-            return
+            return vectors
 
         while position.x < self._size:
             if self._qr_todo.table[row, position.x]:
@@ -48,6 +48,12 @@ class LinePath:
         return vectors
 
     def _make_segment(self, x_length, y_length, position):
+        """Creates a segment from a given input vector and position. Does not connect vectors. Prefers horizontal
+        over vertial vectors.
+        :param x_length: horizontal length of the vector
+        :param y_length: vertical length of the vector
+        :param position: a Point object
+        :returns segment: a LineSegment object"""
         print('x_l: ' + str(x_length) + ' y_l: ' + str(y_length) +
               ' x: ' + str(position.x) + ' y: ' + str(position.y))
         if abs(x_length) >= abs(y_length):
@@ -68,7 +74,7 @@ class LinePath:
         position = Point(self._size - 1, row)
 
         if row >= self._size:
-            return
+            return vectors
 
         while position.x >= 0:
             if self._qr_todo.table[row, position.x]:

@@ -80,32 +80,27 @@ class TestScanQr(unittest.TestCase):
 
     def test_getlinel2r_line0_vector0_contents_ok(self):
         vectors = self.scan_qr._get_line_left_to_right(0)
-        expect = LineSegment(1, 0, Point(0, 0))
+        expect = LineSegment(0, 0, Point(0, 0))
         self.assertEqual(expect, vectors[0])
 
     def test_getlinel2r_line0_vector1_contents_ok(self):
         vectors = self.scan_qr._get_line_left_to_right(0)
-        expect = LineSegment(0, 3, Point(2, 0))
+        expect = LineSegment(0, 2, Point(2, 0))
         self.assertEqual(expect, vectors[1])
 
     def test_getlinel2r_line0_vector2_contents_ok(self):
         vectors = self.scan_qr._get_line_left_to_right(0)
-        expect = LineSegment(2, 0, Point(2, 0))
+        expect = LineSegment(0, 0, Point(3, 0))
         self.assertEqual(expect, vectors[2])
 
-    def test_getlinel2r_line1_returns_2vectors(self):
+    def test_getlinel2r_line1_returns_1vector(self):
         vectors = self.scan_qr._get_line_left_to_right(1)
-        self.assertEqual(2, len(vectors))
+        self.assertEqual(1, len(vectors))
 
     def test_getlinel2r_line1_vector0_contents_ok(self):
         vectors = self.scan_qr._get_line_left_to_right(1)
-        expect = LineSegment(0, 2, Point(1, 1))
+        expect = LineSegment(1, 0, Point(1, 1))
         self.assertEqual(expect, vectors[0])
-
-    def test_getlinel2r_line1_vector1_contents_ok(self):
-        vectors = self.scan_qr._get_line_left_to_right(1)
-        expect = LineSegment(2, 0, Point(1, 1))
-        self.assertEqual(expect, vectors[1])
 
     def test_getlinel2r_line2_returns_1vector(self):
         vectors = self.scan_qr._get_line_left_to_right(2)
@@ -113,7 +108,7 @@ class TestScanQr(unittest.TestCase):
 
     def test_getlinel2r_line2_vector0_contents_ok(self):
         vectors = self.scan_qr._get_line_left_to_right(2)
-        expect = LineSegment(5, 0, Point(0, 2))
+        expect = LineSegment(4, 0, Point(0, 2))
         self.assertEqual(expect, vectors[0])
 
     def test_getlinel2r_line3_returns_0vector(self):
@@ -126,12 +121,12 @@ class TestScanQr(unittest.TestCase):
 
     def test_getlinel2r_line4_vector0_contents_ok(self):
         vectors = self.scan_qr._get_line_left_to_right(4)
-        expect = LineSegment(1, 0, Point(1, 4))
+        expect = LineSegment(0, 0, Point(1, 4))
         self.assertEqual(expect, vectors[0])
 
     def test_getlinel2r_line4_vector1_contents_ok(self):
         vectors = self.scan_qr._get_line_left_to_right(4)
-        expect = LineSegment(2, 0, Point(3, 4))
+        expect = LineSegment(1, 0, Point(3, 4))
         self.assertEqual(expect, vectors[1])
 
     def test_getliner2l_line0_returns_2vectors(self):
@@ -140,27 +135,22 @@ class TestScanQr(unittest.TestCase):
 
     def test_getliner2l_line0_vector0_contents_ok(self):
         vectors = self.scan_qr._get_line_right_to_left(0)
-        expect = LineSegment(0, 3, Point(2, 0))
+        expect = LineSegment(-1, 0, Point(3, 0))
         self.assertEqual(expect, vectors[0])
 
     def test_getliner2l_line0_vector1_contents_ok(self):
         vectors = self.scan_qr._get_line_right_to_left(0)
-        expect = LineSegment(-1, 0, Point(0, 0))
+        expect = LineSegment(0, 0, Point(0, 0))
         self.assertEqual(expect, vectors[1])
 
-    def test_getliner2l_line1_returns_2vectors(self):
+    def test_getliner2l_line1_returns_1vector(self):
         vectors = self.scan_qr._get_line_right_to_left(1)
-        self.assertEqual(2, len(vectors))
+        self.assertEqual(1, len(vectors))
 
     def test_getliner2l_line1_vector0_contents_ok(self):
         vectors = self.scan_qr._get_line_right_to_left(1)
-        expect = LineSegment(0, 2, Point(2, 1))
+        expect = LineSegment(-1, 0, Point(2, 1))
         self.assertEqual(expect, vectors[0])
-
-    def test_getliner2l_line1_vector1_contents_ok(self):
-        vectors = self.scan_qr._get_line_right_to_left(1)
-        expect = LineSegment(0, 2, Point(1, 1))
-        self.assertEqual(expect, vectors[1])
 
     def test_getliner2l_line2_returns_1vector(self):
         vectors = self.scan_qr._get_line_right_to_left(2)
@@ -168,7 +158,7 @@ class TestScanQr(unittest.TestCase):
 
     def test_getliner2l_line2_vector0_contents_ok(self):
         vectors = self.scan_qr._get_line_right_to_left(2)
-        expect = LineSegment(-5, 0, Point(4, 2))
+        expect = LineSegment(-4, 0, Point(4, 2))
         self.assertEqual(expect, vectors[0])
 
     def test_getliner2l_line3_returns_0vector(self):
@@ -181,21 +171,21 @@ class TestScanQr(unittest.TestCase):
 
     def test_getliner2l_line4_vector0_contents_ok(self):
         vectors = self.scan_qr._get_line_right_to_left(4)
-        expect = LineSegment(-2, 0, Point(4, 4))
+        expect = LineSegment(-1, 0, Point(4, 4))
         self.assertEqual(expect, vectors[0])
 
     def test_getliner2l_line4_vector1_contents_ok(self):
         vectors = self.scan_qr._get_line_right_to_left(4)
-        expect = LineSegment(-1, 0, Point(1, 4))
+        expect = LineSegment(0, 0, Point(1, 4))
         self.assertEqual(expect, vectors[1])
 
     def test_cleartodo_singlepixel_ok(self):
-        to_be_cleared = LineSegment(1, 0, Point(0, 0))
+        to_be_cleared = LineSegment(0, 0, Point(0, 0))
         self.scan_qr._clear_todo(to_be_cleared)
         vectors = self.scan_qr._get_line_left_to_right(0)
         self.assertEqual(2, len(vectors))
         self.assertEqual(2, vectors[0].position.x)
-        self.assertEqual(2, vectors[1].position.x)
+        self.assertEqual(3, vectors[1].position.x)
 
     def test_cleartodo_line_horizontal_ok(self):
         to_be_cleared = LineSegment(2, 0, Point(2, 0))
@@ -223,29 +213,29 @@ class TestScanQr(unittest.TestCase):
         self.assertEqual(8, len(vectors))
 
     def test_getvectors_line0_ok(self):
-        expect0 = LineSegment(1, 0, Point(0, 0))
-        expect1 = LineSegment(0, 3, Point(2, 0))
-        expect2 = LineSegment(2, 0, Point(2, 0))
+        expect0 = LineSegment(0, 0, Point(0, 0))
+        expect1 = LineSegment(0, 2, Point(2, 0))
+        expect2 = LineSegment(0, 0, Point(3, 0))
         vectors = self.scan_qr.get_vectors()
         self.assertEqual(expect0, vectors[0])
         self.assertEqual(expect1, vectors[1])
         self.assertEqual(expect2, vectors[2])
 
     def test_getvectors_line1_ok(self):
-        expect0 = LineSegment(0, 2, Point(1, 1))
+        expect0 = LineSegment(0, 1, Point(1, 1))
         vectors = self.scan_qr.get_vectors()
         self.assertEqual(expect0, vectors[3])
 
     def test_getvectors_line2_ok(self):
-        expect0 = LineSegment(1, 0, Point(0, 2))
-        expect1 = LineSegment(2, 0, Point(3, 2))
+        expect0 = LineSegment(0, 0, Point(0, 2))
+        expect1 = LineSegment(1, 0, Point(3, 2))
         vectors = self.scan_qr.get_vectors()
         self.assertEqual(expect0, vectors[4])
         self.assertEqual(expect1, vectors[5])
 
     def test_getvectors_line4_ok(self):
-        expect0 = LineSegment(1, 0, Point(1, 4))
-        expect1 = LineSegment(2, 0, Point(3, 4))
+        expect0 = LineSegment(0, 0, Point(1, 4))
+        expect1 = LineSegment(1, 0, Point(3, 4))
         vectors = self.scan_qr.get_vectors()
         self.assertEqual(expect0, vectors[6])
         self.assertEqual(expect1, vectors[7])
