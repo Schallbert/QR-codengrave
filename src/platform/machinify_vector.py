@@ -70,9 +70,10 @@ class ToolList:
     def get_selected_tool_description(self):
         """Getter method.
         :returns the selected tool's description string or None when no tool is selected."""
-        if self._selected_tool is not None:
-            return self._selected_tool.get_description()
-        return 'None'
+        if self._selected_tool is None:
+            return 'None'
+        return self._selected_tool.get_description()
+
 
     def get_tool_list_string(self):
         """Compiles a sorted list of tools.
@@ -241,20 +242,21 @@ class MachinifyVector:
         :param line_segment: LineSegment object.
         :returns cmd: a string object"""
         cmd = ''
-        if not (bool(line_segment.x_length) ^ bool(line_segment.y_length)):
-            return cmd
 
         # Rapid move: start position of vector
-        cmd += 'G00 X' + str(line_segment.position.x * self._tool.diameter + self._xy_zero.x) + \
-               ' Y' + str(line_segment.position.y * self._tool.diameter + self._xy_zero.y) + '\n'
+        qrpos_x = line_segment.position.x * self._tool.diameter + self._xy_zero.x
+        qrpos_y = -(line_segment.position.y * self._tool.diameter + self._xy_zero.y)
+        cmd += 'G00 X' + str(qrpos_x) + \
+               ' Y' + str(qrpos_y) + '\n'
         # Engrave: Z down
         cmd += 'G01 Z-' + str(self._engrave_params.z_engrave) + ' F' + str(self._tool.fz) + '\n'
         # Engrave: move
-        if line_segment.x_length != 0:
-            cmd += 'G01 X' + str(line_segment.x_length * self._tool.diameter)
-        else:
-            cmd += 'G01 Y' + str(line_segment.y_length * self._tool.diameter)
-        cmd += ' F' + str(self._tool.fxy) + '\n'
+        if line_segment.y_length != 0:
+            cmd += 'G01 Y' + str(qrpos_y - line_segment.y_length * self._tool.diameter)
+            cmd += ' F' + str(self._tool.fxy) + '\n'
+        elif line_segment.x_length != 0:
+            cmd += 'G01 X' + str(qrpos_x + line_segment.x_length * self._tool.diameter)
+            cmd += ' F' + str(self._tool.fxy) + '\n'
         #  Hover: Z up
         cmd += 'G00 Z' + str(self._engrave_params.z_hover) + '\n'
         print(cmd)

@@ -100,7 +100,7 @@ class TestMachinify(unittest.TestCase):
         machinify = MachinifyVector(1.0)
         self.assertEqual(timedelta(seconds=0), machinify.get_job_duration_sec())
 
-    def test_duration_machinify_5vect_length21_returns_4sec(self):
+    def test_duration_machinify_8vect_size5_returns_2sec(self):
         t = Tool(number=1, name='taper', dia=3.18, fxy=1000, fz=500, angle=90, tip=0.1)
         machinify = set_path_tool(t)
         self.assertEqual(timedelta(seconds=1), machinify.get_job_duration_sec())
@@ -120,16 +120,6 @@ class TestMachinify(unittest.TestCase):
         machinify.set_tool(t)
         self.assertEqual(tuple((5 * t.diameter, 8)), machinify.get_dimension_info())
 
-    def test_engrave_engrave_vector_without_length_returns_empty_string(self):
-        machinify = set_path_tool(Tool())
-        vector = LineSegment(0, 0, Point(0, 0))
-        self.assertEqual('', machinify._engrave(vector))
-
-    def test_engrave_vector_with_both_xylength_returns_empty_string(self):
-        machinify = set_path_tool(Tool())
-        vector = LineSegment(2, -7, Point(0, 0))
-        self.assertEqual('', machinify._engrave(vector))
-
     def test_engrave_returns_offset_zero_returns_zero(self):
         machinify = set_path_tool(Tool())
         vector = LineSegment(2, 0, Point(0, 0))
@@ -138,7 +128,7 @@ class TestMachinify(unittest.TestCase):
     def test_engrave_returns_xypositioning(self):
         machinify = set_path_tool(Tool())
         vector = LineSegment(-5, 0, Point(9, 4))
-        self.assertTrue('G00 X18 Y8\n' in machinify._engrave(vector))
+        self.assertTrue('G00 X18 Y-8\n' in machinify._engrave(vector))
 
     def test_engrave_returns_g01negz_engrave_param(self):
         machinify = set_path_tool(Tool())
@@ -148,7 +138,7 @@ class TestMachinify(unittest.TestCase):
     def test_engrave_returns_linearmovecommand(self):
         machinify = set_path_tool(Tool())
         vector = LineSegment(-5, 0, Point(9, 4))
-        self.assertTrue('G01 X-10 F1000\n' in machinify._engrave(vector))
+        self.assertTrue('G01 X8 F1000\n' in machinify._engrave(vector))
 
     def test_engrave_returns_g00z_hover_param(self):
         machinify = set_path_tool(Tool())
@@ -157,15 +147,35 @@ class TestMachinify(unittest.TestCase):
 
     def test_gcode_engrave_dummyqr_returns_correct_string(self):
         machinify = set_path_tool(Tool())
-        self.assertEqual('G01 Z-0.4 F500\n'
-                         'G01 Y14 F1000\n'
-                         'G00 Z0.5\n'
-                         'G00 Y22\n'
+        self.assertEqual('G00 X0 Y0\n'
                          'G01 Z-0.4 F500\n'
-                         'G01 Y26 F1000\n'
                          'G00 Z0.5\n'
-                         'G00 Y40\n'
-                         'G01 Z-0.4 F500\n', machinify._gcode_engrave())
+                         'G00 X4 Y0\n'
+                         'G01 Z-0.4 F500\n'
+                         'G01 Y-4 F1000\n'
+                         'G00 Z0.5\n'
+                         'G00 X6 Y0\n'
+                         'G01 Z-0.4 F500\n'
+                         'G00 Z0.5\n'
+                         'G00 X2 Y-2\n'
+                         'G01 Z-0.4 F500\n'
+                         'G01 Y-4 F1000\n'
+                         'G00 Z0.5\n'
+                         'G00 X0 Y-4\n'
+                         'G01 Z-0.4 F500\n'
+                         'G00 Z0.5\n'
+                         'G00 X6 Y-4\n'
+                         'G01 Z-0.4 F500\n'
+                         'G01 X8 F1000\n'
+                         'G00 Z0.5\n'
+                         'G00 X8 Y-6\n'
+                         'G01 Z-0.4 F500\n'
+                         'G01 Y-8 F1000\n'
+                         'G00 Z0.5\n'
+                         'G00 X6 Y-8\n'
+                         'G01 Z-0.4 F500\n'
+                         'G00 Z0.5\n'
+                         , machinify._gcode_engrave())
 
     def test_gcode_prepare_sets_correct_tool_number(self):
         tool = Tool(4, 'TestTool', 8, 5200, 2600, 20000)
