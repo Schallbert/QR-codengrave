@@ -105,7 +105,7 @@ class GuiGenerateQr:
                 else:
                     self._turtle.setheading(180)
             self._turtle.down()
-            self._turtle.forward(self.pen_size * (abs(length) - 1))
+            self._turtle.forward(self.pen_size * abs(length))
             self._turtle.up()
 
         self._turtle.hideturtle()

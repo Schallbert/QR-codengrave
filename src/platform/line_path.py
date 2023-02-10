@@ -31,35 +31,32 @@ class LinePath:
         :return a list of vectors"""
         vectors = []
         position = Point(0, row)
-        x_length = 0
-        y_length = 1
 
         if row >= self._size:
-            return vectors
+            return
 
         while position.x < self._size:
             if self._qr_todo.table[row, position.x]:
-                x_length += 1
-                if x_length == 1:
-                    while row + y_length < self._size and self._qr_todo.table[row + y_length, position.x]:
-                        y_length += 1
-            elif x_length > 0:
-                segment = LineSegment(x_length, 0, Point(position.x - x_length, position.y))
-                vectors.append(segment)
-                self._clear_todo(segment)
                 x_length = 0
-            if y_length > 1:
-                segment = LineSegment(0, y_length, Point(position.x, position.y))
-                vectors.append(segment)
-                self._clear_todo(segment)
-                y_length = 1
+                y_length = 0
+                while position.x + x_length + 1 < self._size and self._qr_todo.table[row, position.x + x_length + 1]:
+                    x_length += 1
+                while row + y_length + 1 < self._size and self._qr_todo.table[row + y_length + 1, position.x]:
+                    y_length += 1
+                vectors.append(self._make_segment(x_length, y_length, position))
             position.x += 1
-
-        if x_length > 0:
-            segment = LineSegment(x_length, 0, Point(position.x - x_length, position.y))
-            vectors.append(segment)
-            self._clear_todo(segment)
         return vectors
+
+    def _make_segment(self, x_length, y_length, position):
+        print('x_l: ' + str(x_length) + ' y_l: ' + str(y_length) +
+              ' x: ' + str(position.x) + ' y: ' + str(position.y))
+        if abs(x_length) >= abs(y_length):
+            segment = LineSegment(x_length, 0, Point(position.x, position.y))
+            self._clear_todo(segment)
+        else:
+            segment = LineSegment(0, y_length, Point(position.x, position.y))
+            self._clear_todo(segment)
+        return segment
 
     def _get_line_right_to_left(self, row):
         """This algorithm walks through a line of the QR-code right to left and line by line to construct vectors
@@ -69,44 +66,30 @@ class LinePath:
         :return a list of vectors"""
         vectors = []
         position = Point(self._size - 1, row)
-        x_length = 0
-        y_length = 1
 
         if row >= self._size:
-            return vectors
+            return
 
         while position.x >= 0:
             if self._qr_todo.table[row, position.x]:
-                x_length += 1
-                while row + y_length < self._size and self._qr_todo.table[row + y_length, position.x]:
+                x_length = 0
+                y_length = 0
+                while position.x - x_length - 1 >= 0 and self._qr_todo.table[row, position.x - x_length - 1]:
+                    x_length += 1
+                while row + y_length + 1 < self._size and self._qr_todo.table[row + y_length + 1, position.x]:
                     y_length += 1
-            elif x_length > 0:
-                segment = LineSegment(-x_length, 0, Point(position.x + x_length, position.y))
-                vectors.append(segment)
-                self._clear_todo(segment)
-                x_length = 0
-            if y_length > 1:
-                segment = LineSegment(0, y_length, Point(position.x, position.y))
-                vectors.append(segment)
-                self._clear_todo(segment)
-                y_length = 1
-                x_length = 0
+                vectors.append(self._make_segment(-x_length, y_length, position))
             position.x -= 1
-
-        position.x = -1
-        if x_length > 0:
-            segment = LineSegment(-x_length, 0, Point(position.x + x_length, position.y))
-            vectors.append(segment)
-            self._clear_todo(segment)
         return vectors
 
     def _clear_todo(self, segment):
         """Method to clear a segment of the QR-code working copy. Clearing is done to not double-engrave
         already completed fields.
         :param segment: A LineSegment object"""
-        if segment.x_length == 0:
-            for y in range(segment.y_length):
-                self._qr_todo.table[segment.position.y + y, segment.position.x] = False
-        elif segment.y_length == 0:
-            for x in range(segment.x_length):
-                self._qr_todo.table[segment.position.y, segment.position.x + x] = False
+        for y in range(segment.y_length + 1):
+            self._qr_todo.table[segment.position.y + y, segment.position.x] = False
+        xl = abs(segment.x_length + 1)
+        if segment.x_length < 0:
+            xl = -xl
+        for x in range(xl):
+            self._qr_todo.table[segment.position.y, segment.position.x + x] = False
