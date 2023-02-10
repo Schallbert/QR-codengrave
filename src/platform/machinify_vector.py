@@ -259,7 +259,6 @@ class MachinifyVector:
             cmd += ' F' + str(self._tool.fxy) + '\n'
         #  Hover: Z up
         cmd += 'G00 Z' + str(self._engrave_params.z_hover) + '\n'
-        print(cmd)
         return cmd
 
     def _gcode_header(self):

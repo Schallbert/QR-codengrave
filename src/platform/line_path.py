@@ -54,8 +54,6 @@ class LinePath:
         :param y_length: vertical length of the vector
         :param position: a Point object
         :returns segment: a LineSegment object"""
-        print('x_l: ' + str(x_length) + ' y_l: ' + str(y_length) +
-              ' x: ' + str(position.x) + ' y: ' + str(position.y))
         if abs(x_length) >= abs(y_length):
             segment = LineSegment(x_length, 0, Point(position.x, position.y))
             self._clear_todo(segment)
