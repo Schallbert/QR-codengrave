@@ -25,12 +25,12 @@ class App:
     def __init__(self, root):
         self.root = root
 
-        self.version = 1.0
+        self.version = 1.1
 
         self.style = ttk.Style()
         self.style.theme_use('alt')
         self.style.configure('teal.Horizontal.TProgressbar', foreground='black', background='#00A877')
-        self.root.title("QR-Codengrave")
+        self.root.title('QR-Codengrave V' + str(self.version))
         self.canvas = tk.Canvas(root)
         self.canvas.config(width=600, height=600)
 

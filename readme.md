@@ -67,6 +67,19 @@ For testing purposes I created a QR-code to my website [schallbert.de](https://s
 a piece of coated pylwood. I used an `6mm` endmill which resulted in a qr-code size of `144x144 mm`.
 ![QR-codengrave G-code executed on my CNC portal milling machine](src/assets/engravedqr_schallbert_website.jpg)
 
+## Versions
+- 1.0 Initial release. Basic inward-pointing spiral as path algorithm. 
+- 1.1 Algo upgrade release. Uses a faster, single-pixel avoiding algo. Includes several minor bugfixes.
+
+### How to upgrade
+1. Navigate into `src/assets` of your QR-codengrave folder.
+2. copy `Persistence.dat` to a temporary folder or e.g. your Desktop.
+3. Remove the current installation.
+4. Download the latest release, move it where your previous release was deployed.
+5. Move the `Persistence.dat` into `src/assets` of your new installation and start the application.
+
+All tools you entered in your old version, your engrave settings, and zero offsets should be available to you.
+
 ## Code modules
 The application consists of three modules:
 - vectorize_qr
@@ -85,7 +98,7 @@ the workpiece's XY zero offset.
 
 ### machinify_vector
 Class that is able to generate G-code instructions for a Computerized Numerical Control milling machine from QR-code bitfield vectors
-from `vectorize_qr` with help of parameters entered through the `gui` module.
+from `line_path` with help of parameters entered through the `gui` module.
 
 ## Testing
 The application features unit tests for the developed algorithms. It spares out the `gui` though which has been tested
