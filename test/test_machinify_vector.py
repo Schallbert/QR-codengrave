@@ -194,8 +194,7 @@ class TestMachinify(unittest.TestCase):
                          'G00 Z0.5\n'
                          'G00 X6 Y-8\n'
                          'G01 Z-0.4 F500\n'
-                         'G00 Z0.5\n'
-                         , machinify._gcode_engrave())
+                         'G00 Z0.5\n', machinify._gcode_engrave())
 
     def test_gcode_prepare_sets_correct_tool_number(self):
         tool = Tool(4, 'TestTool', 8, 5200, 2600, 20000)

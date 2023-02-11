@@ -2,7 +2,7 @@ from io import StringIO
 from math import sqrt
 from datetime import timedelta
 
-from src.platform.vectorize_helper import Point, LineSegment
+from src.platform.vectorize_helper import Point
 
 
 class Tool:

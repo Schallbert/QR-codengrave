@@ -239,4 +239,3 @@ class TestScanQr(unittest.TestCase):
         vectors = self.scan_qr.get_vectors()
         self.assertEqual(expect0, vectors[6])
         self.assertEqual(expect1, vectors[7])
-
