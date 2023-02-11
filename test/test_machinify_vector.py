@@ -134,7 +134,6 @@ class TestMachinify(unittest.TestCase):
         vector = LineSegment(5, 0, Point(0, 0))
         self.assertTrue('G01 X40 F1000\n' in machinify._engrave(vector))
 
-
     def test_engrave_returns_offset_zero_returns_zero(self):
         machinify = set_path_tool(Tool())
         vector = LineSegment(2, 0, Point(0, 0))
@@ -159,6 +158,12 @@ class TestMachinify(unittest.TestCase):
         machinify = set_path_tool(Tool())
         vector = LineSegment(2, 0, Point(0, 0))
         self.assertTrue('G00 Z0.5\n' in machinify._engrave(vector))
+
+    def test_gcode_engrave_dummyqr_offset_returns_correct_path_offsets(self):
+        machinify = set_path_tool(Tool())
+        xy0 = Point(6.21, -17.21)
+        machinify.set_xy_zero(xy0)
+        self.assertTrue('G00 X6.21 Y-17.21\n' in machinify._gcode_engrave())
 
     def test_gcode_engrave_dummyqr_returns_correct_string(self):
         machinify = set_path_tool(Tool())

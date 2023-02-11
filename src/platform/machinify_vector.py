@@ -247,7 +247,7 @@ class MachinifyVector:
         # Rapid move: start position of vector
         tool_step = self._get_xy_move_per_step()
         qrpos_x = round(line_segment.position.x * tool_step + self._xy_zero.x, 3)
-        qrpos_y = round(-(line_segment.position.y * tool_step - self._xy_zero.y), 3)
+        qrpos_y = round(-line_segment.position.y * tool_step + self._xy_zero.y, 3)
         cmd += 'G00 X' + str(qrpos_x) + \
                ' Y' + str(qrpos_y) + '\n'
         # Engrave: Z down
@@ -261,7 +261,6 @@ class MachinifyVector:
             cmd += ' F' + str(self._tool.fxy) + '\n'
         #  Hover: Z up
         cmd += 'G00 Z' + str(self._engrave_params.z_hover) + '\n'
-        print(cmd)
         return cmd
 
     def _gcode_header(self):
