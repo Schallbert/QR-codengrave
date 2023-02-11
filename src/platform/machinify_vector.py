@@ -7,6 +7,7 @@ from src.platform.vectorize_helper import Point, LineSegment
 
 class Tool:
     """POD container class representing a tool."""
+
     def __init__(self, number=1, name='Default', dia=2, fxy=1000, fz=500, s=24000, angle=0, tip=0):
         self.number = number
         self.name = name
@@ -74,7 +75,6 @@ class ToolList:
             return 'None'
         return self._selected_tool.get_description()
 
-
     def get_tool_list_string(self):
         """Compiles a sorted list of tools.
         :returns a list of tool descriptions."""
@@ -110,13 +110,14 @@ class EngraveParams:
 class MachinifyVector:
     """Class that processes QR-code path data, tool data, engrave depth data, and Workpiece zero coordinates
     to create a CNC machine readable file containing G-code instructions."""
+
     def __init__(self, version):
         self._version = version
 
-        self._qr_path = None         # List of LinePath objects
-        self._tool = None            # Selected Tool
+        self._qr_path = None  # List of LinePath objects
+        self._tool = None  # Selected Tool
         self._engrave_params = None  # Z-information for engraving
-        self._xy_zero = None         # XY0-offset
+        self._xy_zero = None  # XY0-offset
 
         self._project_name = ''
         self._job_duration = timedelta(0)
@@ -244,21 +245,23 @@ class MachinifyVector:
         cmd = ''
 
         # Rapid move: start position of vector
-        qrpos_x = line_segment.position.x * self._tool.diameter + self._xy_zero.x
-        qrpos_y = -(line_segment.position.y * self._tool.diameter + self._xy_zero.y)
+        tool_step = self._get_xy_move_per_step()
+        qrpos_x = round(line_segment.position.x * tool_step + self._xy_zero.x, 3)
+        qrpos_y = round(-(line_segment.position.y * tool_step - self._xy_zero.y), 3)
         cmd += 'G00 X' + str(qrpos_x) + \
                ' Y' + str(qrpos_y) + '\n'
         # Engrave: Z down
         cmd += 'G01 Z-' + str(self._engrave_params.z_engrave) + ' F' + str(self._tool.fz) + '\n'
         # Engrave: move
         if line_segment.y_length != 0:
-            cmd += 'G01 Y' + str(qrpos_y - line_segment.y_length * self._tool.diameter)
+            cmd += 'G01 Y' + str(round(qrpos_y - line_segment.y_length * tool_step, 3))
             cmd += ' F' + str(self._tool.fxy) + '\n'
         elif line_segment.x_length != 0:
-            cmd += 'G01 X' + str(qrpos_x + line_segment.x_length * self._tool.diameter)
+            cmd += 'G01 X' + str(round(qrpos_x + line_segment.x_length * tool_step, 3))
             cmd += ' F' + str(self._tool.fxy) + '\n'
         #  Hover: Z up
         cmd += 'G00 Z' + str(self._engrave_params.z_hover) + '\n'
+        print(cmd)
         return cmd
 
     def _gcode_header(self):
@@ -275,25 +278,25 @@ class MachinifyVector:
         """Creates boilerplate G-code to initialize the CNC with correct tool, spindle speed, and moves to Qr-code's
          targeted position.
          :returns prepare: a String object"""
-        prepare = 'G90 \n'                                                 # Set absolute coordinates (modal)
-        prepare += 'MSG "Tool: ' + self._tool.get_description() + '"\n'    # Tool message for user
-        prepare += 'T' + str(self._tool.number) + '\n'                     # Tool select
-        prepare += 'M06 \n'                                                # Tool change
-        prepare += 'M03 \n'                                                # Spindle on
-        prepare += 'S' + str(self._tool.speed) + '\n'                      # Set spindle speed
+        prepare = 'G90 \n'  # Set absolute coordinates (modal)
+        prepare += 'MSG "Tool: ' + self._tool.get_description() + '"\n'  # Tool message for user
+        prepare += 'T' + str(self._tool.number) + '\n'  # Tool select
+        prepare += 'M06 \n'  # Tool change
+        prepare += 'M03 \n'  # Spindle on
+        prepare += 'S' + str(self._tool.speed) + '\n'  # Set spindle speed
 
         prepare += 'G00 Z' + str(self._engrave_params.z_flyover) + '\n\n'  # Go to flyover height
-        prepare += 'G00 Y0 X0 \n'                                          # Go to workpiece XY0
+        prepare += 'G00 Y0 X0 \n'  # Go to workpiece XY0
         prepare += 'G00 X' + str(self._xy_zero.x) + ' Y' + \
-                   str(self._xy_zero.y) + ' \n'                            # Go to QR-code begin position
-        prepare += 'G00 Z' + str(self._engrave_params.z_hover) + '\n\n'    # Go to hover Z height
+                   str(self._xy_zero.y) + ' \n'  # Go to QR-code begin position
+        prepare += 'G00 Z' + str(self._engrave_params.z_hover) + '\n\n'  # Go to hover Z height
         return prepare
 
     def _gcode_finalize(self):
         """Creates boilerplate G-code to finalize the CNC job. Commands spindle stop, returns to workpiece zero.
         :returns finalize, a String object"""
-        finalize = '\nM05 \n'                                             # Spindle Stop
+        finalize = '\nM05 \n'  # Spindle Stop
         finalize += 'G00 Z' + str(self._engrave_params.z_flyover) + '\n'  # Go to flyover height
-        finalize += 'G00 Y0 X0 \n'                                        # Go to workpiece XY0
-        finalize += 'M30 \n'                                              # End of Program
+        finalize += 'G00 Y0 X0 \n'  # Go to workpiece XY0
+        finalize += 'M30 \n'  # End of Program
         return finalize

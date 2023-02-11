@@ -120,6 +120,21 @@ class TestMachinify(unittest.TestCase):
         machinify.set_tool(t)
         self.assertEqual(tuple((5 * t.diameter, 8)), machinify.get_dimension_info())
 
+    def test_engrave_length5_tool100um_returns500um(self):
+        t = Tool(number=1, name='taper', dia=3.18, fxy=1000, fz=500, angle=90, tip=0.1)
+        machinify = set_path_tool(t)
+        machinify.set_tool(t)
+        vector = LineSegment(5, 0, Point(0, 0))
+        self.assertTrue('G01 X0.5 F1000\n' in machinify._engrave(vector))
+
+    def test_engrave_length5_tool8mm_returns40mm(self):
+        t = Tool(number=1, name='big', dia=8, fxy=1000, fz=500, angle=0, tip=0)
+        machinify = set_path_tool(t)
+        machinify.set_tool(t)
+        vector = LineSegment(5, 0, Point(0, 0))
+        self.assertTrue('G01 X40 F1000\n' in machinify._engrave(vector))
+
+
     def test_engrave_returns_offset_zero_returns_zero(self):
         machinify = set_path_tool(Tool())
         vector = LineSegment(2, 0, Point(0, 0))
