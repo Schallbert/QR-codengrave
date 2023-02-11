@@ -130,10 +130,10 @@ class GuiGenerateQr:
         self._stop_drawing()
         self._turtle.clear()
 
-        if qr_size > 100:
+        if qr_size > 84:
             self.pen_size = 1
         else:
-            self.pen_size = 12 - (qr_size // 10)
+            self.pen_size = 12 - (qr_size // 7)
         self._turtle.pensize(self.pen_size)
 
         self._turtle.showturtle()
