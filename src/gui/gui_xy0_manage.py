@@ -38,7 +38,7 @@ class GuiXy0Manager:
 
     def _init_frame_params_section(self):
         """create all items within the parameters frame section"""
-        params_frame = tk.LabelFrame(bd=5, text='Set XY zero relative to QR-code center')
+        params_frame = tk.LabelFrame(bd=5, text='Set XY zero relative to QR-code TopLeft')
         params_frame['relief'] = 'ridge'
         params_frame.grid(column=1, row=2, sticky='NEWS', **self._options)
         # Center label entries
@@ -75,4 +75,3 @@ class GuiXy0Manager:
             return
         self._guiconfig.show()
         self._main.update_status('Set XY0')
-
