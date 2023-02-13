@@ -267,7 +267,7 @@ class MachinifyVector:
         """Creates boilerplate code that is sent into the G-code file. It creates human-readable comments to
         identify project information.
         :returns header: a String object"""
-        header = '(Project: ' + self._project_name + ')\n'
+        header = '(Project: QR-codengrave_' + self._project_name + ')\n'
         header += '(Created with Schallbert\'s QR-codengrave Version ' + str(self._version) + ')\n'
         header += '(Job duration ca. ' + str(self._job_duration) + ')\n\n'
         header += '(Required tool: ' + self._tool.get_description() + ')\n\n'
