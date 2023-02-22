@@ -122,7 +122,7 @@ class MachinifyVector:
         self._project_name = ''
         self._job_duration = timedelta(0)
         self._state = False  # current Z state (True = engraving)
-        self._time_buffer = 1
+        self._time_buffer = 1.6
 
     def report_data_missing(self):
         """Reports to GUI in case there's data missing so that G-code cannot be generated.

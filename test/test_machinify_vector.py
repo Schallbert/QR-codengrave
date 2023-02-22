@@ -103,7 +103,7 @@ class TestMachinify(unittest.TestCase):
     def test_duration_machinify_8vect_size5_returns_2sec(self):
         t = Tool(number=1, name='taper', dia=3.18, fxy=1000, fz=500, angle=90, tip=0.1)
         machinify = set_path_tool(t)
-        self.assertEqual(timedelta(seconds=1), machinify.get_job_duration_sec())
+        self.assertEqual(timedelta(seconds=2), machinify.get_job_duration_sec())
 
     def test_dimensions_no_tool_defined_returns_0(self):
         machinify = MachinifyVector(1.0)
