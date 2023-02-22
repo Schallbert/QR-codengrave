@@ -206,10 +206,8 @@ class TestMachinify(unittest.TestCase):
         machinify.set_engrave_params(engrave_params)
         self.assertEqual('G90 \n'
                          'MSG "Tool: ' + tool.get_description() + '"\n'
-                         'T' + str(tool.number) + '\n'
-                         'M06 \n'
-                         'M03 \n'
-                         'S' + str(tool.speed) + '\n', machinify._gcode_prepare().split('G00')[0])
+                         'T' + str(tool.number) + ' M06 \n'
+                         'M03 S' + str(tool.speed) + '\n', machinify._gcode_prepare().split('G00')[0])
 
     def test_gcode_prepare_sets_correct_engrave_parameters(self):
         tool = Tool(4, 'TestTool', 8, 5200, 2600, 20000)

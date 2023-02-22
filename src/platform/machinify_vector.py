@@ -279,10 +279,8 @@ class MachinifyVector:
          :returns prepare: a String object"""
         prepare = 'G90 \n'  # Set absolute coordinates (modal)
         prepare += 'MSG "Tool: ' + self._tool.get_description() + '"\n'  # Tool message for user
-        prepare += 'T' + str(self._tool.number) + '\n'  # Tool select
-        prepare += 'M06 \n'  # Tool change
-        prepare += 'M03 \n'  # Spindle on
-        prepare += 'S' + str(self._tool.speed) + '\n'  # Set spindle speed
+        prepare += 'T' + str(self._tool.number) + ' M06 \n'  # Tool select / change
+        prepare += 'M03 S' + str(self._tool.speed) + '\n'  # Set spindle speed
 
         prepare += 'G00 Z' + str(self._engrave_params.z_flyover) + '\n\n'  # Go to flyover height
         prepare += 'G00 Y0 X0 \n'  # Go to workpiece XY0
