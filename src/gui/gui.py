@@ -127,7 +127,7 @@ class App:
         """Calls a file save dialog and copies the already generated G-code into that file.
         :param gcode: A StringIO object representing the machine instructions.
         :returns early in case the dialog is cancelled by the user."""
-        file = asksaveasfile(mode='w', initialfile=self._machinify.get_project_name() + '.tap',
+        file = asksaveasfile(mode='w', initialfile='qr_' + self._machinify.get_project_name() + '.tap',
                              defaultextension='.tap', filetypes=[('CNC gcode', '*.tap'), ('Text Document', '*.txt')])
         if file is None:  # asksaveasfile return `None` if dialog closed with "cancel".
             return
