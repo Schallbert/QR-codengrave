@@ -1,5 +1,5 @@
 from io import StringIO
-from math import sqrt
+from math import sqrt, tan, pi
 from datetime import timedelta
 
 from src.platform.vectorize_helper import Point
@@ -225,8 +225,12 @@ class MachinifyVector:
     def _get_xy_move_per_step(self):
         """Helper method.
         :returns float: a value representing the tool diameter relevant for engraving."""
-        if self._tool.tip > 0:
-            return self._tool.tip
+        if self._tool.angle > 0:
+            tan_angle = tan(self._tool.angle / 360 * pi)  # value range 0 and 1
+            dia = self._tool.tip + 2 * self._engrave_params.z_engrave * tan_angle
+            if dia >= self._tool.diameter:
+                return self._tool.diameter
+            return dia
         else:
             return self._tool.diameter
 

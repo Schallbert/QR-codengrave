@@ -1,5 +1,6 @@
 import unittest
 from datetime import timedelta
+from math import tan, pi
 
 from src.platform.line_path import LinePath
 from src.platform.machinify_vector import MachinifyVector, Tool, EngraveParams
@@ -100,19 +101,48 @@ class TestMachinify(unittest.TestCase):
         machinify = MachinifyVector(1.0)
         self.assertEqual(timedelta(seconds=0), machinify.get_job_duration_sec())
 
-    def test_duration_machinify_8vect_size5_returns_2sec(self):
-        t = Tool(number=1, name='taper', dia=3.18, fxy=1000, fz=500, angle=90, tip=0.1)
+    def test_duration_machinify_8vect_size5_returns_7sec(self):
+        t = Tool(number=1, name='taper', dia=3, fxy=1000, fz=500, angle=0, tip=1)
         machinify = set_path_tool(t)
-        self.assertEqual(timedelta(seconds=2), machinify.get_job_duration_sec())
+        self.assertEqual(timedelta(seconds=7), machinify.get_job_duration_sec())
 
     def test_dimensions_no_tool_defined_returns_0(self):
         machinify = MachinifyVector(1.0)
         self.assertEqual(tuple((0, 0)), machinify.get_dimension_info())
 
-    def test_dimensions_machinify_length21_tool100um_returns2mm(self):
-        t = Tool(number=1, name='taper', dia=3.18, fxy=1000, fz=500, angle=90, tip=0.1)
+    def test_dimensions_machinify_length5_taperedtool_flatend_returns2mm(self):
+        t = Tool(number=1, name='taper', dia=3.18, fxy=1000, fz=500, angle=90, tip=0.5)
         machinify = set_path_tool(t)
-        self.assertEqual(tuple((5 * t.tip, 0.1)), machinify.get_dimension_info())
+        machinify.set_engrave_params(EngraveParams(0.75, 0.5, 5))
+        self.assertAlmostEqual(10, machinify.get_dimension_info()[0])
+        self.assertAlmostEqual(2, machinify.get_dimension_info()[1])
+
+    def test_dimensions_machinify_length5_taperedtool_sharpend_returns1mm(self):
+        t = Tool(number=1, name='taper', dia=3.18, fxy=1000, fz=500, angle=90, tip=0)
+        machinify = set_path_tool(t)
+        machinify.set_engrave_params(EngraveParams(0.5, 0.5, 5))
+        engrave_dia = tan(t.angle / 360 * pi)
+        self.assertEqual(tuple((5 * engrave_dia, engrave_dia)), machinify.get_dimension_info())
+
+    def test_dimensions_machinify_length5_taperedtool_smallangle_returnscorrectly(self):
+        t = Tool(number=1, name='taper', dia=3.18, fxy=1000, fz=500, angle=30, tip=0)
+        machinify = set_path_tool(t)
+        machinify.set_engrave_params(EngraveParams(2, 0.5, 5))
+        engrave_dia = tan(t.angle / 360 * pi)
+        self.assertEqual(tuple((20 * engrave_dia, 4 * engrave_dia)), machinify.get_dimension_info())
+
+    def test_dimensions_machinify_length5_taperedtool_largeangle_returnscorrectly(self):
+        t = Tool(number=1, name='taper', dia=3.18, fxy=1000, fz=500, angle=120, tip=0)
+        machinify = set_path_tool(t)
+        machinify.set_engrave_params(EngraveParams(0.6, 0.5, 5))
+        engrave_dia = tan(t.angle / 360 * pi) * 2 * 0.6
+        self.assertEqual(tuple((5 * engrave_dia, engrave_dia)), machinify.get_dimension_info())
+
+    def test_dimensions_machinify_length5_taperedtool_highengravedepth_returnscorrectly(self):
+        t = Tool(number=1, name='taper', dia=3.18, fxy=1000, fz=500, angle=90, tip=0)
+        machinify = set_path_tool(t)
+        machinify.set_engrave_params(EngraveParams(4, 0.5, 5))
+        self.assertEqual(tuple((5 * 3.18, 3.18)), machinify.get_dimension_info())
 
     def test_dimensions_machinify_length21_tool8mm_returns168mm(self):
         t = Tool(number=2, name='huge_tool', dia=8, fxy=4000, fz=2000, angle=0, tip=0)
@@ -124,6 +154,7 @@ class TestMachinify(unittest.TestCase):
         t = Tool(number=1, name='taper', dia=3.18, fxy=1000, fz=500, angle=90, tip=0.1)
         machinify = set_path_tool(t)
         machinify.set_tool(t)
+        machinify.set_engrave_params(EngraveParams(0, 0.5, 5))
         vector = LineSegment(5, 0, Point(0, 0))
         self.assertTrue('G01 X0.5 F1000\n' in machinify._engrave(vector))
 
