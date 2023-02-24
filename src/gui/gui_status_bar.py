@@ -51,7 +51,7 @@ class GuiStatusBar:
 
         # Estimated QR-code size ' nnn x nnn mm '
 
-        self._schallbert_label = ttk.Label(status_bar_frame, text='\xa9 Schallbert 2022',
+        self._schallbert_label = ttk.Label(status_bar_frame, text='\xa9 Schallbert 2023',
                                            foreground='#00A877', cursor="hand2", width=17)
         self._schallbert_label.grid(column=3, row=0, sticky='E', **self._options)
         self._schallbert_label.bind("<Button-1>", lambda e: _callback('https://schallbert.de/'))

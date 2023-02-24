@@ -2,7 +2,7 @@ import pickle
 
 from tkinter import messagebox
 from src.resources import app_persistence_path
-from src.platform.vectorize_qr import Point
+from src.platform.vectorize_helper import Point
 from src.platform.machinify_vector import ToolList, EngraveParams
 
 
