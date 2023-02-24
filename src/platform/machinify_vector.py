@@ -1,5 +1,5 @@
 from io import StringIO
-from math import sqrt
+from math import sqrt, tan, pi
 from datetime import timedelta
 
 from src.platform.vectorize_helper import Point
@@ -122,7 +122,7 @@ class MachinifyVector:
         self._project_name = ''
         self._job_duration = timedelta(0)
         self._state = False  # current Z state (True = engraving)
-        self._time_buffer = 1
+        self._time_buffer = 1.6
 
     def report_data_missing(self):
         """Reports to GUI in case there's data missing so that G-code cannot be generated.
@@ -225,8 +225,12 @@ class MachinifyVector:
     def _get_xy_move_per_step(self):
         """Helper method.
         :returns float: a value representing the tool diameter relevant for engraving."""
-        if self._tool.tip > 0:
-            return self._tool.tip
+        if self._tool.angle > 0:
+            tan_angle = tan(self._tool.angle / 360 * pi)  # value range 0 and 1
+            dia = self._tool.tip + 2 * self._engrave_params.z_engrave * tan_angle
+            if dia >= self._tool.diameter:
+                return self._tool.diameter
+            return dia
         else:
             return self._tool.diameter
 
@@ -267,7 +271,7 @@ class MachinifyVector:
         """Creates boilerplate code that is sent into the G-code file. It creates human-readable comments to
         identify project information.
         :returns header: a String object"""
-        header = '(Project: ' + self._project_name + ')\n'
+        header = '(Project: QR-codengrave_' + self._project_name + ')\n'
         header += '(Created with Schallbert\'s QR-codengrave Version ' + str(self._version) + ')\n'
         header += '(Job duration ca. ' + str(self._job_duration) + ')\n\n'
         header += '(Required tool: ' + self._tool.get_description() + ')\n\n'
@@ -279,10 +283,8 @@ class MachinifyVector:
          :returns prepare: a String object"""
         prepare = 'G90 \n'  # Set absolute coordinates (modal)
         prepare += 'MSG "Tool: ' + self._tool.get_description() + '"\n'  # Tool message for user
-        prepare += 'T' + str(self._tool.number) + '\n'  # Tool select
-        prepare += 'M06 \n'  # Tool change
-        prepare += 'M03 \n'  # Spindle on
-        prepare += 'S' + str(self._tool.speed) + '\n'  # Set spindle speed
+        prepare += 'T' + str(self._tool.number) + ' M06 \n'  # Tool select / change
+        prepare += 'M03 S' + str(self._tool.speed) + '\n'  # Set spindle speed
 
         prepare += 'G00 Z' + str(self._engrave_params.z_flyover) + '\n\n'  # Go to flyover height
         prepare += 'G00 Y0 X0 \n'  # Go to workpiece XY0

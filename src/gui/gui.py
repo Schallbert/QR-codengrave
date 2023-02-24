@@ -25,7 +25,7 @@ class App:
     def __init__(self, root):
         self.root = root
 
-        self.version = 1.1
+        self.version = 1.2
 
         self.style = ttk.Style()
         self.style.theme_use('alt')
@@ -57,13 +57,12 @@ class App:
         :param text: an optional parameter to display a custom message on the status bar"""
         if text != '':
             self.gui_status_bar.set_status_text(text)
-        elif self._collect_necessary_data():
+        elif self._collect_path_tool_data() and self.collect_engrave_offset_data():
             qr_dimensions = self._machinify.get_dimension_info()
             self.gui_status_bar.set_qr_size(qr_dimensions[0])
             self.gui_xy0_manager.set_dimension_info(qr_dimensions)
-            if self._collect_optional_data():
-                self.gui_status_bar.set_job_duration(self._machinify.get_job_duration_sec())
-                self.gui_status_bar.set_status_ready()
+            self.gui_status_bar.set_job_duration(self._machinify.get_job_duration_sec())
+            self.gui_status_bar.set_status_ready()
         else:
             self.gui_status_bar.set_status_not_ready()
 
@@ -79,7 +78,7 @@ class App:
             return
         self._save_file(self._machinify.generate_gcode())
 
-    def _collect_necessary_data(self):
+    def _collect_path_tool_data(self):
         """Tries to obtain QR-code paths and tool information from other parts of the GUI.
         Forwards the data to the Machinify module.
         :returns False: if data is not available, else returns True."""
@@ -95,7 +94,7 @@ class App:
         Persistence.save(self.gui_tool_manager.get_tool_list())
         return True
 
-    def _collect_optional_data(self):
+    def collect_engrave_offset_data(self):
         """Tries to obtain Engrave parameters and Workpiece Zero offsets from other parts of the GUI.
         FOrwards the data to the Machinify module.
         :returns False: if the data is not available, else returns True."""
@@ -127,7 +126,7 @@ class App:
         """Calls a file save dialog and copies the already generated G-code into that file.
         :param gcode: A StringIO object representing the machine instructions.
         :returns early in case the dialog is cancelled by the user."""
-        file = asksaveasfile(mode='w', initialfile=self._machinify.get_project_name() + '.tap',
+        file = asksaveasfile(mode='w', initialfile='qr_' + self._machinify.get_project_name() + '.tap',
                              defaultextension='.tap', filetypes=[('CNC gcode', '*.tap'), ('Text Document', '*.txt')])
         if file is None:  # asksaveasfile return `None` if dialog closed with "cancel".
             return
