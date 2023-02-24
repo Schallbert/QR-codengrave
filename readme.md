@@ -70,6 +70,8 @@ a piece of coated pylwood. I used an `6mm` endmill which resulted in a qr-code s
 ## Versions
 - 1.0 Initial release. Basic inward-pointing spiral as path algorithm. 
 - 1.1 Algo upgrade release. Uses a faster, single-pixel avoiding algo. Includes several minor bugfixes.
+- 1.2 Implement tapered tool angle and engrave depth to QR-code size calculation. Major bugfix 
+(missing tool change macro call)
 
 ### How to upgrade
 1. Navigate into `src/assets` of your QR-codengrave folder.
