@@ -25,7 +25,7 @@ class App:
     def __init__(self, root):
         self.root = root
 
-        self.version = 1.1
+        self.version = 1.2
 
         self.style = ttk.Style()
         self.style.theme_use('alt')
